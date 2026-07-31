@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:26.3.3
+          args:
+            - start
+            - --https-port=8443
+            - --https-certificate-file=/etc/x509/https/tls.crt
+            - --https-certificate-key-file=/etc/x509/https/tls.key
+            - --hostname=https://172.18.0.4
+            - --log-level=debug,org.keycloak.events:debug,org.keycloak.protocol.oidc:debug
+          env:
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              value: admin
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              value: admin
+          ports:
+            - name: https
+              containerPort: 8443
+          volumeMounts:
+            - name: keycloak-tls
+              mountPath: /etc/x509/https
+              readOnly: true
+      volumes:
+        - name: keycloak-tls
+          secret:
+            secretName: keycloak-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: keycloak
+spec:
+  type: LoadBalancer
+  selector:
+    app: keycloak
+  ports:
+    - name: https
+      port: 443
+      targetPort: 8443

@@ -36,13 +36,36 @@ edge: gsl.#Edge & {
 			]
 		},
 	]
+	volumes: [
+		{
+			name: "oauth2"
+				secret: {
+					secretName: "greymatter-oauth2-secret"
+					optional:   true
+				}
+		},
+	]
+
+	volumeMounts: [
+		{
+			name: "oauth2"
+			mountPath: "/etc/proxy/tls/oauth2"
+		}
+	]
 
 	ingress: {
 		"edge": {
 			gsl.#HTTPListener
 			gsl.#TLSListener
 
+			port: 443
 			filters: [
+				gsl.#OIDCPipelineV2 & {
+					#options: {
+							oauth2: config: {policies.OAuthProvider}
+							jwt: {policies.JWKSProvider} // Omit this line if there is no JWKS Provider
+					}
+				},
 				gsl.#GreymatterWAFFilter & {
 					config: {
 						directives: [
@@ -62,4 +85,19 @@ edge: gsl.#Edge & {
 			}
 		}
 	}
+
+	raw_upstreams: {
+		"oauth2": {
+			gsl.#Upstream
+			gsl.#TLSUpstream
+			instances: [
+				{
+					host: "172.18.0.3"
+					port: 443
+				},
+			]
+		}
+	}
 }
+
+exports: "edge": edge

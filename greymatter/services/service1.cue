@@ -36,6 +36,33 @@ service1: gsl.#Service & {
 				#subjects: ["oauth2tenant-edge"]
 			}
 
+			filters: [
+				gsl.#LuaFilter & {
+					#options: {
+						inline_code:
+							"""
+							function envoy_on_request(request_handle)
+								local headers = request_handle:headers()
+								-- Get the 'cookie' header
+								local cookie = headers:get("cookie")
+								if cookie then
+									-- Extract the token from a cookie named "Token"
+									local token = string.match(cookie, "token=([^;]+)")
+									if token then
+										local auth_value = "Bearer " .. token
+										headers:replace("Authorization", auth_value)
+									else
+										request_handle:logInfo("No 'Token' cookie found in cookie header.")
+									end
+								else
+									request_handle:logInfo("No 'cookie' header found in request.")
+								end
+							end
+							"""
+					}
+				},
+			]
+
 			routes: {
 				"/": {
 					upstreams: {
@@ -88,3 +115,5 @@ service1: gsl.#Service & {
 		}
 	}
 }
+
+exports: "oauth2tenant": oauth2tenant
