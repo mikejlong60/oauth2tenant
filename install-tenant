@@ -32,3 +32,19 @@ kubectl -n oauth2tenant create secret generic greymatter-edge-ingress \
   --dry-run=client -o yaml | kubectl apply -f -
 
   kubectl apply -f nginx.yaml
+
+  kubectl create namespace keycloak
+
+  kubectl create secret generic keycloak-tls \
+    --from-file=ca.crt=edge.crt \
+    --from-file=tls.crt=edge.crt \
+    --from-file=tls.key=edge.key \
+    -n keycloak
+
+  kubectl create secret generic keycloak-cert \
+    --from-file=ca.crt=keycloak.crt \
+    --from-file=tls.crt=keycloak.crt \
+    --from-file=tls.key=keycloak.key \
+    -n oauth2tenant
+
+    kubectl apply -f keycloak.yaml
