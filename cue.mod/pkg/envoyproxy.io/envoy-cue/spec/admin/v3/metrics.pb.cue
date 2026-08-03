@@ -1,17 +1,11 @@
+// Code generated from envoy/admin/v3/metrics.proto. DO NOT EDIT.
 package v3
 
-#SimpleMetric_Type: "COUNTER" | "GAUGE"
-
-SimpleMetric_Type_COUNTER: "COUNTER"
-SimpleMetric_Type_GAUGE:   "GAUGE"
-
-// Proto representation of an Envoy Counter or Gauge value.
 #SimpleMetric: {
 	"@type": "type.googleapis.com/envoy.admin.v3.SimpleMetric"
-	// Type of the metric represented.
-	type?: #SimpleMetric_Type
-	// Current metric value.
-	value?: uint64
-	// Name of the metric.
-	name?: string
+	type?:   #SimpleMetric_Type
+	value?:  uint64
+	name?:   string
 }
+
+#SimpleMetric_Type: "COUNTER" | "GAUGE"

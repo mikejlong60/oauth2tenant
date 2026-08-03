@@ -1,25 +1,29 @@
+// Code generated from envoy/extensions/filters/http/aws_lambda/v3/aws_lambda.proto. DO NOT EDIT.
 package v3
+
+import (
+	"strings"
+)
+
+#Config: {
+	"@type":              "type.googleapis.com/envoy.extensions.filters.http.aws_lambda.v3.Config"
+	arn!:                 string & strings.MinRunes(1)
+	payload_passthrough?: bool
+	invocation_mode?:     #Config_InvocationMode
+	host_rewrite?:        string
+	credentials_profile?: string
+	credentials?:         #Credentials
+}
 
 #Config_InvocationMode: "SYNCHRONOUS" | "ASYNCHRONOUS"
 
-Config_InvocationMode_SYNCHRONOUS:  "SYNCHRONOUS"
-Config_InvocationMode_ASYNCHRONOUS: "ASYNCHRONOUS"
-
-// AWS Lambda filter config
-#Config: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.http.aws_lambda.v3.Config"
-	// The ARN of the AWS Lambda to invoke when the filter is engaged
-	// Must be in the following format:
-	// arn:<partition>:lambda:<region>:<account-number>:function:<function-name>
-	arn?: string
-	// Whether to transform the request (headers and body) to a JSON payload or pass it as is.
-	payload_passthrough?: bool
-	// Determines the way to invoke the Lambda function.
-	invocation_mode?: #Config_InvocationMode
+#Credentials: {
+	"@type":            "type.googleapis.com/envoy.extensions.filters.http.aws_lambda.v3.Credentials"
+	access_key_id!:     string & strings.MinRunes(1)
+	secret_access_key!: string & strings.MinRunes(1)
+	session_token?:     string
 }
 
-// Per-route configuration for AWS Lambda. This can be useful when invoking a different Lambda function or a different
-// version of the same Lambda depending on the route.
 #PerRouteConfig: {
 	"@type":        "type.googleapis.com/envoy.extensions.filters.http.aws_lambda.v3.PerRouteConfig"
 	invoke_config?: #Config

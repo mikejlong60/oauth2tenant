@@ -1,15 +1,8 @@
+// Code generated from envoy/config/filter/listener/original_src/v2alpha1/original_src.proto. DO NOT EDIT.
 package v2alpha1
 
-// The Original Src filter binds upstream connections to the original source address determined
-// for the connection. This address could come from something like the Proxy Protocol filter, or it
-// could come from trusted http headers.
 #OriginalSrc: {
-	"@type": "type.googleapis.com/envoy.config.filter.listener.original_src.v2alpha1.OriginalSrc"
-	// Whether to bind the port to the one used in the original downstream connection.
-	// [#not-implemented-hide:]
+	"@type":    "type.googleapis.com/envoy.config.filter.listener.original_src.v2alpha1.OriginalSrc"
 	bind_port?: bool
-	// Sets the SO_MARK option on the upstream connection's socket to the provided value. Used to
-	// ensure that non-local addresses may be routed back through envoy when binding to the original
-	// source address. The option will not be applied if the mark is 0.
-	mark?: uint32
+	mark?:      uint32
 }

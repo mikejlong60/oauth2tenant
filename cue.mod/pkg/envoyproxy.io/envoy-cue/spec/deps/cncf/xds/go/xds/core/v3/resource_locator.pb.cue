@@ -1,23 +1,24 @@
+// Code generated from xds/core/v3/resource_locator.proto. DO NOT EDIT.
 package v3
 
-#ResourceLocator_Scheme: "XDSTP" | "HTTP" | "FILE"
-
-ResourceLocator_Scheme_XDSTP: "XDSTP"
-ResourceLocator_Scheme_HTTP:  "HTTP"
-ResourceLocator_Scheme_FILE:  "FILE"
+import (
+	"strings"
+)
 
 #ResourceLocator: {
-	"@type":        "type.googleapis.com/github.com.cncf.xds.go.xds.core.v3.ResourceLocator"
+	"@type":        "type.googleapis.com/xds.core.v3.ResourceLocator"
 	scheme?:        #ResourceLocator_Scheme
 	id?:            string
 	authority?:     string
-	resource_type?: string
+	resource_type!: string & strings.MinRunes(1)
 	exact_context?: #ContextParams
 	directives?: [...#ResourceLocator_Directive]
 }
 
 #ResourceLocator_Directive: {
-	"@type": "type.googleapis.com/github.com.cncf.xds.go.xds.core.v3.ResourceLocator_Directive"
+	"@type": "type.googleapis.com/xds.core.v3.ResourceLocator.Directive"
 	alt?:    #ResourceLocator
-	entry?:  string
+	entry!:  string & strings.MinRunes(1) // TODO(pgv): string.pattern
 }
+
+#ResourceLocator_Scheme: "XDSTP" | "HTTP" | "FILE"

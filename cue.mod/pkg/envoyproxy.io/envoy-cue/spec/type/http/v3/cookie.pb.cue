@@ -1,15 +1,20 @@
+// Code generated from envoy/type/http/v3/cookie.proto. DO NOT EDIT.
 package v3
 
-// Cookie defines an API for obtaining or generating HTTP cookie.
+import (
+	"strings"
+)
+
 #Cookie: {
 	"@type": "type.googleapis.com/envoy.type.http.v3.Cookie"
-	// The name that will be used to obtain cookie value from downstream HTTP request or generate
-	// new cookie for downstream.
-	name?: string
-	// Duration of cookie. This will be used to set the expiry time of a new cookie when it is
-	// generated. Set this to 0 to use a session cookie.
-	ttl?: string
-	// Path of cookie. This will be used to set the path of a new cookie when it is generated.
-	// If no path is specified here, no path will be set for the cookie.
-	path?: string
+	name!:   string & strings.MinRunes(1)
+	ttl?:    string // TODO(pgv): duration bounds
+	path?:   string
+	attributes?: [...#CookieAttribute]
+}
+
+#CookieAttribute: {
+	"@type": "type.googleapis.com/envoy.type.http.v3.CookieAttribute"
+	name!:   string & strings.MinRunes(1) // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	value?:  string                       // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
 }

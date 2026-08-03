@@ -1,20 +1,27 @@
+// Code generated from envoy/extensions/filters/network/zookeeper_proxy/v3/zookeeper_proxy.proto. DO NOT EDIT.
 package v3
 
+import (
+	"strings"
+)
+
 #ZooKeeperProxy: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.network.zookeeper_proxy.v3.ZooKeeperProxy"
-	// The human readable prefix to use when emitting :ref:`statistics
-	// <config_network_filters_zookeeper_proxy_stats>`.
-	stat_prefix?: string
-	// [#not-implemented-hide:] The optional path to use for writing ZooKeeper access logs.
-	// If the access log field is empty, access logs will not be written.
-	access_log?: string
-	// Messages — requests, responses and events — that are bigger than this value will
-	// be ignored. If it is not set, the default value is 1Mb.
-	//
-	// The value here should match the jute.maxbuffer property in your cluster configuration:
-	//
-	// https://zookeeper.apache.org/doc/r3.4.10/zookeeperAdmin.html#Unsafe+Options
-	//
-	// if that is set. If it isn't, ZooKeeper's default is also 1Mb.
-	max_packet_bytes?: uint32
+	"@type":                           "type.googleapis.com/envoy.extensions.filters.network.zookeeper_proxy.v3.ZooKeeperProxy"
+	stat_prefix!:                      string & strings.MinRunes(1)
+	access_log?:                       string
+	max_packet_bytes?:                 uint32
+	enable_latency_threshold_metrics?: bool
+	default_latency_threshold?:        string // TODO(pgv): duration bounds
+	latency_threshold_overrides?: [...#LatencyThresholdOverride]
+	enable_per_opcode_request_bytes_metrics?:  bool
+	enable_per_opcode_response_bytes_metrics?: bool
+	enable_per_opcode_decoder_error_metrics?:  bool
 }
+
+#LatencyThresholdOverride: {
+	"@type":    "type.googleapis.com/envoy.extensions.filters.network.zookeeper_proxy.v3.LatencyThresholdOverride"
+	opcode?:    #LatencyThresholdOverride_Opcode
+	threshold!: string // TODO(pgv): duration bounds
+}
+
+#LatencyThresholdOverride_Opcode: "Connect" | "Create" | "Delete" | "Exists" | "GetData" | "SetData" | "GetAcl" | "SetAcl" | "GetChildren" | "Sync" | "Ping" | "GetChildren2" | "Check" | "Multi" | "Create2" | "Reconfig" | "CheckWatches" | "RemoveWatches" | "CreateContainer" | "CreateTtl" | "Close" | "SetAuth" | "SetWatches" | "GetEphemerals" | "GetAllChildrenNumber" | "SetWatches2" | "AddWatch"

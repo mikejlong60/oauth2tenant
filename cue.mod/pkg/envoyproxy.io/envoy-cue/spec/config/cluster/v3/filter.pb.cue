@@ -1,12 +1,14 @@
+// Code generated from envoy/config/cluster/v3/filter.proto. DO NOT EDIT.
 package v3
+
+import (
+	"strings"
+	v3_1 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+)
 
 #Filter: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.Filter"
-	// The name of the filter configuration.
-	name?: string
-	// Filter specific configuration which depends on the filter being
-	// instantiated. See the supported filters for further documentation.
-	// Note that Envoy's :ref:`downstream network
-	// filters <config_network_filters>` are not valid upstream filters.
-	typed_config?: _
+	name!:   string & strings.MinRunes(1)
+	typed_config?: {...}
+	config_discovery?: v3_1.#ExtensionConfigSource
 }

@@ -1,23 +1,19 @@
+// Code generated from envoy/extensions/filters/http/stateful_session/v3/stateful_session.proto. DO NOT EDIT.
 package v3
 
 import (
-	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v3_1 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
 #StatefulSession: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.http.stateful_session.v3.StatefulSession"
-	// Specific implementation of session state. This session state will be used to store and
-	// get address of the upstream host to which the session is assigned.
-	//
-	// [#extension-category: envoy.http.stateful_session]
-	session_state?: v3.#TypedExtensionConfig
+	"@type":        "type.googleapis.com/envoy.extensions.filters.http.stateful_session.v3.StatefulSession"
+	session_state?: v3_1.#TypedExtensionConfig
+	strict?:        bool
+	stat_prefix?:   string
 }
 
 #StatefulSessionPerRoute: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.http.stateful_session.v3.StatefulSessionPerRoute"
-	// Disable the stateful session filter for this particular vhost or route. If disabled is
-	// specified in multiple per-filter-configs, the most specific one will be used.
-	disabled?: bool
-	// Per-route stateful session configuration that can be served by RDS or static route table.
+	"@type":           "type.googleapis.com/envoy.extensions.filters.http.stateful_session.v3.StatefulSessionPerRoute"
+	disabled!:         bool & true
 	stateful_session?: #StatefulSession
 }

@@ -1,3 +1,4 @@
+// Code generated from envoy/extensions/filters/http/upstream_codec/v3/upstream_codec.proto. DO NOT EDIT.
 package v3
 
 #UpstreamCodec: {

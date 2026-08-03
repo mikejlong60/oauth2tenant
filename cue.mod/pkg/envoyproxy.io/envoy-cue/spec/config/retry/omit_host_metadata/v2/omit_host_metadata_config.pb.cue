@@ -1,17 +1,11 @@
+// Code generated from envoy/config/retry/omit_host_metadata/v2/omit_host_metadata_config.proto. DO NOT EDIT.
 package v2
 
 import (
-	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	core_1 "envoyproxy.io/envoy-cue/spec/api/v2/core"
 )
 
-// A retry host predicate that can be used to reject a host based on
-// predefined metadata match criteria.
-// [#extension: envoy.retry_host_predicates.omit_host_metadata]
 #OmitHostMetadataConfig: {
-	"@type": "type.googleapis.com/envoy.config.retry.omit_host_metadata.v2.OmitHostMetadataConfig"
-	// Retry host predicate metadata match criteria. The hosts in
-	// the upstream cluster with matching metadata will be omitted while
-	// attempting a retry of a failed request. The metadata should be specified
-	// under the *envoy.lb* key.
-	metadata_match?: core.#Metadata
+	"@type":         "type.googleapis.com/envoy.config.retry.omit_host_metadata.v2.OmitHostMetadataConfig"
+	metadata_match?: core_1.#Metadata
 }

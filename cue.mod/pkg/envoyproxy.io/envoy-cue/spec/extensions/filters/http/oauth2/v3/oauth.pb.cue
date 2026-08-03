@@ -1,83 +1,87 @@
+// Code generated from envoy/extensions/filters/http/oauth2/v3/oauth.proto. DO NOT EDIT.
 package v3
 
 import (
-	v3 "envoyproxy.io/envoy-cue/spec/extensions/transport_sockets/tls/v3"
-	v31 "envoyproxy.io/envoy-cue/spec/config/core/v3"
-	v32 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
-	v33 "envoyproxy.io/envoy-cue/spec/config/route/v3"
+	"strings"
+	v3_1 "envoyproxy.io/envoy-cue/spec/extensions/transport_sockets/tls/v3"
+	v3_2 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v3_3 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
+	v3_4 "envoyproxy.io/envoy-cue/spec/config/route/v3"
 )
 
-#OAuth2Config_AuthType: "URL_ENCODED_BODY" | "BASIC_AUTH"
+#CookieConfig: {
+	"@type":      "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.CookieConfig"
+	same_site?:   #CookieConfig_SameSite
+	path?:        string // TODO(pgv): string.pattern
+	partitioned?: bool
+}
 
-OAuth2Config_AuthType_URL_ENCODED_BODY: "URL_ENCODED_BODY"
-OAuth2Config_AuthType_BASIC_AUTH:       "BASIC_AUTH"
+#CookieConfig_SameSite: "DISABLED" | "STRICT" | "LAX" | "NONE"
+
+#CookieConfigs: {
+	"@type":                      "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.CookieConfigs"
+	bearer_token_cookie_config?:  #CookieConfig
+	oauth_hmac_cookie_config?:    #CookieConfig
+	oauth_expires_cookie_config?: #CookieConfig
+	id_token_cookie_config?:      #CookieConfig
+	refresh_token_cookie_config?: #CookieConfig
+	oauth_nonce_cookie_config?:   #CookieConfig
+	code_verifier_cookie_config?: #CookieConfig
+}
 
 #OAuth2Credentials: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Credentials"
-	// The client_id to be used in the authorize calls. This value will be URL encoded when sent to the OAuth server.
-	client_id?: string
-	// The secret used to retrieve the access token. This value will be URL encoded when sent to the OAuth server.
-	token_secret?: v3.#SdsSecretConfig
-	// If present, the secret token will be a HMAC using the provided secret.
-	hmac_secret?: v3.#SdsSecretConfig
-	// The cookie names used in OAuth filters flow.
-	cookie_names?: #OAuth2Credentials_CookieNames
-}
-
-// OAuth config
-//
-// [#next-free-field: 12]
-#OAuth2Config: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Config"
-	// Endpoint on the authorization server to retrieve the access token from.
-	token_endpoint?: v31.#HttpUri
-	// The endpoint redirect to for authorization in response to unauthorized requests.
-	authorization_endpoint?: string
-	// Credentials used for OAuth.
-	credentials?: #OAuth2Credentials
-	// The redirect URI passed to the authorization endpoint. Supports header formatting
-	// tokens. For more information, including details on header value syntax, see the
-	// documentation on :ref:`custom request headers <config_http_conn_man_headers_custom_request_headers>`.
-	//
-	// This URI should not contain any query parameters.
-	redirect_uri?: string
-	// Matching criteria used to determine whether a path appears to be the result of a redirect from the authorization server.
-	redirect_path_matcher?: v32.#PathMatcher
-	// The path to sign a user out, clearing their credential cookies.
-	signout_path?: v32.#PathMatcher
-	// Forward the OAuth token as a Bearer to upstream web service.
-	forward_bearer_token?: bool
-	// Any request that matches any of the provided matchers will be passed through without OAuth validation.
-	pass_through_matcher?: [...v33.#HeaderMatcher]
-	// Optional list of OAuth scopes to be claimed in the authorization request. If not specified,
-	// defaults to "user" scope.
-	// OAuth RFC https://tools.ietf.org/html/rfc6749#section-3.3
-	auth_scopes?: [...string]
-	// Optional resource parameter for authorization request
-	// RFC: https://tools.ietf.org/html/rfc8707
-	resources?: [...string]
-	// Defines how ``client_id`` and ``client_secret`` are sent in OAuth client to OAuth server requests.
-	// RFC https://datatracker.ietf.org/doc/html/rfc6749#section-2.3.1
-	auth_type?: #OAuth2Config_AuthType
-}
-
-// Filter config.
-#OAuth2: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2"
-	// Leave this empty to disable OAuth2 for a specific route, using per filter config.
-	config?: #OAuth2Config
+	"@type":        "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Credentials"
+	client_id!:     string & strings.MinRunes(1)
+	token_secret!:  v3_1.#SdsSecretConfig
+	hmac_secret!:   v3_1.#SdsSecretConfig
+	cookie_names?:  #OAuth2Credentials_CookieNames
+	cookie_domain?: string // TODO(pgv): string.pattern
 }
 
 #OAuth2Credentials_CookieNames: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Credentials_CookieNames"
-	// Cookie name to hold OAuth bearer token value. When the authentication server validates the
-	// client and returns an authorization token back to the OAuth filter, no matter what format
-	// that token is, if :ref:`forward_bearer_token <envoy_v3_api_field_extensions.filters.http.oauth2.v3.OAuth2Config.forward_bearer_token>`
-	// is set to true the filter will send over the bearer token as a cookie with this name to the
-	// upstream. Defaults to ``BearerToken``.
-	bearer_token?: string
-	// Cookie name to hold OAuth HMAC value. Defaults to ``OauthHMAC``.
-	oauth_hmac?: string
-	// Cookie name to hold OAuth expiry value. Defaults to ``OauthExpires``.
-	oauth_expires?: string
+	"@type":        "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Credentials.CookieNames"
+	bearer_token?:  string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	oauth_hmac?:    string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	oauth_expires?: string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	id_token?:      string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	refresh_token?: string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	oauth_nonce?:   string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	code_verifier?: string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+}
+
+#OAuth2Config: {
+	"@type":                        "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Config"
+	token_endpoint?:                v3_2.#HttpUri
+	retry_policy?:                  v3_2.#RetryPolicy
+	authorization_endpoint!:        string & strings.MinRunes(1)
+	end_session_endpoint?:          string
+	credentials!:                   #OAuth2Credentials
+	redirect_uri!:                  string & strings.MinRunes(1)
+	redirect_path_matcher!:         v3_3.#PathMatcher
+	signout_path!:                  v3_3.#PathMatcher
+	forward_bearer_token?:          bool
+	preserve_authorization_header?: bool
+	pass_through_matcher?: [...v3_4.#HeaderMatcher]
+	auth_scopes?: [...string]
+	resources?: [...string]
+	auth_type?:          #OAuth2Config_AuthType
+	use_refresh_token?:  bool
+	default_expires_in?: string
+	deny_redirect_matcher?: [...v3_4.#HeaderMatcher]
+	default_refresh_token_expires_in?: string
+	disable_id_token_set_cookie?:      bool
+	disable_access_token_set_cookie?:  bool
+	disable_refresh_token_set_cookie?: bool
+	cookie_configs?:                   #CookieConfigs
+	stat_prefix?:                      string
+	csrf_token_expires_in?:            string
+	code_verifier_token_expires_in?:   string
+	disable_token_encryption?:         bool
+}
+
+#OAuth2Config_AuthType: "URL_ENCODED_BODY" | "BASIC_AUTH"
+
+#OAuth2: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2"
+	config?: #OAuth2Config
 }

@@ -1,12 +1,14 @@
+// Code generated from envoy/extensions/filters/http/tap/v3/tap.proto. DO NOT EDIT.
 package v3
 
 import (
-	v3 "envoyproxy.io/envoy-cue/spec/extensions/common/tap/v3"
+	v3_1 "envoyproxy.io/envoy-cue/spec/extensions/common/tap/v3"
 )
 
-// Top level configuration for the tap filter.
 #Tap: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.http.tap.v3.Tap"
-	// Common configuration for the HTTP tap filter.
-	common_config?: v3.#CommonExtensionConfig
+	"@type":                       "type.googleapis.com/envoy.extensions.filters.http.tap.v3.Tap"
+	common_config!:                v3_1.#CommonExtensionConfig
+	record_headers_received_time?: bool
+	record_downstream_connection?: bool
+	record_upstream_connection?:   bool
 }

@@ -1,8 +1,9 @@
+// Code generated from envoy/service/metrics/v2/metrics_service.proto. DO NOT EDIT.
 package v2
 
 import (
-	_go "envoyproxy.io/envoy-cue/spec/deps/prometheus/client_model/go"
-	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	core_2 "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	go_1 "envoyproxy.io/envoy-cue/spec/deps/prometheus/client_model/go"
 )
 
 #StreamMetricsResponse: {
@@ -10,33 +11,12 @@ import (
 }
 
 #StreamMetricsMessage: {
-	"@type": "type.googleapis.com/envoy.service.metrics.v2.StreamMetricsMessage"
-	// Identifier data effectively is a structured metadata. As a performance optimization this will
-	// only be sent in the first message on the stream.
+	"@type":     "type.googleapis.com/envoy.service.metrics.v2.StreamMetricsMessage"
 	identifier?: #StreamMetricsMessage_Identifier
-	// A list of metric entries
-	envoy_metrics?: [..._go.#MetricFamily]
+	envoy_metrics?: [...go_1.#MetricFamily]
 }
 
 #StreamMetricsMessage_Identifier: {
-	"@type": "type.googleapis.com/envoy.service.metrics.v2.StreamMetricsMessage_Identifier"
-	// The node sending metrics over the stream.
-	node?: core.#Node
+	"@type": "type.googleapis.com/envoy.service.metrics.v2.StreamMetricsMessage.Identifier"
+	node!:   core_2.#Node
 }
-
-// MetricsServiceClient is the client API for MetricsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#MetricsServiceClient: _
-
-#MetricsService_StreamMetricsClient: _
-
-// MetricsServiceServer is the server API for MetricsService service.
-#MetricsServiceServer: _
-
-// UnimplementedMetricsServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedMetricsServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.metrics.v2.UnimplementedMetricsServiceServer"
-}
-
-#MetricsService_StreamMetricsServer: _

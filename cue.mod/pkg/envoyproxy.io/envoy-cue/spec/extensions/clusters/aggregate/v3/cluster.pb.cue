@@ -1,11 +1,19 @@
+// Code generated from envoy/extensions/clusters/aggregate/v3/cluster.proto. DO NOT EDIT.
 package v3
 
-// Configuration for the aggregate cluster. See the :ref:`architecture overview
-// <arch_overview_aggregate_cluster>` for more information.
-// [#extension: envoy.clusters.aggregate]
+import (
+	"list"
+	"strings"
+	v3_1 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+)
+
 #ClusterConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.clusters.aggregate.v3.ClusterConfig"
-	// Load balancing clusters in aggregate cluster. Clusters are prioritized based on the order they
-	// appear in this list.
-	clusters?: [...string]
+	clusters!: [...string] & list.MinItems(1)
+}
+
+#AggregateClusterResource: {
+	"@type":        "type.googleapis.com/envoy.extensions.clusters.aggregate.v3.AggregateClusterResource"
+	config_source!: v3_1.#ConfigSource
+	resource_name!: string & strings.MinRunes(1)
 }

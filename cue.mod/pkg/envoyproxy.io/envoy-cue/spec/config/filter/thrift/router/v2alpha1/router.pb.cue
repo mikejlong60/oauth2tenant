@@ -1,3 +1,4 @@
+// Code generated from envoy/config/filter/thrift/router/v2alpha1/router.proto. DO NOT EDIT.
 package v2alpha1
 
 #Router: {

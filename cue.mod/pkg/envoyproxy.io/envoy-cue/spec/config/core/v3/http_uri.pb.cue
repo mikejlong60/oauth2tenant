@@ -1,27 +1,13 @@
+// Code generated from envoy/config/core/v3/http_uri.proto. DO NOT EDIT.
 package v3
 
-// Envoy external URI descriptor
+import (
+	"strings"
+)
+
 #HttpUri: {
-	"@type": "type.googleapis.com/envoy.config.core.v3.HttpUri"
-	// The HTTP server URI. It should be a full FQDN with protocol, host and path.
-	//
-	// Example:
-	//
-	// .. code-block:: yaml
-	//
-	//    uri: https://www.googleapis.com/oauth2/v1/certs
-	//
-	uri?: string
-	// A cluster is created in the Envoy "cluster_manager" config
-	// section. This field specifies the cluster name.
-	//
-	// Example:
-	//
-	// .. code-block:: yaml
-	//
-	//    cluster: jwks_cluster
-	//
-	cluster?: string
-	// Sets the maximum duration in milliseconds that a response can take to arrive upon request.
-	timeout?: string
+	"@type":  "type.googleapis.com/envoy.config.core.v3.HttpUri"
+	uri!:     string & strings.MinRunes(1)
+	cluster!: string & strings.MinRunes(1)
+	timeout!: string // TODO(pgv): duration bounds
 }

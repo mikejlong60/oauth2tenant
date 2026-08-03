@@ -1,3 +1,4 @@
+// Code generated from envoy/extensions/filters/network/echo/v3/echo.proto. DO NOT EDIT.
 package v3
 
 #Echo: {
