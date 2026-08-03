@@ -2,7 +2,7 @@ package policies
 
 // The following objects can be used as variables when building out
 // the URI's for ease of changing providers at a later date.
-_clientId:         "edgeopenwebui"
+_clientId:         "edge"
 _oauth2_host:      "172.18.0.5"
 _oauth2_host_port: 443
 _realm:            "professional-services"
