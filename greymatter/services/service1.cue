@@ -116,4 +116,4 @@ service1: gsl.#Service & {
 	}
 }
 
-exports: "oauth2tenant": oauth2tenant
+exports: "oauth2tenant": service1

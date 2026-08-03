@@ -3,7 +3,7 @@ package oauth2tenant
 import (
 	gsl "greymatter.io/gsl/spec/v1"
 	"oauth2tenant.module/greymatter:globals"
-	wafpolicies "oauth2tenant.module/greymatter/policies"
+	policies "oauth2tenant.module/greymatter/policies"
 )
 
 edge: gsl.#Edge & {
@@ -70,7 +70,7 @@ edge: gsl.#Edge & {
 					config: {
 						directives: [
 							{
-								inline_string: wafpolicies.DefaultWafConfig
+								inline_string: policies.DefaultWafConfig
 							},
 						]
 					}
@@ -92,7 +92,7 @@ edge: gsl.#Edge & {
 			gsl.#TLSUpstream
 			instances: [
 				{
-					host: "172.18.0.3"
+					host: "172.18.0.5"
 					port: 443
 				},
 			]
