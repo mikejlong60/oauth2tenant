@@ -33,9 +33,11 @@ import (
 	"@type":        "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Credentials"
 	client_id!:     string & strings.MinRunes(1)
 	token_secret!:  v3_1.#SdsSecretConfig
-	hmac_secret!:   v3_1.#SdsSecretConfig
 	cookie_names?:  #OAuth2Credentials_CookieNames
 	cookie_domain?: string // TODO(pgv): string.pattern
+
+	// oneof token_formation: exactly one must be set
+	{hmac_secret!: v3_1.#SdsSecretConfig}
 }
 
 #OAuth2Credentials_CookieNames: {

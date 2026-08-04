@@ -22,22 +22,27 @@ import (
 }
 
 #RouteMatch: {
-	"@type":       "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.v3.RouteMatch"
-	method_name?:  string
-	service_name?: string
-	invert?:       bool
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.v3.RouteMatch"
+	invert?: bool
 	headers?: [...v3_1.#HeaderMatcher]
+
+	// oneof match_specifier: exactly one must be set
+	{method_name!: string} |
+	{service_name!: string}
 }
 
 #RouteAction: {
-	"@type":            "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.v3.RouteAction"
-	cluster!:           string & strings.MinRunes(1)
-	weighted_clusters?: #WeightedCluster
-	cluster_header!:    string & strings.MinRunes(1) // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	metadata_match?:    v3_2.#Metadata
+	"@type":         "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.v3.RouteAction"
+	metadata_match?: v3_2.#Metadata
 	rate_limits?: [...v3_1.#RateLimit]
 	strip_service_name?: bool
 	request_mirror_policies?: [...#RouteAction_RequestMirrorPolicy]
+
+	// oneof cluster_specifier: exactly one must be set
+	// TODO(pgv): cluster_header.string well-known *validate.StringRules_WellKnownRegex
+	{cluster!: string & strings.MinRunes(1)} |
+	{weighted_clusters!: #WeightedCluster} |
+	{cluster_header!: string & strings.MinRunes(1)}
 }
 
 #RouteAction_RequestMirrorPolicy: {

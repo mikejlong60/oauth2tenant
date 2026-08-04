@@ -11,9 +11,11 @@ import (
 	"@type":         "type.googleapis.com/envoy.extensions.http.injected_credentials.oauth2.v3.OAuth2"
 	token_endpoint!: v3_1.#HttpUri
 	scopes?: [...string]
-	client_credentials?:         #OAuth2_ClientCredentials
 	token_fetch_retry_interval?: string // TODO(pgv): duration bounds
 	endpoint_params?: [...#OAuth2_EndpointParameter]
+
+	// oneof flow_type: exactly one must be set
+	{client_credentials!: #OAuth2_ClientCredentials}
 }
 
 #OAuth2_ClientCredentials: {

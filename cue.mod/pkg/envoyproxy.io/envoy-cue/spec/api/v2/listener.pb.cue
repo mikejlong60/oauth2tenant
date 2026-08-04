@@ -39,8 +39,10 @@ import (
 }
 
 #Listener_ConnectionBalanceConfig: {
-	"@type":        "type.googleapis.com/envoy.api.v2.Listener.ConnectionBalanceConfig"
-	exact_balance?: #Listener_ConnectionBalanceConfig_ExactBalance
+	"@type": "type.googleapis.com/envoy.api.v2.Listener.ConnectionBalanceConfig"
+
+	// oneof balance_type: exactly one must be set
+	{exact_balance!: #Listener_ConnectionBalanceConfig_ExactBalance}
 }
 
 #Listener_ConnectionBalanceConfig_ExactBalance: {

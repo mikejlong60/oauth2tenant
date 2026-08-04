@@ -32,14 +32,17 @@ import (
 	id?:      string
 	cluster?: string
 	metadata?: {...}
-	locality?:                 #Locality
-	build_version?:            string
-	user_agent_name?:          string
-	user_agent_version?:       string
-	user_agent_build_version?: #BuildVersion
+	locality?:        #Locality
+	build_version?:   string
+	user_agent_name?: string
 	extensions?: [...#Extension]
 	client_features?: [...string]
 	listening_addresses?: [...#Address]
+
+	// oneof user_agent_version_type: at most one may be set
+	*{} |
+	{user_agent_version!: string} |
+	{user_agent_build_version!: #BuildVersion}
 }
 
 #Metadata: {
@@ -83,10 +86,12 @@ import (
 }
 
 #DataSource: {
-	"@type":        "type.googleapis.com/envoy.api.v2.core.DataSource"
-	filename!:      string & !=""
-	inline_bytes?:  bytes
-	inline_string!: string & !=""
+	"@type": "type.googleapis.com/envoy.api.v2.core.DataSource"
+
+	// oneof specifier: exactly one must be set
+	{filename!: string & !=""} |
+	{inline_bytes!: bytes} |
+	{inline_string!: string & !=""}
 }
 
 #RetryPolicy: {
@@ -104,15 +109,20 @@ import (
 
 #AsyncDataSource: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.AsyncDataSource"
-	local?:  #DataSource
-	remote?: #RemoteDataSource
+
+	// oneof specifier: exactly one must be set
+	{local!: #DataSource} |
+	{remote!: #RemoteDataSource}
 }
 
 #TransportSocket: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.TransportSocket"
 	name!:   string & !=""
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }
 
 #RuntimeFractionalPercent: {

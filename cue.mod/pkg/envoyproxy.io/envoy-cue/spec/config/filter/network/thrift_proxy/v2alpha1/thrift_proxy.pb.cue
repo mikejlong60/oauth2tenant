@@ -13,8 +13,11 @@ package v2alpha1
 #ThriftFilter: {
 	"@type": "type.googleapis.com/envoy.config.filter.network.thrift_proxy.v2alpha1.ThriftFilter"
 	name!:   string & !=""
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }
 
 #ThriftProtocolOptions: {

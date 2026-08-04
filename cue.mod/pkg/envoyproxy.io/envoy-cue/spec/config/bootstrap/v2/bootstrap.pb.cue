@@ -88,10 +88,12 @@ import (
 #RuntimeLayer: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v2.RuntimeLayer"
 	name!:   string & !=""
-	static_layer?: {...}
-	disk_layer?:  #RuntimeLayer_DiskLayer
-	admin_layer?: #RuntimeLayer_AdminLayer
-	rtds_layer?:  #RuntimeLayer_RtdsLayer
+
+	// oneof layer_specifier: exactly one must be set
+	{static_layer!: {...}} |
+	{disk_layer!: #RuntimeLayer_DiskLayer} |
+	{admin_layer!: #RuntimeLayer_AdminLayer} |
+	{rtds_layer!: #RuntimeLayer_RtdsLayer}
 }
 
 #RuntimeLayer_DiskLayer: {

@@ -46,13 +46,15 @@ import (
 #ConfigSource: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.ConfigSource"
 	authorities?: [...v3_1.#Authority]
-	path?:                  string
-	path_config_source?:    #PathConfigSource
-	api_config_source?:     #ApiConfigSource
-	ads?:                   #AggregatedConfigSource
-	self?:                  #SelfConfigSource
 	initial_fetch_timeout?: string
 	resource_api_version?:  #ApiVersion
+
+	// oneof config_source_specifier: exactly one must be set
+	{path!: string} |
+	{path_config_source!: #PathConfigSource} |
+	{api_config_source!: #ApiConfigSource} |
+	{ads!: #AggregatedConfigSource} |
+	{self!: #SelfConfigSource}
 }
 
 #ExtensionConfigSource: {

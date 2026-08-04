@@ -28,8 +28,6 @@ import (
 	deferred_stat_options?:         #Bootstrap_DeferredStatOptions
 	stats_config?:                  v3_2.#StatsConfig
 	stats_flush_interval?:          string // TODO(pgv): duration bounds
-	stats_flush_on_admin!:          bool & true
-	stats_eviction_interval?:       string // TODO(pgv): duration bounds
 	watchdog?:                      #Watchdog
 	watchdogs?:                     #Watchdogs
 	tracing?:                       v3_3.#Tracing
@@ -57,6 +55,15 @@ import (
 	application_log_config?:           #Bootstrap_ApplicationLogConfig
 	grpc_async_client_manager_config?: #Bootstrap_GrpcAsyncClientManagerConfig
 	memory_allocator_manager?:         #MemoryAllocatorManager
+
+	// oneof stats_flush: at most one may be set
+	*{} |
+	{stats_flush_on_admin!: bool & true}
+
+	// oneof stats_eviction: at most one may be set
+	// TODO(pgv): stats_eviction_interval.duration bounds
+	*{} |
+	{stats_eviction_interval!: string}
 }
 
 #Bootstrap_StaticResources: {
@@ -82,8 +89,10 @@ import (
 
 #Bootstrap_ApplicationLogConfig_LogFormat: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.Bootstrap.ApplicationLogConfig.LogFormat"
-	json_format?: {...}
-	text_format?: string
+
+	// oneof log_format: exactly one must be set
+	{json_format!: {...}} |
+	{text_format!: string}
 }
 
 #Bootstrap_DeferredStatOptions: {
@@ -163,10 +172,12 @@ import (
 #RuntimeLayer: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.RuntimeLayer"
 	name!:   string & strings.MinRunes(1)
-	static_layer?: {...}
-	disk_layer?:  #RuntimeLayer_DiskLayer
-	admin_layer?: #RuntimeLayer_AdminLayer
-	rtds_layer?:  #RuntimeLayer_RtdsLayer
+
+	// oneof layer_specifier: exactly one must be set
+	{static_layer!: {...}} |
+	{disk_layer!: #RuntimeLayer_DiskLayer} |
+	{admin_layer!: #RuntimeLayer_AdminLayer} |
+	{rtds_layer!: #RuntimeLayer_RtdsLayer}
 }
 
 #RuntimeLayer_DiskLayer: {

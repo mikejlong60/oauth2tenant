@@ -34,10 +34,13 @@ import (
 #RateLimitResponse_RateLimit_Unit: "UNKNOWN" | "SECOND" | "MINUTE" | "HOUR" | "DAY" | "WEEK" | "MONTH" | "YEAR"
 
 #RateLimitResponse_Quota: {
-	"@type":      "type.googleapis.com/envoy.service.ratelimit.v3.RateLimitResponse.Quota"
-	requests?:    uint32 & >0
-	valid_until?: string
-	id?:          string
+	"@type":   "type.googleapis.com/envoy.service.ratelimit.v3.RateLimitResponse.Quota"
+	requests?: uint32 & >0
+	id?:       string
+
+	// oneof expiration_specifier: at most one may be set
+	*{} |
+	{valid_until!: string}
 }
 
 #RateLimitResponse_DescriptorStatus: {

@@ -36,15 +36,19 @@ import (
 }
 
 #RateLimitQuotaBucketSettings_NoAssignmentBehavior: {
-	"@type":              "type.googleapis.com/envoy.extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.NoAssignmentBehavior"
-	fallback_rate_limit?: v3_3.#RateLimitStrategy
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.NoAssignmentBehavior"
+
+	// oneof no_assignment_behavior: exactly one must be set
+	{fallback_rate_limit!: v3_3.#RateLimitStrategy}
 }
 
 #RateLimitQuotaBucketSettings_ExpiredAssignmentBehavior: {
 	"@type":                              "type.googleapis.com/envoy.extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.ExpiredAssignmentBehavior"
 	expired_assignment_behavior_timeout?: string // TODO(pgv): duration bounds
-	fallback_rate_limit?:                 v3_3.#RateLimitStrategy
-	reuse_last_assignment?:               #RateLimitQuotaBucketSettings_ExpiredAssignmentBehavior_ReuseLastAssignment
+
+	// oneof expired_assignment_behavior: exactly one must be set
+	{fallback_rate_limit!: v3_3.#RateLimitStrategy} |
+	{reuse_last_assignment!: #RateLimitQuotaBucketSettings_ExpiredAssignmentBehavior_ReuseLastAssignment}
 }
 
 #RateLimitQuotaBucketSettings_ExpiredAssignmentBehavior_ReuseLastAssignment: {
@@ -65,7 +69,9 @@ import (
 }
 
 #RateLimitQuotaBucketSettings_BucketIdBuilder_ValueBuilder: {
-	"@type":       "type.googleapis.com/envoy.extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.BucketIdBuilder.ValueBuilder"
-	string_value?: string
-	custom_value?: v3_1.#TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.BucketIdBuilder.ValueBuilder"
+
+	// oneof value_specifier: exactly one must be set
+	{string_value!: string} |
+	{custom_value!: v3_1.#TypedExtensionConfig}
 }

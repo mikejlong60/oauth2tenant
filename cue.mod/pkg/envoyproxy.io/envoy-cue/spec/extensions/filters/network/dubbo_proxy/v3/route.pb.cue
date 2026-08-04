@@ -30,10 +30,12 @@ import (
 }
 
 #RouteAction: {
-	"@type":            "type.googleapis.com/envoy.extensions.filters.network.dubbo_proxy.v3.RouteAction"
-	cluster?:           string
-	weighted_clusters?: v3_1.#WeightedCluster
-	metadata_match?:    v3_2.#Metadata
+	"@type":         "type.googleapis.com/envoy.extensions.filters.network.dubbo_proxy.v3.RouteAction"
+	metadata_match?: v3_2.#Metadata
+
+	// oneof cluster_specifier: exactly one must be set
+	{cluster!: string} |
+	{weighted_clusters!: v3_1.#WeightedCluster}
 }
 
 #MethodMatch: {
@@ -43,9 +45,12 @@ import (
 }
 
 #MethodMatch_ParameterMatchSpecifier: {
-	"@type":      "type.googleapis.com/envoy.extensions.filters.network.dubbo_proxy.v3.MethodMatch.ParameterMatchSpecifier"
-	exact_match?: string
-	range_match?: v3_4.#Int64Range
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.dubbo_proxy.v3.MethodMatch.ParameterMatchSpecifier"
+
+	// oneof parameter_match_specifier: at most one may be set
+	*{} |
+	{exact_match!: string} |
+	{range_match!: v3_4.#Int64Range}
 }
 
 #MultipleRouteConfiguration: {

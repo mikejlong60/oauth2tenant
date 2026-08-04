@@ -123,8 +123,11 @@ import (
 
 #TLSProperties_CertificateProperties_SubjectAltName: {
 	"@type": "type.googleapis.com/envoy.data.accesslog.v3.TLSProperties.CertificateProperties.SubjectAltName"
-	uri?:    string
-	dns?:    string
+
+	// oneof san: at most one may be set
+	*{} |
+	{uri!: string} |
+	{dns!: string}
 }
 
 #TLSProperties_TLSVersion: "VERSION_UNSPECIFIED" | "TLSv1" | "TLSv1_1" | "TLSv1_2" | "TLSv1_3"

@@ -9,8 +9,11 @@ import (
 #StatsSink: {
 	"@type": "type.googleapis.com/envoy.config.metrics.v2.StatsSink"
 	name?:   string
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }
 
 #StatsConfig: {
@@ -21,30 +24,39 @@ import (
 }
 
 #StatsMatcher: {
-	"@type":         "type.googleapis.com/envoy.config.metrics.v2.StatsMatcher"
-	reject_all?:     bool
-	exclusion_list?: matcher_1.#ListStringMatcher
-	inclusion_list?: matcher_1.#ListStringMatcher
+	"@type": "type.googleapis.com/envoy.config.metrics.v2.StatsMatcher"
+
+	// oneof stats_matcher: exactly one must be set
+	{reject_all!: bool} |
+	{exclusion_list!: matcher_1.#ListStringMatcher} |
+	{inclusion_list!: matcher_1.#ListStringMatcher}
 }
 
 #TagSpecifier: {
-	"@type":      "type.googleapis.com/envoy.config.metrics.v2.TagSpecifier"
-	tag_name?:    string
-	regex?:       string
-	fixed_value?: string
+	"@type":   "type.googleapis.com/envoy.config.metrics.v2.TagSpecifier"
+	tag_name?: string
+
+	// oneof tag_value: at most one may be set
+	*{} |
+	{regex!: string} |
+	{fixed_value!: string}
 }
 
 #StatsdSink: {
-	"@type":           "type.googleapis.com/envoy.config.metrics.v2.StatsdSink"
-	address?:          core_2.#Address
-	tcp_cluster_name?: string
-	prefix?:           string
+	"@type": "type.googleapis.com/envoy.config.metrics.v2.StatsdSink"
+	prefix?: string
+
+	// oneof statsd_specifier: exactly one must be set
+	{address!: core_2.#Address} |
+	{tcp_cluster_name!: string}
 }
 
 #DogStatsdSink: {
-	"@type":  "type.googleapis.com/envoy.config.metrics.v2.DogStatsdSink"
-	address?: core_2.#Address
-	prefix?:  string
+	"@type": "type.googleapis.com/envoy.config.metrics.v2.DogStatsdSink"
+	prefix?: string
+
+	// oneof dog_statsd_specifier: exactly one must be set
+	{address!: core_2.#Address}
 }
 
 #HystrixSink: {

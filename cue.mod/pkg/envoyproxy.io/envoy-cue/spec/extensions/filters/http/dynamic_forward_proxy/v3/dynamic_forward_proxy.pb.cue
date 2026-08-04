@@ -7,16 +7,22 @@ import (
 
 #FilterConfig: {
 	"@type":                               "type.googleapis.com/envoy.extensions.filters.http.dynamic_forward_proxy.v3.FilterConfig"
-	dns_cache_config?:                     v3_1.#DnsCacheConfig
-	sub_cluster_config?:                   #SubClusterConfig
 	save_upstream_address?:                bool
 	allow_dynamic_host_from_filter_state?: bool
+
+	// oneof implementation_specifier: at most one may be set
+	*{} |
+	{dns_cache_config!: v3_1.#DnsCacheConfig} |
+	{sub_cluster_config!: #SubClusterConfig}
 }
 
 #PerRouteConfig: {
-	"@type":               "type.googleapis.com/envoy.extensions.filters.http.dynamic_forward_proxy.v3.PerRouteConfig"
-	host_rewrite_literal?: string
-	host_rewrite_header?:  string
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.dynamic_forward_proxy.v3.PerRouteConfig"
+
+	// oneof host_rewrite_specifier: at most one may be set
+	*{} |
+	{host_rewrite_literal!: string} |
+	{host_rewrite_header!: string}
 }
 
 #SubClusterConfig: {

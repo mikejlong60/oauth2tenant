@@ -18,17 +18,19 @@ import (
 }
 
 #MatchPredicate: {
-	"@type":                           "type.googleapis.com/envoy.config.tap.v3.MatchPredicate"
-	or_match?:                         #MatchPredicate_MatchSet
-	and_match?:                        #MatchPredicate_MatchSet
-	not_match?:                        #MatchPredicate
-	any_match!:                        bool & true
-	http_request_headers_match?:       #HttpHeadersMatch
-	http_request_trailers_match?:      #HttpHeadersMatch
-	http_response_headers_match?:      #HttpHeadersMatch
-	http_response_trailers_match?:     #HttpHeadersMatch
-	http_request_generic_body_match?:  #HttpGenericBodyMatch
-	http_response_generic_body_match?: #HttpGenericBodyMatch
+	"@type": "type.googleapis.com/envoy.config.tap.v3.MatchPredicate"
+
+	// oneof rule: exactly one must be set
+	{or_match!: #MatchPredicate_MatchSet} |
+	{and_match!: #MatchPredicate_MatchSet} |
+	{not_match!: #MatchPredicate} |
+	{any_match!: bool & true} |
+	{http_request_headers_match!: #HttpHeadersMatch} |
+	{http_request_trailers_match!: #HttpHeadersMatch} |
+	{http_response_headers_match!: #HttpHeadersMatch} |
+	{http_response_trailers_match!: #HttpHeadersMatch} |
+	{http_request_generic_body_match!: #HttpGenericBodyMatch} |
+	{http_response_generic_body_match!: #HttpGenericBodyMatch}
 }
 
 #MatchPredicate_MatchSet: {
@@ -48,9 +50,11 @@ import (
 }
 
 #HttpGenericBodyMatch_GenericTextMatch: {
-	"@type":       "type.googleapis.com/envoy.config.tap.v3.HttpGenericBodyMatch.GenericTextMatch"
-	string_match!: string & strings.MinRunes(1)
-	binary_match?: bytes
+	"@type": "type.googleapis.com/envoy.config.tap.v3.HttpGenericBodyMatch.GenericTextMatch"
+
+	// oneof rule: exactly one must be set
+	{string_match!: string & strings.MinRunes(1)} |
+	{binary_match!: bytes}
 }
 
 #OutputConfig: {
@@ -63,13 +67,15 @@ import (
 }
 
 #OutputSink: {
-	"@type":          "type.googleapis.com/envoy.config.tap.v3.OutputSink"
-	format?:          #OutputSink_Format
-	streaming_admin?: #StreamingAdminSink
-	file_per_tap?:    #FilePerTapSink
-	streaming_grpc?:  #StreamingGrpcSink
-	buffered_admin?:  #BufferedAdminSink
-	custom_sink?:     v3_2.#TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.config.tap.v3.OutputSink"
+	format?: #OutputSink_Format
+
+	// oneof output_sink_type: exactly one must be set
+	{streaming_admin!: #StreamingAdminSink} |
+	{file_per_tap!: #FilePerTapSink} |
+	{streaming_grpc!: #StreamingGrpcSink} |
+	{buffered_admin!: #BufferedAdminSink} |
+	{custom_sink!: v3_2.#TypedExtensionConfig}
 }
 
 #OutputSink_Format: "JSON_BODY_AS_BYTES" | "JSON_BODY_AS_STRING" | "PROTO_BINARY" | "PROTO_BINARY_LENGTH_DELIMITED" | "PROTO_TEXT"

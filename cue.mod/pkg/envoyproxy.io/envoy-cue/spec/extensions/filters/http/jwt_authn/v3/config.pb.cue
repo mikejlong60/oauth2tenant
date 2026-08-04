@@ -16,8 +16,6 @@ import (
 	subjects?:           v3_1.#StringMatcher
 	require_expiration?: bool
 	max_lifetime?:       string
-	remote_jwks?:        #RemoteJwks
-	local_jwks?:         v3_2.#DataSource
 	forward?:            bool
 	from_headers?: [...#JwtHeader]
 	from_params?: [...string]
@@ -32,6 +30,10 @@ import (
 	jwt_cache_config?:              #JwtCacheConfig
 	claim_to_headers?: [...#JwtClaimToHeader]
 	clear_route_cache?: bool
+
+	// oneof jwks_source_specifier: exactly one must be set
+	{remote_jwks!: #RemoteJwks} |
+	{local_jwks!: v3_2.#DataSource}
 }
 
 #JwtProvider_NormalizePayload: {
@@ -72,14 +74,17 @@ import (
 }
 
 #JwtRequirement: {
-	"@type":                 "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtRequirement"
-	provider_name?:          string
-	provider_and_audiences?: #ProviderWithAudiences
-	requires_any?:           #JwtRequirementOrList
-	requires_all?:           #JwtRequirementAndList
-	allow_missing_or_failed?: {}
-	allow_missing?: {}
-	extract_only_without_validation?: #ExtractOnlyWithoutValidation
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtRequirement"
+
+	// oneof requires_type: at most one may be set
+	*{} |
+	{provider_name!: string} |
+	{provider_and_audiences!: #ProviderWithAudiences} |
+	{requires_any!: #JwtRequirementOrList} |
+	{requires_all!: #JwtRequirementAndList} |
+	{allow_missing_or_failed!: {}} |
+	{allow_missing!: {}} |
+	{extract_only_without_validation!: #ExtractOnlyWithoutValidation}
 }
 
 #ExtractOnlyWithoutValidation: {
@@ -97,10 +102,13 @@ import (
 }
 
 #RequirementRule: {
-	"@type":           "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.RequirementRule"
-	match!:            v3_3.#RouteMatch
-	requires?:         #JwtRequirement
-	requirement_name!: string & strings.MinRunes(1)
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.RequirementRule"
+	match!:  v3_3.#RouteMatch
+
+	// oneof requirement_type: at most one may be set
+	*{} |
+	{requires!: #JwtRequirement} |
+	{requirement_name!: string & strings.MinRunes(1)}
 }
 
 #FilterStateRule: {
@@ -121,9 +129,11 @@ import (
 }
 
 #PerRouteConfig: {
-	"@type":           "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.PerRouteConfig"
-	disabled!:         bool & true
-	requirement_name!: string & strings.MinRunes(1)
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.PerRouteConfig"
+
+	// oneof requirement_specifier: exactly one must be set
+	{disabled!: bool & true} |
+	{requirement_name!: string & strings.MinRunes(1)}
 }
 
 #JwtClaimToHeader: {

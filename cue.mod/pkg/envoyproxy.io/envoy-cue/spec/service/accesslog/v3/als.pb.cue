@@ -15,8 +15,10 @@ import (
 #StreamAccessLogsMessage: {
 	"@type":     "type.googleapis.com/envoy.service.accesslog.v3.StreamAccessLogsMessage"
 	identifier?: #StreamAccessLogsMessage_Identifier
-	http_logs?:  #StreamAccessLogsMessage_HTTPAccessLogEntries
-	tcp_logs?:   #StreamAccessLogsMessage_TCPAccessLogEntries
+
+	// oneof log_entries: exactly one must be set
+	{http_logs!: #StreamAccessLogsMessage_HTTPAccessLogEntries} |
+	{tcp_logs!: #StreamAccessLogsMessage_TCPAccessLogEntries}
 }
 
 #StreamAccessLogsMessage_Identifier: {

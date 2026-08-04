@@ -4,10 +4,10 @@ package v3
 import (
 	"list"
 	"strings"
-	v3_1 "envoyproxy.io/envoy-cue/spec/config/route/v3"
-	v3_2 "envoyproxy.io/envoy-cue/spec/config/core/v3"
-	v3_3 "envoyproxy.io/envoy-cue/spec/config/accesslog/v3"
-	v3_4 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/type/matcher/v3"
+	v3_1 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v3_2 "envoyproxy.io/envoy-cue/spec/config/accesslog/v3"
+	v3_3 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/type/matcher/v3"
+	v3_4 "envoyproxy.io/envoy-cue/spec/config/route/v3"
 	v3_5 "envoyproxy.io/envoy-cue/spec/type/v3"
 	v3_6 "envoyproxy.io/envoy-cue/spec/type/tracing/v3"
 	v3_7 "envoyproxy.io/envoy-cue/spec/config/trace/v3"
@@ -15,23 +15,20 @@ import (
 )
 
 #HttpConnectionManager: {
-	"@type":        "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
-	codec_type?:    #HttpConnectionManager_CodecType
-	stat_prefix!:   string & strings.MinRunes(1)
-	rds?:           #Rds
-	route_config?:  v3_1.#RouteConfiguration
-	scoped_routes?: #ScopedRoutes
+	"@type":      "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
+	codec_type?:  #HttpConnectionManager_CodecType
+	stat_prefix!: string & strings.MinRunes(1)
 	http_filters?: [...#HttpFilter]
 	add_user_agent?:                     bool
 	tracing?:                            #HttpConnectionManager_Tracing
-	common_http_protocol_options?:       v3_2.#HttpProtocolOptions
+	common_http_protocol_options?:       v3_1.#HttpProtocolOptions
 	http1_safe_max_connection_duration?: bool
-	http_protocol_options?:              v3_2.#Http1ProtocolOptions
-	http2_protocol_options?:             v3_2.#Http2ProtocolOptions
-	http3_protocol_options?:             v3_2.#Http3ProtocolOptions
+	http_protocol_options?:              v3_1.#Http1ProtocolOptions
+	http2_protocol_options?:             v3_1.#Http2ProtocolOptions
+	http3_protocol_options?:             v3_1.#Http3ProtocolOptions
 	server_name?:                        string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
 	server_header_transformation?:       #HttpConnectionManager_ServerHeaderTransformation
-	scheme_header_transformation?:       v3_2.#SchemeHeaderTransformation
+	scheme_header_transformation?:       v3_1.#SchemeHeaderTransformation
 	max_request_headers_kb?:             uint32 & >0 & <=8192
 	stream_idle_timeout?:                string
 	stream_flush_timeout?:               string
@@ -39,14 +36,14 @@ import (
 	request_headers_timeout?:            string // TODO(pgv): duration bounds
 	drain_timeout?:                      string
 	delayed_close_timeout?:              string
-	access_log?: [...v3_3.#AccessLog]
+	access_log?: [...v3_2.#AccessLog]
 	access_log_flush_interval?:       string // TODO(pgv): duration bounds
 	flush_access_log_on_new_request?: bool
 	access_log_options?:              #HttpConnectionManager_HcmAccessLogOptions
 	use_remote_address?:              bool
 	xff_num_trusted_hops?:            uint32
-	original_ip_detection_extensions?: [...v3_2.#TypedExtensionConfig]
-	early_header_mutation_extensions?: [...v3_2.#TypedExtensionConfig]
+	original_ip_detection_extensions?: [...v3_1.#TypedExtensionConfig]
+	early_header_mutation_extensions?: [...v3_1.#TypedExtensionConfig]
 	internal_address_config?:                           #HttpConnectionManager_InternalAddressConfig
 	skip_xff_append?:                                   bool
 	via?:                                               string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
@@ -55,7 +52,7 @@ import (
 	always_set_request_id_in_response?:                 bool
 	forward_client_cert_details?:                       #HttpConnectionManager_ForwardClientCertDetails
 	set_current_client_cert_details?:                   #HttpConnectionManager_SetCurrentClientCertDetails
-	forward_client_cert_matcher?:                       v3_4.#Matcher
+	forward_client_cert_matcher?:                       v3_3.#Matcher
 	proxy_100_continue?:                                bool
 	represent_ipv4_remote_address_as_ipv4_mapped_ipv6?: bool
 	upgrade_configs?: [...#HttpConnectionManager_UpgradeConfig]
@@ -65,16 +62,24 @@ import (
 	request_id_extension?:                 #RequestIDExtension
 	local_reply_config?:                   #LocalReplyConfig
 	strip_matching_host_port?:             bool
-	strip_any_host_port?:                  bool
 	stream_error_on_invalid_http_message?: bool
 	path_normalization_options?:           #HttpConnectionManager_PathNormalizationOptions
 	strip_trailing_host_dot?:              bool
 	proxy_status_config?:                  #HttpConnectionManager_ProxyStatusConfig
-	typed_header_validation_config?:       v3_2.#TypedExtensionConfig
+	typed_header_validation_config?:       v3_1.#TypedExtensionConfig
 	append_x_forwarded_port?:              bool
 	append_local_overload?:                bool
 	add_proxy_protocol_connection_state?:  bool
 	forward_proto_config?:                 #ForwardProtoConfig
+
+	// oneof route_specifier: exactly one must be set
+	{rds!: #Rds} |
+	{route_config!: v3_4.#RouteConfiguration} |
+	{scoped_routes!: #ScopedRoutes}
+
+	// oneof strip_port_mode: at most one may be set
+	*{} |
+	{strip_any_host_port!: bool}
 }
 
 #HttpConnectionManager_Tracing: {
@@ -96,7 +101,7 @@ import (
 #HttpConnectionManager_InternalAddressConfig: {
 	"@type":       "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.InternalAddressConfig"
 	unix_sockets?: bool
-	cidr_ranges?: [...v3_2.#CidrRange]
+	cidr_ranges?: [...v3_1.#CidrRange]
 }
 
 #HttpConnectionManager_SetCurrentClientCertDetails: {
@@ -133,8 +138,11 @@ import (
 	remove_connection_termination_details?: bool
 	remove_response_flags?:                 bool
 	set_recommended_response_code?:         bool
-	use_node_id?:                           bool
-	literal_proxy_name?:                    string
+
+	// oneof proxy_name: at most one may be set
+	*{} |
+	{use_node_id!: bool} |
+	{literal_proxy_name!: string}
 }
 
 #HttpConnectionManager_HcmAccessLogOptions: {
@@ -161,36 +169,38 @@ import (
 #LocalReplyConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.LocalReplyConfig"
 	mappers?: [...#ResponseMapper]
-	body_format?: v3_2.#SubstitutionFormatString
+	body_format?: v3_1.#SubstitutionFormatString
 }
 
 #ResponseMapper: {
 	"@type":               "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ResponseMapper"
-	filter!:               v3_3.#AccessLogFilter
+	filter!:               v3_2.#AccessLogFilter
 	status_code?:          uint32 & >=200 & <600
-	body?:                 v3_2.#DataSource
-	body_format_override?: v3_2.#SubstitutionFormatString
-	headers_to_add?: [...v3_2.#HeaderValueOption] & list.MaxItems(1000)
+	body?:                 v3_1.#DataSource
+	body_format_override?: v3_1.#SubstitutionFormatString
+	headers_to_add?: [...v3_1.#HeaderValueOption] & list.MaxItems(1000)
 }
 
 #Rds: {
 	"@type":            "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.Rds"
-	config_source?:     v3_2.#ConfigSource
+	config_source?:     v3_1.#ConfigSource
 	route_config_name?: string
 }
 
 #ScopedRouteConfigurationsList: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRouteConfigurationsList"
-	scoped_route_configurations!: [...v3_1.#ScopedRouteConfiguration] & list.MinItems(1)
+	scoped_route_configurations!: [...v3_4.#ScopedRouteConfiguration] & list.MinItems(1)
 }
 
 #ScopedRoutes: {
-	"@type":                           "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRoutes"
-	name!:                             string & strings.MinRunes(1)
-	scope_key_builder!:                #ScopedRoutes_ScopeKeyBuilder
-	rds_config_source?:                v3_2.#ConfigSource
-	scoped_route_configurations_list?: #ScopedRouteConfigurationsList
-	scoped_rds?:                       #ScopedRds
+	"@type":            "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRoutes"
+	name!:              string & strings.MinRunes(1)
+	scope_key_builder!: #ScopedRoutes_ScopeKeyBuilder
+	rds_config_source?: v3_1.#ConfigSource
+
+	// oneof config_specifier: exactly one must be set
+	{scoped_route_configurations_list!: #ScopedRouteConfigurationsList} |
+	{scoped_rds!: #ScopedRds}
 }
 
 #ScopedRoutes_ScopeKeyBuilder: {
@@ -199,16 +209,21 @@ import (
 }
 
 #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder: {
-	"@type":                 "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRoutes.ScopeKeyBuilder.FragmentBuilder"
-	header_value_extractor?: #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRoutes.ScopeKeyBuilder.FragmentBuilder"
+
+	// oneof type: exactly one must be set
+	{header_value_extractor!: #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor}
 }
 
 #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor: {
 	"@type":            "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRoutes.ScopeKeyBuilder.FragmentBuilder.HeaderValueExtractor"
 	name!:              string & strings.MinRunes(1) // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
 	element_separator?: string
-	index?:             uint32
-	element?:           #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor_KvElement
+
+	// oneof extract_type: at most one may be set
+	*{} |
+	{index!: uint32} |
+	{element!: #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor_KvElement}
 }
 
 #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor_KvElement: {
@@ -219,17 +234,20 @@ import (
 
 #ScopedRds: {
 	"@type":                   "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRds"
-	scoped_rds_config_source!: v3_2.#ConfigSource
+	scoped_rds_config_source!: v3_1.#ConfigSource
 	srds_resources_locator?:   string
 }
 
 #HttpFilter: {
-	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpFilter"
-	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
-	config_discovery?: v3_2.#ExtensionConfigSource
-	is_optional?:      bool
-	disabled?:         bool
+	"@type":      "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpFilter"
+	name!:        string & strings.MinRunes(1)
+	is_optional?: bool
+	disabled?:    bool
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}} |
+	{config_discovery!: v3_1.#ExtensionConfigSource}
 }
 
 #RequestIDExtension: {

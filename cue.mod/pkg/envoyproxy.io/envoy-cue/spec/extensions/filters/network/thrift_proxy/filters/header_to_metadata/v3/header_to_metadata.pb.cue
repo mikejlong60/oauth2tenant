@@ -13,13 +13,16 @@ import (
 }
 
 #HeaderToMetadata_KeyValuePair: {
-	"@type":              "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.filters.header_to_metadata.v3.HeaderToMetadata.KeyValuePair"
-	metadata_namespace?:  string
-	key!:                 string & strings.MinRunes(1)
-	value?:               string
-	regex_value_rewrite?: v3_1.#RegexMatchAndSubstitute
-	type?:                #HeaderToMetadata_ValueType
-	encode?:              #HeaderToMetadata_ValueEncode
+	"@type":             "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.filters.header_to_metadata.v3.HeaderToMetadata.KeyValuePair"
+	metadata_namespace?: string
+	key!:                string & strings.MinRunes(1)
+	type?:               #HeaderToMetadata_ValueType
+	encode?:             #HeaderToMetadata_ValueEncode
+
+	// oneof value_type: at most one may be set
+	*{} |
+	{value!: string} |
+	{regex_value_rewrite!: v3_1.#RegexMatchAndSubstitute}
 }
 
 #HeaderToMetadata_Rule: {

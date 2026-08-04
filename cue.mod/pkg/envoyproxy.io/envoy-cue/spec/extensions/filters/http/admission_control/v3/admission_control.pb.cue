@@ -10,12 +10,14 @@ import (
 #AdmissionControl: {
 	"@type":                    "type.googleapis.com/envoy.extensions.filters.http.admission_control.v3.AdmissionControl"
 	enabled?:                   v3_1.#RuntimeFeatureFlag
-	success_criteria?:          #AdmissionControl_SuccessCriteria
 	sampling_window?:           string
 	aggression?:                v3_1.#RuntimeDouble
 	sr_threshold?:              v3_1.#RuntimePercent
 	rps_threshold?:             v3_1.#RuntimeUInt32
 	max_rejection_probability?: v3_1.#RuntimePercent
+
+	// oneof evaluation_criteria: exactly one must be set
+	{success_criteria!: #AdmissionControl_SuccessCriteria}
 }
 
 #AdmissionControl_SuccessCriteria: {

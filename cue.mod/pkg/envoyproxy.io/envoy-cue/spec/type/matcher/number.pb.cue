@@ -7,6 +7,8 @@ import (
 
 #DoubleMatcher: {
 	"@type": "type.googleapis.com/envoy.type.matcher.DoubleMatcher"
-	range?:  type_1.#DoubleRange
-	exact?:  float64
+
+	// oneof match_pattern: exactly one must be set
+	{range!: type_1.#DoubleRange} |
+	{exact!: float64}
 }

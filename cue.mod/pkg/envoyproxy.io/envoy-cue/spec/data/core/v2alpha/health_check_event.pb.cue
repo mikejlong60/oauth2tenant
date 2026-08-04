@@ -6,16 +6,18 @@ import (
 )
 
 #HealthCheckEvent: {
-	"@type":                     "type.googleapis.com/envoy.data.core.v2alpha.HealthCheckEvent"
-	health_checker_type?:        #HealthCheckerType
-	host?:                       core_1.#Address
-	cluster_name!:               string & !=""
-	eject_unhealthy_event?:      #HealthCheckEjectUnhealthy
-	add_healthy_event?:          #HealthCheckAddHealthy
-	health_check_failure_event?: #HealthCheckFailure
-	degraded_healthy_host?:      #DegradedHealthyHost
-	no_longer_degraded_host?:    #NoLongerDegradedHost
-	timestamp?:                  string
+	"@type":              "type.googleapis.com/envoy.data.core.v2alpha.HealthCheckEvent"
+	health_checker_type?: #HealthCheckerType
+	host?:                core_1.#Address
+	cluster_name!:        string & !=""
+	timestamp?:           string
+
+	// oneof event: exactly one must be set
+	{eject_unhealthy_event!: #HealthCheckEjectUnhealthy} |
+	{add_healthy_event!: #HealthCheckAddHealthy} |
+	{health_check_failure_event!: #HealthCheckFailure} |
+	{degraded_healthy_host!: #DegradedHealthyHost} |
+	{no_longer_degraded_host!: #NoLongerDegradedHost}
 }
 
 #HealthCheckEjectUnhealthy: {

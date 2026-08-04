@@ -2,10 +2,12 @@
 package v3
 
 #RateLimitStrategy: {
-	"@type":                 "type.googleapis.com/envoy.type.v3.RateLimitStrategy"
-	blanket_rule?:           #RateLimitStrategy_BlanketRule
-	requests_per_time_unit?: #RateLimitStrategy_RequestsPerTimeUnit
-	token_bucket?:           #TokenBucket
+	"@type": "type.googleapis.com/envoy.type.v3.RateLimitStrategy"
+
+	// oneof strategy: exactly one must be set
+	{blanket_rule!: #RateLimitStrategy_BlanketRule} |
+	{requests_per_time_unit!: #RateLimitStrategy_RequestsPerTimeUnit} |
+	{token_bucket!: #TokenBucket}
 }
 
 #RateLimitStrategy_RequestsPerTimeUnit: {

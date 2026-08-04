@@ -4,11 +4,14 @@ package v3
 #SocketEvent: {
 	"@type":     "type.googleapis.com/envoy.data.tap.v3.SocketEvent"
 	timestamp?:  string
-	read?:       #SocketEvent_Read
-	write?:      #SocketEvent_Write
-	closed?:     #SocketEvent_Closed
 	connection?: #Connection
 	seq_num?:    uint64
+
+	// oneof event_selector: at most one may be set
+	*{} |
+	{read!: #SocketEvent_Read} |
+	{write!: #SocketEvent_Write} |
+	{closed!: #SocketEvent_Closed}
 }
 
 #SocketEvent_Read: {
@@ -41,9 +44,12 @@ package v3
 }
 
 #SocketStreamedTraceSegment: {
-	"@type":     "type.googleapis.com/envoy.data.tap.v3.SocketStreamedTraceSegment"
-	trace_id?:   uint64
-	connection?: #Connection
-	event?:      #SocketEvent
-	events?:     #SocketEvents
+	"@type":   "type.googleapis.com/envoy.data.tap.v3.SocketStreamedTraceSegment"
+	trace_id?: uint64
+
+	// oneof message_piece: at most one may be set
+	*{} |
+	{connection!: #Connection} |
+	{event!: #SocketEvent} |
+	{events!: #SocketEvents}
 }

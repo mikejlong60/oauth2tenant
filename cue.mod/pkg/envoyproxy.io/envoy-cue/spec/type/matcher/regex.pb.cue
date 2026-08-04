@@ -6,9 +6,11 @@ import (
 )
 
 #RegexMatcher: {
-	"@type":     "type.googleapis.com/envoy.type.matcher.RegexMatcher"
-	google_re2!: #RegexMatcher_GoogleRE2
-	regex!:      string & strings.MinRunes(1)
+	"@type": "type.googleapis.com/envoy.type.matcher.RegexMatcher"
+	regex!:  string & strings.MinRunes(1)
+
+	// oneof engine_type: exactly one must be set
+	{google_re2!: #RegexMatcher_GoogleRE2}
 }
 
 #RegexMatcher_GoogleRE2: {

@@ -13,8 +13,6 @@ import (
 #TcpProxy: {
 	"@type":                  "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy"
 	stat_prefix!:             string & strings.MinRunes(1)
-	cluster?:                 string
-	weighted_clusters?:       #TcpProxy_WeightedCluster
 	on_demand?:               #TcpProxy_OnDemand
 	metadata_match?:          v3_1.#Metadata
 	idle_timeout?:            string
@@ -33,6 +31,10 @@ import (
 	proxy_protocol_tlvs?: [...v3_1.#TlvEntry]
 	upstream_connect_mode?: #UpstreamConnectMode
 	max_early_data_bytes?:  uint32 & <=1048576
+
+	// oneof cluster_specifier: exactly one must be set
+	{cluster!: string} |
+	{weighted_clusters!: #TcpProxy_WeightedCluster}
 }
 
 #TcpProxy_WeightedCluster: {

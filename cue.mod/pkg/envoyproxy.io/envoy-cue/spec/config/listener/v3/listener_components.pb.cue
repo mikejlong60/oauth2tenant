@@ -11,8 +11,11 @@ import (
 #Filter: {
 	"@type": "type.googleapis.com/envoy.config.listener.v3.Filter"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
-	config_discovery?: v3_1.#ExtensionConfigSource
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}} |
+	{config_discovery!: v3_1.#ExtensionConfigSource}
 }
 
 #FilterChainMatch: {
@@ -44,12 +47,14 @@ import (
 }
 
 #ListenerFilterChainMatchPredicate: {
-	"@type":                 "type.googleapis.com/envoy.config.listener.v3.ListenerFilterChainMatchPredicate"
-	or_match?:               #ListenerFilterChainMatchPredicate_MatchSet
-	and_match?:              #ListenerFilterChainMatchPredicate_MatchSet
-	not_match?:              #ListenerFilterChainMatchPredicate
-	any_match!:              bool & true
-	destination_port_range?: v3_2.#Int32Range
+	"@type": "type.googleapis.com/envoy.config.listener.v3.ListenerFilterChainMatchPredicate"
+
+	// oneof rule: exactly one must be set
+	{or_match!: #ListenerFilterChainMatchPredicate_MatchSet} |
+	{and_match!: #ListenerFilterChainMatchPredicate_MatchSet} |
+	{not_match!: #ListenerFilterChainMatchPredicate} |
+	{any_match!: bool & true} |
+	{destination_port_range!: v3_2.#Int32Range}
 }
 
 #ListenerFilterChainMatchPredicate_MatchSet: {
@@ -58,9 +63,12 @@ import (
 }
 
 #ListenerFilter: {
-	"@type": "type.googleapis.com/envoy.config.listener.v3.ListenerFilter"
-	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
-	config_discovery?: v3_1.#ExtensionConfigSource
-	filter_disabled?:  #ListenerFilterChainMatchPredicate
+	"@type":          "type.googleapis.com/envoy.config.listener.v3.ListenerFilter"
+	name!:            string & strings.MinRunes(1)
+	filter_disabled?: #ListenerFilterChainMatchPredicate
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}} |
+	{config_discovery!: v3_1.#ExtensionConfigSource}
 }

@@ -8,12 +8,14 @@ import (
 
 #StringMatcher: {
 	"@type":      "type.googleapis.com/envoy.type.matcher.StringMatcher"
-	exact?:       string
-	prefix!:      string & strings.MinRunes(1)
-	suffix!:      string & strings.MinRunes(1)
-	regex?:       string
-	safe_regex!:  #RegexMatcher
 	ignore_case?: bool
+
+	// oneof match_pattern: exactly one must be set
+	{exact!: string} |
+	{prefix!: string & strings.MinRunes(1)} |
+	{suffix!: string & strings.MinRunes(1)} |
+	{regex!: string} |
+	{safe_regex!: #RegexMatcher}
 }
 
 #ListStringMatcher: {

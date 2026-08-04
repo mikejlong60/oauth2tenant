@@ -8,11 +8,13 @@ import (
 )
 
 #FaultAbort: {
-	"@type":       "type.googleapis.com/envoy.extensions.filters.http.fault.v3.FaultAbort"
-	http_status?:  uint32 & >=200 & <600
-	grpc_status?:  uint32
-	header_abort?: #FaultAbort_HeaderAbort
-	percentage?:   v3_1.#FractionalPercent
+	"@type":     "type.googleapis.com/envoy.extensions.filters.http.fault.v3.FaultAbort"
+	percentage?: v3_1.#FractionalPercent
+
+	// oneof error_type: exactly one must be set
+	{http_status!: uint32 & >=200 & <600} |
+	{grpc_status!: uint32} |
+	{header_abort!: #FaultAbort_HeaderAbort}
 }
 
 #FaultAbort_HeaderAbort: {

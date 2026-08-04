@@ -12,11 +12,13 @@ import (
 	"@type":       "type.googleapis.com/envoy.extensions.filters.network.generic_proxy.v3.GenericProxy"
 	stat_prefix!:  string & strings.MinRunes(1)
 	codec_config!: v3_1.#TypedExtensionConfig
-	generic_rds?:  #GenericRds
-	route_config?: #RouteConfiguration
 	filters?: [...v3_1.#TypedExtensionConfig]
 	tracing?: v3_2.#HttpConnectionManager_Tracing
 	access_log?: [...v3_3.#AccessLog]
+
+	// oneof route_specifier: exactly one must be set
+	{generic_rds!: #GenericRds} |
+	{route_config!: #RouteConfiguration}
 }
 
 #GenericRds: {

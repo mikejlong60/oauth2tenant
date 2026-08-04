@@ -8,6 +8,8 @@ import (
 #HttpUri: {
 	"@type":  "type.googleapis.com/envoy.config.core.v3.HttpUri"
 	uri!:     string & strings.MinRunes(1)
-	cluster!: string & strings.MinRunes(1)
 	timeout!: string // TODO(pgv): duration bounds
+
+	// oneof http_upstream_type: exactly one must be set
+	{cluster!: string & strings.MinRunes(1)}
 }

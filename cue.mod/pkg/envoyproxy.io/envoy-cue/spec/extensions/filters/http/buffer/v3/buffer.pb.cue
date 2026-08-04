@@ -7,7 +7,9 @@ package v3
 }
 
 #BufferPerRoute: {
-	"@type":   "type.googleapis.com/envoy.extensions.filters.http.buffer.v3.BufferPerRoute"
-	disabled!: bool & true
-	buffer!:   #Buffer
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.buffer.v3.BufferPerRoute"
+
+	// oneof override: exactly one must be set
+	{disabled!: bool & true} |
+	{buffer!: #Buffer}
 }

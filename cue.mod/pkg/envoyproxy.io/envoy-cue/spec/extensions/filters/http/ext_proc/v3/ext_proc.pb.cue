@@ -63,9 +63,11 @@ import (
 }
 
 #ExtProcPerRoute: {
-	"@type":    "type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcPerRoute"
-	disabled!:  bool & true
-	overrides?: #ExtProcOverrides
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcPerRoute"
+
+	// oneof override: exactly one must be set
+	{disabled!: bool & true} |
+	{overrides!: #ExtProcOverrides}
 }
 
 #ExtProcOverrides: {

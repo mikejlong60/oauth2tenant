@@ -30,8 +30,11 @@ package v3
 }
 
 #SubjectAlternateName: {
-	"@type":     "type.googleapis.com/envoy.admin.v3.SubjectAlternateName"
-	dns?:        string
-	uri?:        string
-	ip_address?: string
+	"@type": "type.googleapis.com/envoy.admin.v3.SubjectAlternateName"
+
+	// oneof name: at most one may be set
+	*{} |
+	{dns!: string} |
+	{uri!: string} |
+	{ip_address!: string}
 }

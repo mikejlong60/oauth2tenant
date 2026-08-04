@@ -6,14 +6,16 @@ import (
 )
 
 #ValueMatcher: {
-	"@type":        "type.googleapis.com/envoy.type.matcher.v3.ValueMatcher"
-	null_match?:    #ValueMatcher_NullMatch
-	double_match?:  #DoubleMatcher
-	string_match?:  #StringMatcher
-	bool_match?:    bool
-	present_match?: bool
-	list_match?:    #ListMatcher
-	or_match?:      #OrMatcher
+	"@type": "type.googleapis.com/envoy.type.matcher.v3.ValueMatcher"
+
+	// oneof match_pattern: exactly one must be set
+	{null_match!: #ValueMatcher_NullMatch} |
+	{double_match!: #DoubleMatcher} |
+	{string_match!: #StringMatcher} |
+	{bool_match!: bool} |
+	{present_match!: bool} |
+	{list_match!: #ListMatcher} |
+	{or_match!: #OrMatcher}
 }
 
 #ValueMatcher_NullMatch: {
@@ -22,7 +24,9 @@ import (
 
 #ListMatcher: {
 	"@type": "type.googleapis.com/envoy.type.matcher.v3.ListMatcher"
-	one_of?: #ValueMatcher
+
+	// oneof match_pattern: exactly one must be set
+	{one_of!: #ValueMatcher}
 }
 
 #OrMatcher: {

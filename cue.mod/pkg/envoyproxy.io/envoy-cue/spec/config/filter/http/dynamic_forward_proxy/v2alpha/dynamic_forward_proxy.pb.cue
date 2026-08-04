@@ -11,7 +11,10 @@ import (
 }
 
 #PerRouteConfig: {
-	"@type":                   "type.googleapis.com/envoy.config.filter.http.dynamic_forward_proxy.v2alpha.PerRouteConfig"
-	host_rewrite?:             string
-	auto_host_rewrite_header?: string
+	"@type": "type.googleapis.com/envoy.config.filter.http.dynamic_forward_proxy.v2alpha.PerRouteConfig"
+
+	// oneof host_rewrite_specifier: at most one may be set
+	*{} |
+	{host_rewrite!: string} |
+	{auto_host_rewrite_header!: string}
 }

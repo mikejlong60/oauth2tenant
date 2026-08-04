@@ -7,12 +7,14 @@ package v3
 }
 
 #SubstitutionFormatString: {
-	"@type":      "type.googleapis.com/envoy.config.core.v3.SubstitutionFormatString"
-	text_format?: string
-	json_format!: {...}
-	text_format_source?: #DataSource
-	omit_empty_values?:  bool
-	content_type?:       string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	"@type":            "type.googleapis.com/envoy.config.core.v3.SubstitutionFormatString"
+	omit_empty_values?: bool
+	content_type?:      string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
 	formatters?: [...#TypedExtensionConfig]
 	json_format_options?: #JsonFormatOptions
+
+	// oneof format: exactly one must be set
+	{text_format!: string} |
+	{json_format!: {...}} |
+	{text_format_source!: #DataSource}
 }

@@ -7,9 +7,11 @@ import (
 )
 
 #CommonExtensionConfig: {
-	"@type":        "type.googleapis.com/envoy.extensions.common.tap.v3.CommonExtensionConfig"
-	admin_config?:  #AdminConfig
-	static_config?: v3_1.#TapConfig
+	"@type": "type.googleapis.com/envoy.extensions.common.tap.v3.CommonExtensionConfig"
+
+	// oneof config_type: exactly one must be set
+	{admin_config!: #AdminConfig} |
+	{static_config!: v3_1.#TapConfig}
 }
 
 #AdminConfig: {

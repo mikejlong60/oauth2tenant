@@ -7,9 +7,12 @@ import (
 
 #Body: {
 	"@type":    "type.googleapis.com/envoy.data.tap.v3.Body"
-	as_bytes?:  bytes
-	as_string?: string
 	truncated?: bool
+
+	// oneof body_type: at most one may be set
+	*{} |
+	{as_bytes!: bytes} |
+	{as_string!: string}
 }
 
 #Connection: {

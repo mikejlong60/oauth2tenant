@@ -13,21 +13,26 @@ import (
 }
 
 #PayloadToMetadata_KeyValuePair: {
-	"@type":              "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.filters.payload_to_metadata.v3.PayloadToMetadata.KeyValuePair"
-	metadata_namespace?:  string
-	key!:                 string & strings.MinRunes(1)
-	value?:               string
-	regex_value_rewrite?: v3_1.#RegexMatchAndSubstitute
-	type?:                #PayloadToMetadata_ValueType
+	"@type":             "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.filters.payload_to_metadata.v3.PayloadToMetadata.KeyValuePair"
+	metadata_namespace?: string
+	key!:                string & strings.MinRunes(1)
+	type?:               #PayloadToMetadata_ValueType
+
+	// oneof value_type: at most one may be set
+	*{} |
+	{value!: string} |
+	{regex_value_rewrite!: v3_1.#RegexMatchAndSubstitute}
 }
 
 #PayloadToMetadata_Rule: {
 	"@type":         "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.filters.payload_to_metadata.v3.PayloadToMetadata.Rule"
-	method_name?:    string
-	service_name?:   string
 	field_selector!: #PayloadToMetadata_FieldSelector
 	on_present?:     #PayloadToMetadata_KeyValuePair
 	on_missing?:     #PayloadToMetadata_KeyValuePair
+
+	// oneof match_specifier: exactly one must be set
+	{method_name!: string} |
+	{service_name!: string}
 }
 
 #PayloadToMetadata_FieldSelector: {

@@ -19,12 +19,15 @@ import (
 }
 
 #HttpStreamedTraceSegment: {
-	"@type":              "type.googleapis.com/envoy.data.tap.v2alpha.HttpStreamedTraceSegment"
-	trace_id?:            uint64
-	request_headers?:     core_1.#HeaderMap
-	request_body_chunk?:  #Body
-	request_trailers?:    core_1.#HeaderMap
-	response_headers?:    core_1.#HeaderMap
-	response_body_chunk?: #Body
-	response_trailers?:   core_1.#HeaderMap
+	"@type":   "type.googleapis.com/envoy.data.tap.v2alpha.HttpStreamedTraceSegment"
+	trace_id?: uint64
+
+	// oneof message_piece: at most one may be set
+	*{} |
+	{request_headers!: core_1.#HeaderMap} |
+	{request_body_chunk!: #Body} |
+	{request_trailers!: core_1.#HeaderMap} |
+	{response_headers!: core_1.#HeaderMap} |
+	{response_body_chunk!: #Body} |
+	{response_trailers!: core_1.#HeaderMap}
 }

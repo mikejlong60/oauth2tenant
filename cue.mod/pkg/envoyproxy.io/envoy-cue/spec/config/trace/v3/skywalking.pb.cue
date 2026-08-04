@@ -15,6 +15,9 @@ import (
 	"@type":         "type.googleapis.com/envoy.config.trace.v3.ClientConfig"
 	service_name?:   string
 	instance_name?:  string
-	backend_token?:  string
 	max_cache_size?: uint32
+
+	// oneof backend_token_specifier: at most one may be set
+	*{} |
+	{backend_token!: string}
 }

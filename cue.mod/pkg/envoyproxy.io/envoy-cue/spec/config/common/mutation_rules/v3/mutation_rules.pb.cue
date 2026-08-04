@@ -18,10 +18,13 @@ import (
 }
 
 #HeaderMutation: {
-	"@type":          "type.googleapis.com/envoy.config.common.mutation_rules.v3.HeaderMutation"
-	remove?:          string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	append?:          v3_2.#HeaderValueOption
-	remove_on_match?: #HeaderMutation_RemoveOnMatch
+	"@type": "type.googleapis.com/envoy.config.common.mutation_rules.v3.HeaderMutation"
+
+	// oneof action: exactly one must be set
+	// TODO(pgv): remove.string well-known *validate.StringRules_WellKnownRegex
+	{remove!: string} |
+	{append!: v3_2.#HeaderValueOption} |
+	{remove_on_match!: #HeaderMutation_RemoveOnMatch}
 }
 
 #HeaderMutation_RemoveOnMatch: {

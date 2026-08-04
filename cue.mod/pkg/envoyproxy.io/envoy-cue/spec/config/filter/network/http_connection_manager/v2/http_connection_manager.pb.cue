@@ -3,27 +3,24 @@ package v2
 
 import (
 	"list"
-	core_2 "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	core_1 "envoyproxy.io/envoy-cue/spec/api/v2/core"
 	type_4 "envoyproxy.io/envoy-cue/spec/type"
-	v2_1 "envoyproxy.io/envoy-cue/spec/api/v2"
-	v2_3 "envoyproxy.io/envoy-cue/spec/config/filter/accesslog/v2"
+	v2_2 "envoyproxy.io/envoy-cue/spec/config/filter/accesslog/v2"
+	v2_3 "envoyproxy.io/envoy-cue/spec/api/v2"
 	v2_5 "envoyproxy.io/envoy-cue/spec/type/tracing/v2"
 	v2_6 "envoyproxy.io/envoy-cue/spec/config/trace/v2"
 )
 
 #HttpConnectionManager: {
-	"@type":        "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager"
-	codec_type?:    #HttpConnectionManager_CodecType
-	stat_prefix!:   string & !=""
-	rds?:           #Rds
-	route_config?:  v2_1.#RouteConfiguration
-	scoped_routes?: #ScopedRoutes
+	"@type":      "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager"
+	codec_type?:  #HttpConnectionManager_CodecType
+	stat_prefix!: string & !=""
 	http_filters?: [...#HttpFilter]
 	add_user_agent?:               bool
 	tracing?:                      #HttpConnectionManager_Tracing
-	common_http_protocol_options?: core_2.#HttpProtocolOptions
-	http_protocol_options?:        core_2.#Http1ProtocolOptions
-	http2_protocol_options?:       core_2.#Http2ProtocolOptions
+	common_http_protocol_options?: core_1.#HttpProtocolOptions
+	http_protocol_options?:        core_1.#Http1ProtocolOptions
+	http2_protocol_options?:       core_1.#Http2ProtocolOptions
 	server_name?:                  string
 	server_header_transformation?: #HttpConnectionManager_ServerHeaderTransformation
 	max_request_headers_kb?:       uint32 & >0 & <=8192
@@ -32,7 +29,7 @@ import (
 	request_timeout?:              string
 	drain_timeout?:                string
 	delayed_close_timeout?:        string
-	access_log?: [...v2_3.#AccessLog]
+	access_log?: [...v2_2.#AccessLog]
 	use_remote_address?:                                bool
 	xff_num_trusted_hops?:                              uint32
 	internal_address_config?:                           #HttpConnectionManager_InternalAddressConfig
@@ -48,6 +45,11 @@ import (
 	normalize_path?:       bool
 	merge_slashes?:        bool
 	request_id_extension?: #RequestIDExtension
+
+	// oneof route_specifier: exactly one must be set
+	{rds!: #Rds} |
+	{route_config!: v2_3.#RouteConfiguration} |
+	{scoped_routes!: #ScopedRoutes}
 }
 
 #HttpConnectionManager_Tracing: {
@@ -94,22 +96,24 @@ import (
 
 #Rds: {
 	"@type":            "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.Rds"
-	config_source!:     core_2.#ConfigSource
+	config_source!:     core_1.#ConfigSource
 	route_config_name!: string & !=""
 }
 
 #ScopedRouteConfigurationsList: {
 	"@type": "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.ScopedRouteConfigurationsList"
-	scoped_route_configurations!: [...v2_1.#ScopedRouteConfiguration] & list.MinItems(1)
+	scoped_route_configurations!: [...v2_3.#ScopedRouteConfiguration] & list.MinItems(1)
 }
 
 #ScopedRoutes: {
-	"@type":                           "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.ScopedRoutes"
-	name!:                             string & !=""
-	scope_key_builder!:                #ScopedRoutes_ScopeKeyBuilder
-	rds_config_source!:                core_2.#ConfigSource
-	scoped_route_configurations_list?: #ScopedRouteConfigurationsList
-	scoped_rds?:                       #ScopedRds
+	"@type":            "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.ScopedRoutes"
+	name!:              string & !=""
+	scope_key_builder!: #ScopedRoutes_ScopeKeyBuilder
+	rds_config_source!: core_1.#ConfigSource
+
+	// oneof config_specifier: exactly one must be set
+	{scoped_route_configurations_list!: #ScopedRouteConfigurationsList} |
+	{scoped_rds!: #ScopedRds}
 }
 
 #ScopedRoutes_ScopeKeyBuilder: {
@@ -118,16 +122,21 @@ import (
 }
 
 #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder: {
-	"@type":                 "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.ScopedRoutes.ScopeKeyBuilder.FragmentBuilder"
-	header_value_extractor?: #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor
+	"@type": "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.ScopedRoutes.ScopeKeyBuilder.FragmentBuilder"
+
+	// oneof type: exactly one must be set
+	{header_value_extractor!: #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor}
 }
 
 #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor: {
 	"@type":            "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.ScopedRoutes.ScopeKeyBuilder.FragmentBuilder.HeaderValueExtractor"
 	name!:              string & !=""
 	element_separator?: string
-	index?:             uint32
-	element?:           #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor_KvElement
+
+	// oneof extract_type: at most one may be set
+	*{} |
+	{index!: uint32} |
+	{element!: #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor_KvElement}
 }
 
 #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor_KvElement: {
@@ -138,14 +147,17 @@ import (
 
 #ScopedRds: {
 	"@type":                   "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.ScopedRds"
-	scoped_rds_config_source!: core_2.#ConfigSource
+	scoped_rds_config_source!: core_1.#ConfigSource
 }
 
 #HttpFilter: {
 	"@type": "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpFilter"
 	name!:   string & !=""
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }
 
 #RequestIDExtension: {

@@ -7,13 +7,15 @@ import (
 )
 
 #CustomTag: {
-	"@type":         "type.googleapis.com/envoy.type.tracing.v3.CustomTag"
-	tag!:            string & strings.MinRunes(1)
-	literal?:        #CustomTag_Literal
-	environment?:    #CustomTag_Environment
-	request_header?: #CustomTag_Header
-	metadata?:       #CustomTag_Metadata
-	value?:          string
+	"@type": "type.googleapis.com/envoy.type.tracing.v3.CustomTag"
+	tag!:    string & strings.MinRunes(1)
+
+	// oneof type: exactly one must be set
+	{literal!: #CustomTag_Literal} |
+	{environment!: #CustomTag_Environment} |
+	{request_header!: #CustomTag_Header} |
+	{metadata!: #CustomTag_Metadata} |
+	{value!: string}
 }
 
 #CustomTag_Literal: {

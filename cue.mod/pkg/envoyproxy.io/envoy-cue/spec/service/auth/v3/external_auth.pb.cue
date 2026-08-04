@@ -30,10 +30,13 @@ import (
 }
 
 #CheckResponse: {
-	"@type":          "type.googleapis.com/envoy.service.auth.v3.CheckResponse"
-	status?:          status_3.#Status
-	denied_response?: #DeniedHttpResponse
-	ok_response?:     #OkHttpResponse
-	error_response?:  #DeniedHttpResponse
+	"@type": "type.googleapis.com/envoy.service.auth.v3.CheckResponse"
+	status?: status_3.#Status
 	dynamic_metadata?: {...}
+
+	// oneof http_response: at most one may be set
+	*{} |
+	{denied_response!: #DeniedHttpResponse} |
+	{ok_response!: #OkHttpResponse} |
+	{error_response!: #DeniedHttpResponse}
 }

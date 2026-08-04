@@ -27,10 +27,12 @@ import (
 }
 
 #RateLimitQuotaResponse_BucketAction: {
-	"@type":                  "type.googleapis.com/envoy.service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction"
-	bucket_id!:               #BucketId
-	quota_assignment_action?: #RateLimitQuotaResponse_BucketAction_QuotaAssignmentAction
-	abandon_action?:          #RateLimitQuotaResponse_BucketAction_AbandonAction
+	"@type":    "type.googleapis.com/envoy.service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction"
+	bucket_id!: #BucketId
+
+	// oneof bucket_action: exactly one must be set
+	{quota_assignment_action!: #RateLimitQuotaResponse_BucketAction_QuotaAssignmentAction} |
+	{abandon_action!: #RateLimitQuotaResponse_BucketAction_AbandonAction}
 }
 
 #RateLimitQuotaResponse_BucketAction_QuotaAssignmentAction: {

@@ -20,8 +20,10 @@ import (
 }
 
 #DnsTable_DnsEndpoint: {
-	"@type":       "type.googleapis.com/envoy.data.dns.v2alpha.DnsTable.DnsEndpoint"
-	address_list?: #DnsTable_AddressList
+	"@type": "type.googleapis.com/envoy.data.dns.v2alpha.DnsTable.DnsEndpoint"
+
+	// oneof endpoint_config: exactly one must be set
+	{address_list!: #DnsTable_AddressList}
 }
 
 #DnsTable_DnsVirtualDomain: {

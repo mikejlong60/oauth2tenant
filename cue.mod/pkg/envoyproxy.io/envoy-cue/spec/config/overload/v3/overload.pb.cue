@@ -10,7 +10,10 @@ import (
 #ResourceMonitor: {
 	"@type": "type.googleapis.com/envoy.config.overload.v3.ResourceMonitor"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #ThresholdTrigger: {
@@ -25,10 +28,12 @@ import (
 }
 
 #Trigger: {
-	"@type":    "type.googleapis.com/envoy.config.overload.v3.Trigger"
-	name!:      string & strings.MinRunes(1)
-	threshold?: #ThresholdTrigger
-	scaled?:    #ScaledTrigger
+	"@type": "type.googleapis.com/envoy.config.overload.v3.Trigger"
+	name!:   string & strings.MinRunes(1)
+
+	// oneof trigger_oneof: exactly one must be set
+	{threshold!: #ThresholdTrigger} |
+	{scaled!: #ScaledTrigger}
 }
 
 #ScaleTimersOverloadActionConfig: {
@@ -37,10 +42,12 @@ import (
 }
 
 #ScaleTimersOverloadActionConfig_ScaleTimer: {
-	"@type":      "type.googleapis.com/envoy.config.overload.v3.ScaleTimersOverloadActionConfig.ScaleTimer"
-	timer?:       #ScaleTimersOverloadActionConfig_TimerType
-	min_timeout?: string
-	min_scale?:   v3_1.#Percent
+	"@type": "type.googleapis.com/envoy.config.overload.v3.ScaleTimersOverloadActionConfig.ScaleTimer"
+	timer?:  #ScaleTimersOverloadActionConfig_TimerType
+
+	// oneof overload_adjust: exactly one must be set
+	{min_timeout!: string} |
+	{min_scale!: v3_1.#Percent}
 }
 
 #ScaleTimersOverloadActionConfig_TimerType: "UNSPECIFIED" | "HTTP_DOWNSTREAM_CONNECTION_IDLE" | "HTTP_DOWNSTREAM_STREAM_IDLE" | "TRANSPORT_SOCKET_CONNECT" | "HTTP_DOWNSTREAM_CONNECTION_MAX" | "HTTP_DOWNSTREAM_STREAM_FLUSH"

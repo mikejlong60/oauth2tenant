@@ -18,9 +18,12 @@ import (
 	protocol_type?:      #ProtocolType
 	serialization_type?: #SerializationType
 	route_config?: [...#RouteConfiguration]
-	drds?:                  #Drds
-	multiple_route_config?: #MultipleRouteConfiguration
 	dubbo_filters?: [...#DubboFilter]
+
+	// oneof route_specifier: at most one may be set
+	*{} |
+	{drds!: #Drds} |
+	{multiple_route_config!: #MultipleRouteConfiguration}
 }
 
 #DubboFilter: {

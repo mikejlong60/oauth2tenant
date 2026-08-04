@@ -11,10 +11,12 @@ package core
 	"@type":        "type.googleapis.com/envoy.api.v2.core.SocketAddress"
 	protocol?:      #SocketAddress_Protocol
 	address!:       string & !=""
-	port_value?:    uint32 & <=65535
-	named_port?:    string
 	resolver_name?: string
 	ipv4_compat?:   bool
+
+	// oneof port_specifier: exactly one must be set
+	{port_value!: uint32 & <=65535} |
+	{named_port!: string}
 }
 
 #SocketAddress_Protocol: "TCP" | "UDP"
@@ -34,9 +36,11 @@ package core
 }
 
 #Address: {
-	"@type":         "type.googleapis.com/envoy.api.v2.core.Address"
-	socket_address?: #SocketAddress
-	pipe?:           #Pipe
+	"@type": "type.googleapis.com/envoy.api.v2.core.Address"
+
+	// oneof address: exactly one must be set
+	{socket_address!: #SocketAddress} |
+	{pipe!: #Pipe}
 }
 
 #CidrRange: {

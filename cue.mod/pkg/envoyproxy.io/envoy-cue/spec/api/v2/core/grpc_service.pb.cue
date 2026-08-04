@@ -2,11 +2,13 @@
 package core
 
 #GrpcService: {
-	"@type":      "type.googleapis.com/envoy.api.v2.core.GrpcService"
-	envoy_grpc?:  #GrpcService_EnvoyGrpc
-	google_grpc?: #GrpcService_GoogleGrpc
-	timeout?:     string
+	"@type":  "type.googleapis.com/envoy.api.v2.core.GrpcService"
+	timeout?: string
 	initial_metadata?: [...#HeaderValue]
+
+	// oneof target_specifier: exactly one must be set
+	{envoy_grpc!: #GrpcService_EnvoyGrpc} |
+	{google_grpc!: #GrpcService_GoogleGrpc}
 }
 
 #GrpcService_EnvoyGrpc: {
@@ -36,21 +38,25 @@ package core
 }
 
 #GrpcService_GoogleGrpc_ChannelCredentials: {
-	"@type":          "type.googleapis.com/envoy.api.v2.core.GrpcService.GoogleGrpc.ChannelCredentials"
-	ssl_credentials?: #GrpcService_GoogleGrpc_SslCredentials
-	google_default?: {}
-	local_credentials?: #GrpcService_GoogleGrpc_GoogleLocalCredentials
+	"@type": "type.googleapis.com/envoy.api.v2.core.GrpcService.GoogleGrpc.ChannelCredentials"
+
+	// oneof credential_specifier: exactly one must be set
+	{ssl_credentials!: #GrpcService_GoogleGrpc_SslCredentials} |
+	{google_default!: {}} |
+	{local_credentials!: #GrpcService_GoogleGrpc_GoogleLocalCredentials}
 }
 
 #GrpcService_GoogleGrpc_CallCredentials: {
-	"@type":       "type.googleapis.com/envoy.api.v2.core.GrpcService.GoogleGrpc.CallCredentials"
-	access_token?: string
-	google_compute_engine?: {}
-	google_refresh_token?:       string
-	service_account_jwt_access?: #GrpcService_GoogleGrpc_CallCredentials_ServiceAccountJWTAccessCredentials
-	google_iam?:                 #GrpcService_GoogleGrpc_CallCredentials_GoogleIAMCredentials
-	from_plugin?:                #GrpcService_GoogleGrpc_CallCredentials_MetadataCredentialsFromPlugin
-	sts_service?:                #GrpcService_GoogleGrpc_CallCredentials_StsService
+	"@type": "type.googleapis.com/envoy.api.v2.core.GrpcService.GoogleGrpc.CallCredentials"
+
+	// oneof credential_specifier: exactly one must be set
+	{access_token!: string} |
+	{google_compute_engine!: {}} |
+	{google_refresh_token!: string} |
+	{service_account_jwt_access!: #GrpcService_GoogleGrpc_CallCredentials_ServiceAccountJWTAccessCredentials} |
+	{google_iam!: #GrpcService_GoogleGrpc_CallCredentials_GoogleIAMCredentials} |
+	{from_plugin!: #GrpcService_GoogleGrpc_CallCredentials_MetadataCredentialsFromPlugin} |
+	{sts_service!: #GrpcService_GoogleGrpc_CallCredentials_StsService}
 }
 
 #GrpcService_GoogleGrpc_CallCredentials_ServiceAccountJWTAccessCredentials: {
@@ -68,8 +74,11 @@ package core
 #GrpcService_GoogleGrpc_CallCredentials_MetadataCredentialsFromPlugin: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.GrpcService.GoogleGrpc.CallCredentials.MetadataCredentialsFromPlugin"
 	name?:   string
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }
 
 #GrpcService_GoogleGrpc_CallCredentials_StsService: {

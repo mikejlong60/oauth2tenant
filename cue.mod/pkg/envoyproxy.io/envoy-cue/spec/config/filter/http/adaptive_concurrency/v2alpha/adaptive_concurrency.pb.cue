@@ -29,7 +29,9 @@ import (
 }
 
 #AdaptiveConcurrency: {
-	"@type":                     "type.googleapis.com/envoy.config.filter.http.adaptive_concurrency.v2alpha.AdaptiveConcurrency"
-	gradient_controller_config!: #GradientControllerConfig
-	enabled?:                    core_2.#RuntimeFeatureFlag
+	"@type":  "type.googleapis.com/envoy.config.filter.http.adaptive_concurrency.v2alpha.AdaptiveConcurrency"
+	enabled?: core_2.#RuntimeFeatureFlag
+
+	// oneof concurrency_controller_config: exactly one must be set
+	{gradient_controller_config!: #GradientControllerConfig}
 }

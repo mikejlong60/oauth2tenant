@@ -19,10 +19,13 @@ import (
 }
 
 #Secret: {
-	"@type":              "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
-	name?:                string
-	tls_certificate?:     #TlsCertificate
-	session_ticket_keys?: #TlsSessionTicketKeys
-	validation_context?:  #CertificateValidationContext
-	generic_secret?:      #GenericSecret
+	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
+	name?:   string
+
+	// oneof type: at most one may be set
+	*{} |
+	{tls_certificate!: #TlsCertificate} |
+	{session_ticket_keys!: #TlsSessionTicketKeys} |
+	{validation_context!: #CertificateValidationContext} |
+	{generic_secret!: #GenericSecret}
 }

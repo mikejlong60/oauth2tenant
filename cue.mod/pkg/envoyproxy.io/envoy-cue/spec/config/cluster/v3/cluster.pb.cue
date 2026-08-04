@@ -22,8 +22,6 @@ import (
 	transport_socket_matcher?:          v3_2.#Matcher
 	name!:                              string & strings.MinRunes(1)
 	alt_stat_name?:                     string
-	type?:                              #Cluster_DiscoveryType
-	cluster_type?:                      #Cluster_CustomClusterType
 	eds_cluster_config?:                #Cluster_EdsClusterConfig
 	connect_timeout?:                   string // TODO(pgv): duration bounds
 	per_connection_buffer_limit_bytes?: uint32
@@ -51,11 +49,6 @@ import (
 	cleanup_interval?:                         string // TODO(pgv): duration bounds
 	upstream_bind_config?:                     v3_4.#BindConfig
 	lb_subset_config?:                         #Cluster_LbSubsetConfig
-	ring_hash_lb_config?:                      #Cluster_RingHashLbConfig
-	maglev_lb_config?:                         #Cluster_MaglevLbConfig
-	original_dst_lb_config?:                   #Cluster_OriginalDstLbConfig
-	least_request_lb_config?:                  #Cluster_LeastRequestLbConfig
-	round_robin_lb_config?:                    #Cluster_RoundRobinLbConfig
 	common_lb_config?:                         #Cluster_CommonLbConfig
 	transport_socket?:                         v3_4.#TransportSocket
 	metadata?:                                 v3_4.#Metadata
@@ -72,6 +65,19 @@ import (
 	track_cluster_stats?:                       #TrackClusterStats
 	preconnect_policy?:                         #Cluster_PreconnectPolicy
 	connection_pool_per_downstream_connection?: bool
+
+	// oneof cluster_discovery_type: at most one may be set
+	*{} |
+	{type!: #Cluster_DiscoveryType} |
+	{cluster_type!: #Cluster_CustomClusterType}
+
+	// oneof lb_config: at most one may be set
+	*{} |
+	{ring_hash_lb_config!: #Cluster_RingHashLbConfig} |
+	{maglev_lb_config!: #Cluster_MaglevLbConfig} |
+	{original_dst_lb_config!: #Cluster_OriginalDstLbConfig} |
+	{least_request_lb_config!: #Cluster_LeastRequestLbConfig} |
+	{round_robin_lb_config!: #Cluster_RoundRobinLbConfig}
 }
 
 #Cluster_TransportSocketMatch: {
@@ -163,13 +169,16 @@ import (
 #Cluster_CommonLbConfig: {
 	"@type":                               "type.googleapis.com/envoy.config.cluster.v3.Cluster.CommonLbConfig"
 	healthy_panic_threshold?:              v3_5.#Percent
-	zone_aware_lb_config?:                 #Cluster_CommonLbConfig_ZoneAwareLbConfig
-	locality_weighted_lb_config?:          #Cluster_CommonLbConfig_LocalityWeightedLbConfig
 	update_merge_window?:                  string
 	ignore_new_hosts_until_first_hc?:      bool
 	close_connections_on_host_set_change?: bool
 	consistent_hashing_lb_config?:         #Cluster_CommonLbConfig_ConsistentHashingLbConfig
 	override_host_status?:                 v3_4.#HealthStatusSet
+
+	// oneof locality_config_specifier: at most one may be set
+	*{} |
+	{zone_aware_lb_config!: #Cluster_CommonLbConfig_ZoneAwareLbConfig} |
+	{locality_weighted_lb_config!: #Cluster_CommonLbConfig_LocalityWeightedLbConfig}
 }
 
 #Cluster_CommonLbConfig_ZoneAwareLbConfig: {

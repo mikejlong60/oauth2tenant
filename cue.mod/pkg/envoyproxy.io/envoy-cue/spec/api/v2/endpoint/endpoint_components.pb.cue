@@ -20,11 +20,14 @@ import (
 
 #LbEndpoint: {
 	"@type":                "type.googleapis.com/envoy.api.v2.endpoint.LbEndpoint"
-	endpoint?:              #Endpoint
-	endpoint_name?:         string
 	health_status?:         core_1.#HealthStatus
 	metadata?:              core_1.#Metadata
 	load_balancing_weight?: uint32 & >=1
+
+	// oneof host_identifier: at most one may be set
+	*{} |
+	{endpoint!: #Endpoint} |
+	{endpoint_name!: string}
 }
 
 #LocalityLbEndpoints: {

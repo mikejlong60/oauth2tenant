@@ -6,11 +6,14 @@ import (
 )
 
 #ProtoMessageExtractionConfig: {
-	"@type":                          "type.googleapis.com/envoy.extensions.filters.http.proto_message_extraction.v3.ProtoMessageExtractionConfig"
-	data_source?:                     v3_1.#DataSource
-	proto_descriptor_typed_metadata?: string
-	mode?:                            #ProtoMessageExtractionConfig_ExtractMode
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.proto_message_extraction.v3.ProtoMessageExtractionConfig"
+	mode?:   #ProtoMessageExtractionConfig_ExtractMode
 	extraction_by_method?: {[string]: #MethodExtraction}
+
+	// oneof descriptor_set: at most one may be set
+	*{} |
+	{data_source!: v3_1.#DataSource} |
+	{proto_descriptor_typed_metadata!: string}
 }
 
 #ProtoMessageExtractionConfig_ExtractMode: "ExtractMode_UNSPECIFIED" | "FIRST_AND_LAST"

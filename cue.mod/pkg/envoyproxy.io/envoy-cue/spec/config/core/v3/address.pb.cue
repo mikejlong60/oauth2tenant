@@ -12,20 +12,24 @@ import (
 }
 
 #EnvoyInternalAddress: {
-	"@type":               "type.googleapis.com/envoy.config.core.v3.EnvoyInternalAddress"
-	server_listener_name?: string
-	endpoint_id?:          string
+	"@type":      "type.googleapis.com/envoy.config.core.v3.EnvoyInternalAddress"
+	endpoint_id?: string
+
+	// oneof address_name_specifier: exactly one must be set
+	{server_listener_name!: string}
 }
 
 #SocketAddress: {
 	"@type":                     "type.googleapis.com/envoy.config.core.v3.SocketAddress"
 	protocol?:                   #SocketAddress_Protocol
 	address!:                    string & strings.MinRunes(1)
-	port_value?:                 uint32 & <=65535
-	named_port?:                 string
 	resolver_name?:              string
 	ipv4_compat?:                bool
 	network_namespace_filepath?: string
+
+	// oneof port_specifier: exactly one must be set
+	{port_value!: uint32 & <=65535} |
+	{named_port!: string}
 }
 
 #SocketAddress_Protocol: "TCP" | "UDP"
@@ -54,10 +58,12 @@ import (
 }
 
 #Address: {
-	"@type":                 "type.googleapis.com/envoy.config.core.v3.Address"
-	socket_address?:         #SocketAddress
-	pipe?:                   #Pipe
-	envoy_internal_address?: #EnvoyInternalAddress
+	"@type": "type.googleapis.com/envoy.config.core.v3.Address"
+
+	// oneof address: exactly one must be set
+	{socket_address!: #SocketAddress} |
+	{pipe!: #Pipe} |
+	{envoy_internal_address!: #EnvoyInternalAddress}
 }
 
 #CidrRange: {

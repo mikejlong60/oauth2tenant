@@ -13,7 +13,9 @@ import (
 }
 
 #StatefulSessionPerRoute: {
-	"@type":           "type.googleapis.com/envoy.extensions.filters.http.stateful_session.v3.StatefulSessionPerRoute"
-	disabled!:         bool & true
-	stateful_session?: #StatefulSession
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.stateful_session.v3.StatefulSessionPerRoute"
+
+	// oneof override: exactly one must be set
+	{disabled!: bool & true} |
+	{stateful_session!: #StatefulSession}
 }

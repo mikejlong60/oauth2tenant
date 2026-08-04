@@ -21,6 +21,8 @@ import (
 }
 
 #ScopedRouteConfiguration_Key_Fragment: {
-	"@type":     "type.googleapis.com/envoy.config.route.v3.ScopedRouteConfiguration.Key.Fragment"
-	string_key?: string
+	"@type": "type.googleapis.com/envoy.config.route.v3.ScopedRouteConfiguration.Key.Fragment"
+
+	// oneof type: exactly one must be set
+	{string_key!: string}
 }

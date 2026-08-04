@@ -14,7 +14,9 @@ import (
 
 #EndpointMetadataInput_PathSegment: {
 	"@type": "type.googleapis.com/envoy.extensions.matching.common_inputs.transport_socket.v3.EndpointMetadataInput.PathSegment"
-	key!:    string & strings.MinRunes(1)
+
+	// oneof segment: exactly one must be set
+	{key!: string & strings.MinRunes(1)}
 }
 
 #LocalityMetadataInput: {
@@ -25,7 +27,9 @@ import (
 
 #LocalityMetadataInput_PathSegment: {
 	"@type": "type.googleapis.com/envoy.extensions.matching.common_inputs.transport_socket.v3.LocalityMetadataInput.PathSegment"
-	key!:    string & strings.MinRunes(1)
+
+	// oneof segment: exactly one must be set
+	{key!: string & strings.MinRunes(1)}
 }
 
 #FilterStateInput: {

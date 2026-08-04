@@ -10,15 +10,18 @@ package annotations
 #HttpRule: {
 	"@type":        "type.googleapis.com/google.api.HttpRule"
 	selector?:      string
-	get?:           string
-	put?:           string
-	post?:          string
-	delete?:        string
-	patch?:         string
-	custom?:        #CustomHttpPattern
 	body?:          string
 	response_body?: string
 	additional_bindings?: [...#HttpRule]
+
+	// oneof pattern: at most one may be set
+	*{} |
+	{get!: string} |
+	{put!: string} |
+	{post!: string} |
+	{delete!: string} |
+	{patch!: string} |
+	{custom!: #CustomHttpPattern}
 }
 
 #CustomHttpPattern: {

@@ -2,24 +2,27 @@
 package v2
 
 import (
-	core_1 "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	core_2 "envoyproxy.io/envoy-cue/spec/api/v2/core"
 	matcher_3 "envoyproxy.io/envoy-cue/spec/type/matcher"
-	type_2 "envoyproxy.io/envoy-cue/spec/type"
+	type_1 "envoyproxy.io/envoy-cue/spec/type"
 )
 
 #ExtAuthz: {
 	"@type":             "type.googleapis.com/envoy.config.filter.http.ext_authz.v2.ExtAuthz"
-	grpc_service?:       core_1.#GrpcService
-	http_service?:       #HttpService
 	failure_mode_allow?: bool
 	use_alpha?:          bool
 	with_request_body?:  #BufferSettings
 	clear_route_cache?:  bool
-	status_on_error?:    type_2.#HttpStatus
+	status_on_error?:    type_1.#HttpStatus
 	metadata_context_namespaces?: [...string]
-	filter_enabled?:           core_1.#RuntimeFractionalPercent
-	deny_at_disable?:          core_1.#RuntimeFeatureFlag
+	filter_enabled?:           core_2.#RuntimeFractionalPercent
+	deny_at_disable?:          core_2.#RuntimeFeatureFlag
 	include_peer_certificate?: bool
+
+	// oneof services: at most one may be set
+	*{} |
+	{grpc_service!: core_2.#GrpcService} |
+	{http_service!: #HttpService}
 }
 
 #BufferSettings: {
@@ -30,7 +33,7 @@ import (
 
 #HttpService: {
 	"@type":                 "type.googleapis.com/envoy.config.filter.http.ext_authz.v2.HttpService"
-	server_uri?:             core_1.#HttpUri
+	server_uri?:             core_2.#HttpUri
 	path_prefix?:            string
 	authorization_request?:  #AuthorizationRequest
 	authorization_response?: #AuthorizationResponse
@@ -39,7 +42,7 @@ import (
 #AuthorizationRequest: {
 	"@type":          "type.googleapis.com/envoy.config.filter.http.ext_authz.v2.AuthorizationRequest"
 	allowed_headers?: matcher_3.#ListStringMatcher
-	headers_to_add?: [...core_1.#HeaderValue]
+	headers_to_add?: [...core_2.#HeaderValue]
 }
 
 #AuthorizationResponse: {
@@ -49,9 +52,11 @@ import (
 }
 
 #ExtAuthzPerRoute: {
-	"@type":         "type.googleapis.com/envoy.config.filter.http.ext_authz.v2.ExtAuthzPerRoute"
-	disabled!:       bool & true
-	check_settings!: #CheckSettings
+	"@type": "type.googleapis.com/envoy.config.filter.http.ext_authz.v2.ExtAuthzPerRoute"
+
+	// oneof override: exactly one must be set
+	{disabled!: bool & true} |
+	{check_settings!: #CheckSettings}
 }
 
 #CheckSettings: {

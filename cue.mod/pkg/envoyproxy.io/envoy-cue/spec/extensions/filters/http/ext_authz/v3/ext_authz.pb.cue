@@ -10,8 +10,6 @@ import (
 
 #ExtAuthz: {
 	"@type":                        "type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz"
-	grpc_service?:                  v3_1.#GrpcService
-	http_service?:                  #HttpService
 	transport_api_version?:         v3_1.#ApiVersion
 	failure_mode_allow?:            bool
 	failure_mode_allow_header_add?: bool
@@ -40,6 +38,11 @@ import (
 	emit_filter_state_stats?:        bool
 	max_denied_response_body_bytes?: uint32
 	enforce_response_header_limits?: bool
+
+	// oneof services: at most one may be set
+	*{} |
+	{grpc_service!: v3_1.#GrpcService} |
+	{http_service!: #HttpService}
 }
 
 #BufferSettings: {
@@ -74,9 +77,11 @@ import (
 }
 
 #ExtAuthzPerRoute: {
-	"@type":         "type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute"
-	disabled?:       bool
-	check_settings!: #CheckSettings
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthzPerRoute"
+
+	// oneof override: exactly one must be set
+	{disabled!: bool} |
+	{check_settings!: #CheckSettings}
 }
 
 #CheckSettings: {
@@ -84,6 +89,9 @@ import (
 	context_extensions?: {[string]: string}
 	disable_request_body_buffering?: bool
 	with_request_body?:              #BufferSettings
-	grpc_service?:                   v3_1.#GrpcService
-	http_service?:                   #HttpService
+
+	// oneof service_override: at most one may be set
+	*{} |
+	{grpc_service!: v3_1.#GrpcService} |
+	{http_service!: #HttpService}
 }

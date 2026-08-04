@@ -29,11 +29,14 @@ import (
 
 #LbEndpoint: {
 	"@type":                "type.googleapis.com/envoy.config.endpoint.v3.LbEndpoint"
-	endpoint?:              #Endpoint
-	endpoint_name?:         string
 	health_status?:         v3_1.#HealthStatus
 	metadata?:              v3_1.#Metadata
 	load_balancing_weight?: uint32 & >=1
+
+	// oneof host_identifier: at most one may be set
+	*{} |
+	{endpoint!: #Endpoint} |
+	{endpoint_name!: string}
 }
 
 #LbEndpointCollection: {
@@ -52,11 +55,14 @@ import (
 	locality?: v3_1.#Locality
 	metadata?: v3_1.#Metadata
 	lb_endpoints?: [...#LbEndpoint]
-	load_balancer_endpoints?:      #LocalityLbEndpoints_LbEndpointList
-	leds_cluster_locality_config?: #LedsClusterLocalityConfig
-	load_balancing_weight?:        uint32 & >=1
-	priority?:                     uint32 & <=128
-	proximity?:                    uint32
+	load_balancing_weight?: uint32 & >=1
+	priority?:              uint32 & <=128
+	proximity?:             uint32
+
+	// oneof lb_config: at most one may be set
+	*{} |
+	{load_balancer_endpoints!: #LocalityLbEndpoints_LbEndpointList} |
+	{leds_cluster_locality_config!: #LedsClusterLocalityConfig}
 }
 
 #LocalityLbEndpoints_LbEndpointList: {

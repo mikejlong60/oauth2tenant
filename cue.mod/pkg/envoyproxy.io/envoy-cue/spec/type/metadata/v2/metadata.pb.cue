@@ -13,15 +13,19 @@ import (
 
 #MetadataKey_PathSegment: {
 	"@type": "type.googleapis.com/envoy.type.metadata.v2.MetadataKey.PathSegment"
-	key!:    string & !=""
+
+	// oneof segment: exactly one must be set
+	{key!: string & !=""}
 }
 
 #MetadataKind: {
-	"@type":  "type.googleapis.com/envoy.type.metadata.v2.MetadataKind"
-	request?: #MetadataKind_Request
-	route?:   #MetadataKind_Route
-	cluster?: #MetadataKind_Cluster
-	host?:    #MetadataKind_Host
+	"@type": "type.googleapis.com/envoy.type.metadata.v2.MetadataKind"
+
+	// oneof kind: exactly one must be set
+	{request!: #MetadataKind_Request} |
+	{route!: #MetadataKind_Route} |
+	{cluster!: #MetadataKind_Cluster} |
+	{host!: #MetadataKind_Host}
 }
 
 #MetadataKind_Request: {

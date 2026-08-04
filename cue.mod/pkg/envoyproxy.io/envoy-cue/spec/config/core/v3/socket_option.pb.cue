@@ -6,11 +6,13 @@ package v3
 	description?: string
 	level?:       int64
 	name?:        int64
-	int_value?:   int64
-	buf_value?:   bytes
 	state?:       #SocketOption_SocketState
 	type?:        #SocketOption_SocketType
 	ip_version?:  #SocketOption_SocketIpVersion
+
+	// oneof value: exactly one must be set
+	{int_value!: int64} |
+	{buf_value!: bytes}
 }
 
 #SocketOption_SocketType: {

@@ -11,14 +11,20 @@ import (
 	id?:            string
 	authority?:     string
 	resource_type!: string & strings.MinRunes(1)
-	exact_context?: #ContextParams
 	directives?: [...#ResourceLocator_Directive]
+
+	// oneof context_param_specifier: at most one may be set
+	*{} |
+	{exact_context!: #ContextParams}
 }
 
 #ResourceLocator_Directive: {
 	"@type": "type.googleapis.com/xds.core.v3.ResourceLocator.Directive"
-	alt?:    #ResourceLocator
-	entry!:  string & strings.MinRunes(1) // TODO(pgv): string.pattern
+
+	// oneof directive: exactly one must be set
+	// TODO(pgv): entry.string.pattern
+	{alt!: #ResourceLocator} |
+	{entry!: string & strings.MinRunes(1)}
 }
 
 #ResourceLocator_Scheme: "XDSTP" | "HTTP" | "FILE"

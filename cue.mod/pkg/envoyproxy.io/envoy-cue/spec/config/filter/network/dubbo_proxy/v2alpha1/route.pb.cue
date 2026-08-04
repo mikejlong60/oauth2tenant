@@ -29,9 +29,11 @@ import (
 }
 
 #RouteAction: {
-	"@type":            "type.googleapis.com/envoy.config.filter.network.dubbo_proxy.v2alpha1.RouteAction"
-	cluster?:           string
-	weighted_clusters?: route_1.#WeightedCluster
+	"@type": "type.googleapis.com/envoy.config.filter.network.dubbo_proxy.v2alpha1.RouteAction"
+
+	// oneof cluster_specifier: exactly one must be set
+	{cluster!: string} |
+	{weighted_clusters!: route_1.#WeightedCluster}
 }
 
 #MethodMatch: {
@@ -41,7 +43,10 @@ import (
 }
 
 #MethodMatch_ParameterMatchSpecifier: {
-	"@type":      "type.googleapis.com/envoy.config.filter.network.dubbo_proxy.v2alpha1.MethodMatch.ParameterMatchSpecifier"
-	exact_match?: string
-	range_match?: type_3.#Int64Range
+	"@type": "type.googleapis.com/envoy.config.filter.network.dubbo_proxy.v2alpha1.MethodMatch.ParameterMatchSpecifier"
+
+	// oneof parameter_match_specifier: at most one may be set
+	*{} |
+	{exact_match!: string} |
+	{range_match!: type_3.#Int64Range}
 }

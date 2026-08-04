@@ -8,10 +8,13 @@ import (
 #FilterConfig: {
 	"@type":                            "type.googleapis.com/envoy.extensions.filters.http.grpc_stats.v3.FilterConfig"
 	emit_filter_state?:                 bool
-	individual_method_stats_allowlist?: v3_1.#GrpcMethodList
-	stats_for_all_methods?:             bool
 	enable_upstream_stats?:             bool
 	replace_dots_in_grpc_service_name?: bool
+
+	// oneof per_method_stat_specifier: at most one may be set
+	*{} |
+	{individual_method_stats_allowlist!: v3_1.#GrpcMethodList} |
+	{stats_for_all_methods!: bool}
 }
 
 #FilterObject: {

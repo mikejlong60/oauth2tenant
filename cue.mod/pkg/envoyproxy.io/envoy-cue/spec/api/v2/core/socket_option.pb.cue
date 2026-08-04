@@ -6,9 +6,11 @@ package core
 	description?: string
 	level?:       int64
 	name?:        int64
-	int_value?:   int64
-	buf_value?:   bytes
 	state?:       #SocketOption_SocketState
+
+	// oneof value: exactly one must be set
+	{int_value!: int64} |
+	{buf_value!: bytes}
 }
 
 #SocketOption_SocketState: "STATE_PREBIND" | "STATE_BOUND" | "STATE_LISTENING"

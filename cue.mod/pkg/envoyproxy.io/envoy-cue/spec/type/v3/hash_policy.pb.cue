@@ -6,9 +6,11 @@ import (
 )
 
 #HashPolicy: {
-	"@type":       "type.googleapis.com/envoy.type.v3.HashPolicy"
-	source_ip?:    #HashPolicy_SourceIp
-	filter_state?: #HashPolicy_FilterState
+	"@type": "type.googleapis.com/envoy.type.v3.HashPolicy"
+
+	// oneof policy_specifier: exactly one must be set
+	{source_ip!: #HashPolicy_SourceIp} |
+	{filter_state!: #HashPolicy_FilterState}
 }
 
 #HashPolicy_SourceIp: {

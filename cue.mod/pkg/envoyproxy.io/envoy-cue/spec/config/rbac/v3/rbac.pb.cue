@@ -50,21 +50,23 @@ import (
 }
 
 #Permission: {
-	"@type":                 "type.googleapis.com/envoy.config.rbac.v3.Permission"
-	and_rules?:              #Permission_Set
-	or_rules?:               #Permission_Set
-	any!:                    bool & true
-	header?:                 v3_4.#HeaderMatcher
-	url_path?:               v3_3.#PathMatcher
-	destination_ip?:         v3_1.#CidrRange
-	destination_port?:       uint32 & <=65535
-	destination_port_range?: v3_5.#Int32Range
-	metadata?:               v3_3.#MetadataMatcher
-	not_rule?:               #Permission
-	requested_server_name?:  v3_3.#StringMatcher
-	matcher?:                v3_1.#TypedExtensionConfig
-	uri_template?:           v3_1.#TypedExtensionConfig
-	sourced_metadata?:       #SourcedMetadata
+	"@type": "type.googleapis.com/envoy.config.rbac.v3.Permission"
+
+	// oneof rule: exactly one must be set
+	{and_rules!: #Permission_Set} |
+	{or_rules!: #Permission_Set} |
+	{any!: bool & true} |
+	{header!: v3_4.#HeaderMatcher} |
+	{url_path!: v3_3.#PathMatcher} |
+	{destination_ip!: v3_1.#CidrRange} |
+	{destination_port!: uint32 & <=65535} |
+	{destination_port_range!: v3_5.#Int32Range} |
+	{metadata!: v3_3.#MetadataMatcher} |
+	{not_rule!: #Permission} |
+	{requested_server_name!: v3_3.#StringMatcher} |
+	{matcher!: v3_1.#TypedExtensionConfig} |
+	{uri_template!: v3_1.#TypedExtensionConfig} |
+	{sourced_metadata!: #SourcedMetadata}
 }
 
 #Permission_Set: {
@@ -73,21 +75,23 @@ import (
 }
 
 #Principal: {
-	"@type":           "type.googleapis.com/envoy.config.rbac.v3.Principal"
-	and_ids?:          #Principal_Set
-	or_ids?:           #Principal_Set
-	any!:              bool & true
-	authenticated?:    #Principal_Authenticated
-	source_ip?:        v3_1.#CidrRange
-	direct_remote_ip?: v3_1.#CidrRange
-	remote_ip?:        v3_1.#CidrRange
-	header?:           v3_4.#HeaderMatcher
-	url_path?:         v3_3.#PathMatcher
-	metadata?:         v3_3.#MetadataMatcher
-	filter_state?:     v3_3.#FilterStateMatcher
-	not_id?:           #Principal
-	sourced_metadata?: #SourcedMetadata
-	custom?:           v3_1.#TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.config.rbac.v3.Principal"
+
+	// oneof identifier: exactly one must be set
+	{and_ids!: #Principal_Set} |
+	{or_ids!: #Principal_Set} |
+	{any!: bool & true} |
+	{authenticated!: #Principal_Authenticated} |
+	{source_ip!: v3_1.#CidrRange} |
+	{direct_remote_ip!: v3_1.#CidrRange} |
+	{remote_ip!: v3_1.#CidrRange} |
+	{header!: v3_4.#HeaderMatcher} |
+	{url_path!: v3_3.#PathMatcher} |
+	{metadata!: v3_3.#MetadataMatcher} |
+	{filter_state!: v3_3.#FilterStateMatcher} |
+	{not_id!: #Principal} |
+	{sourced_metadata!: #SourcedMetadata} |
+	{custom!: v3_1.#TypedExtensionConfig}
 }
 
 #Principal_Set: {

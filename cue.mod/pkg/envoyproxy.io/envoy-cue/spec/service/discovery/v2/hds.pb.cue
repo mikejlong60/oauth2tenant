@@ -31,9 +31,12 @@ import (
 }
 
 #HealthCheckRequestOrEndpointHealthResponse: {
-	"@type":                   "type.googleapis.com/envoy.service.discovery.v2.HealthCheckRequestOrEndpointHealthResponse"
-	health_check_request?:     #HealthCheckRequest
-	endpoint_health_response?: #EndpointHealthResponse
+	"@type": "type.googleapis.com/envoy.service.discovery.v2.HealthCheckRequestOrEndpointHealthResponse"
+
+	// oneof request_type: at most one may be set
+	*{} |
+	{health_check_request!: #HealthCheckRequest} |
+	{endpoint_health_response!: #EndpointHealthResponse}
 }
 
 #LocalityEndpoints: {

@@ -20,21 +20,25 @@ import (
 }
 
 #RouteMatch: {
-	"@type":       "type.googleapis.com/envoy.config.filter.network.thrift_proxy.v2alpha1.RouteMatch"
-	method_name?:  string
-	service_name?: string
-	invert?:       bool
+	"@type": "type.googleapis.com/envoy.config.filter.network.thrift_proxy.v2alpha1.RouteMatch"
+	invert?: bool
 	headers?: [...route_1.#HeaderMatcher]
+
+	// oneof match_specifier: exactly one must be set
+	{method_name!: string} |
+	{service_name!: string}
 }
 
 #RouteAction: {
-	"@type":            "type.googleapis.com/envoy.config.filter.network.thrift_proxy.v2alpha1.RouteAction"
-	cluster!:           string & !=""
-	weighted_clusters?: #WeightedCluster
-	cluster_header!:    string & !=""
-	metadata_match?:    core_2.#Metadata
+	"@type":         "type.googleapis.com/envoy.config.filter.network.thrift_proxy.v2alpha1.RouteAction"
+	metadata_match?: core_2.#Metadata
 	rate_limits?: [...route_1.#RateLimit]
 	strip_service_name?: bool
+
+	// oneof cluster_specifier: exactly one must be set
+	{cluster!: string & !=""} |
+	{weighted_clusters!: #WeightedCluster} |
+	{cluster_header!: string & !=""}
 }
 
 #WeightedCluster: {

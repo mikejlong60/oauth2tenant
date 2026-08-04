@@ -9,10 +9,13 @@ import (
 
 #ClusterConfig: {
 	"@type":                         "type.googleapis.com/envoy.extensions.clusters.dynamic_forward_proxy.v3.ClusterConfig"
-	dns_cache_config?:               v3_1.#DnsCacheConfig
-	sub_clusters_config?:            #SubClustersConfig
 	allow_insecure_cluster_options?: bool
 	allow_coalesced_connections?:    bool
+
+	// oneof cluster_implementation_specifier: at most one may be set
+	*{} |
+	{dns_cache_config!: v3_1.#DnsCacheConfig} |
+	{sub_clusters_config!: #SubClustersConfig}
 }
 
 #SubClustersConfig: {

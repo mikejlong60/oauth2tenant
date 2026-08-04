@@ -24,10 +24,6 @@ import (
 	healthy_threshold!:           uint32
 	alt_port?:                    uint32
 	reuse_connection?:            bool
-	http_health_check?:           #HealthCheck_HttpHealthCheck
-	tcp_health_check?:            #HealthCheck_TcpHealthCheck
-	grpc_health_check?:           #HealthCheck_GrpcHealthCheck
-	custom_health_check?:         #HealthCheck_CustomHealthCheck
 	no_traffic_interval?:         string // TODO(pgv): duration bounds
 	no_traffic_healthy_interval?: string // TODO(pgv): duration bounds
 	unhealthy_interval?:          string // TODO(pgv): duration bounds
@@ -40,12 +36,20 @@ import (
 	always_log_health_check_success?:  bool
 	tls_options?:                      #HealthCheck_TlsOptions
 	transport_socket_match_criteria?: {...}
+
+	// oneof health_checker: exactly one must be set
+	{http_health_check!: #HealthCheck_HttpHealthCheck} |
+	{tcp_health_check!: #HealthCheck_TcpHealthCheck} |
+	{grpc_health_check!: #HealthCheck_GrpcHealthCheck} |
+	{custom_health_check!: #HealthCheck_CustomHealthCheck}
 }
 
 #HealthCheck_Payload: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck.Payload"
-	text!:   string & strings.MinRunes(1)
-	binary?: bytes
+
+	// oneof payload: exactly one must be set
+	{text!: string & strings.MinRunes(1)} |
+	{binary!: bytes}
 }
 
 #HealthCheck_HttpHealthCheck: {
@@ -86,7 +90,10 @@ import (
 #HealthCheck_CustomHealthCheck: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck.CustomHealthCheck"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #HealthCheck_TlsOptions: {

@@ -25,8 +25,11 @@ import (
 #PrivateKeyProvider: {
 	"@type":        "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.PrivateKeyProvider"
 	provider_name!: string & strings.MinRunes(1)
-	typed_config?: {...}
-	fallback?: bool
+	fallback?:      bool
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #TlsCertificate: {

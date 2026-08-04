@@ -12,19 +12,22 @@ package v1alpha1
 
 #Type: {
 	"@type": "type.googleapis.com/google.api.expr.v1alpha1.Type"
-	dyn?: {}
-	null?:         _
-	primitive?:    #Type_PrimitiveType
-	wrapper?:      #Type_PrimitiveType
-	well_known?:   #Type_WellKnownType
-	list_type?:    #Type_ListType
-	map_type?:     #Type_MapType
-	function?:     #Type_FunctionType
-	message_type?: string
-	type_param?:   string
-	type?:         #Type
-	error?: {}
-	abstract_type?: #Type_AbstractType
+
+	// oneof type_kind: at most one may be set
+	*{} |
+	{dyn!: {}} |
+	{null!: _} |
+	{primitive!: #Type_PrimitiveType} |
+	{wrapper!: #Type_PrimitiveType} |
+	{well_known!: #Type_WellKnownType} |
+	{list_type!: #Type_ListType} |
+	{map_type!: #Type_MapType} |
+	{function!: #Type_FunctionType} |
+	{message_type!: string} |
+	{type_param!: string} |
+	{type!: #Type} |
+	{error!: {}} |
+	{abstract_type!: #Type_AbstractType}
 }
 
 #Type_ListType: {
@@ -55,10 +58,13 @@ package v1alpha1
 #Type_WellKnownType: "WELL_KNOWN_TYPE_UNSPECIFIED" | "ANY" | "TIMESTAMP" | "DURATION"
 
 #Decl: {
-	"@type":   "type.googleapis.com/google.api.expr.v1alpha1.Decl"
-	name?:     string
-	ident?:    #Decl_IdentDecl
-	function?: #Decl_FunctionDecl
+	"@type": "type.googleapis.com/google.api.expr.v1alpha1.Decl"
+	name?:   string
+
+	// oneof decl_kind: at most one may be set
+	*{} |
+	{ident!: #Decl_IdentDecl} |
+	{function!: #Decl_FunctionDecl}
 }
 
 #Decl_IdentDecl: {

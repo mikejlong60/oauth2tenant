@@ -8,6 +8,9 @@ import (
 #FilterConfig: {
 	"@type":                "type.googleapis.com/envoy.extensions.filters.network.sni_dynamic_forward_proxy.v3.FilterConfig"
 	dns_cache_config!:      v3_1.#DnsCacheConfig
-	port_value?:            uint32 & >0 & <=65535
 	save_upstream_address?: bool
+
+	// oneof port_specifier: at most one may be set
+	*{} |
+	{port_value!: uint32 & >0 & <=65535}
 }

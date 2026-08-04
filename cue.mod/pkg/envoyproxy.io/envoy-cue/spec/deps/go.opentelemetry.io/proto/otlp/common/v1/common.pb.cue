@@ -2,15 +2,18 @@
 package v1
 
 #AnyValue: {
-	"@type":                "type.googleapis.com/opentelemetry.proto.common.v1.AnyValue"
-	string_value?:          string
-	bool_value?:            bool
-	int_value?:             int64
-	double_value?:          float64
-	array_value?:           #ArrayValue
-	kvlist_value?:          #KeyValueList
-	bytes_value?:           bytes
-	string_value_strindex?: int32
+	"@type": "type.googleapis.com/opentelemetry.proto.common.v1.AnyValue"
+
+	// oneof value: at most one may be set
+	*{} |
+	{string_value!: string} |
+	{bool_value!: bool} |
+	{int_value!: int64} |
+	{double_value!: float64} |
+	{array_value!: #ArrayValue} |
+	{kvlist_value!: #KeyValueList} |
+	{bytes_value!: bytes} |
+	{string_value_strindex!: int32}
 }
 
 #ArrayValue: {

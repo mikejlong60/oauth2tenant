@@ -8,15 +8,18 @@ package v1alpha1
 }
 
 #Expr: {
-	"@type":             "type.googleapis.com/google.api.expr.v1alpha1.Expr"
-	id?:                 int64
-	const_expr?:         #Constant
-	ident_expr?:         #Expr_Ident
-	select_expr?:        #Expr_Select
-	call_expr?:          #Expr_Call
-	list_expr?:          #Expr_CreateList
-	struct_expr?:        #Expr_CreateStruct
-	comprehension_expr?: #Expr_Comprehension
+	"@type": "type.googleapis.com/google.api.expr.v1alpha1.Expr"
+	id?:     int64
+
+	// oneof expr_kind: at most one may be set
+	*{} |
+	{const_expr!: #Constant} |
+	{ident_expr!: #Expr_Ident} |
+	{select_expr!: #Expr_Select} |
+	{call_expr!: #Expr_Call} |
+	{list_expr!: #Expr_CreateList} |
+	{struct_expr!: #Expr_CreateStruct} |
+	{comprehension_expr!: #Expr_Comprehension}
 }
 
 #Expr_Ident: {
@@ -53,10 +56,13 @@ package v1alpha1
 #Expr_CreateStruct_Entry: {
 	"@type":         "type.googleapis.com/google.api.expr.v1alpha1.Expr.CreateStruct.Entry"
 	id?:             int64
-	field_key?:      string
-	map_key?:        #Expr
 	value?:          #Expr
 	optional_entry?: bool
+
+	// oneof key_kind: at most one may be set
+	*{} |
+	{field_key!: string} |
+	{map_key!: #Expr}
 }
 
 #Expr_Comprehension: {
@@ -72,16 +78,19 @@ package v1alpha1
 }
 
 #Constant: {
-	"@type":          "type.googleapis.com/google.api.expr.v1alpha1.Constant"
-	null_value?:      _
-	bool_value?:      bool
-	int64_value?:     int64
-	uint64_value?:    uint64
-	double_value?:    float64
-	string_value?:    string
-	bytes_value?:     bytes
-	duration_value?:  string
-	timestamp_value?: string
+	"@type": "type.googleapis.com/google.api.expr.v1alpha1.Constant"
+
+	// oneof constant_kind: at most one may be set
+	*{} |
+	{null_value!: _} |
+	{bool_value!: bool} |
+	{int64_value!: int64} |
+	{uint64_value!: uint64} |
+	{double_value!: float64} |
+	{string_value!: string} |
+	{bytes_value!: bytes} |
+	{duration_value!: string} |
+	{timestamp_value!: string}
 }
 
 #SourceInfo: {

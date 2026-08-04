@@ -2,9 +2,11 @@
 package v3
 
 #CollectionEntry: {
-	"@type":       "type.googleapis.com/xds.core.v3.CollectionEntry"
-	locator?:      #ResourceLocator
-	inline_entry?: #CollectionEntry_InlineEntry
+	"@type": "type.googleapis.com/xds.core.v3.CollectionEntry"
+
+	// oneof resource_specifier: exactly one must be set
+	{locator!: #ResourceLocator} |
+	{inline_entry!: #CollectionEntry_InlineEntry}
 }
 
 #CollectionEntry_InlineEntry: {

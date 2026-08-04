@@ -9,13 +9,15 @@ import (
 
 #StringMatcher: {
 	"@type":      "type.googleapis.com/envoy.type.matcher.v3.StringMatcher"
-	exact?:       string
-	prefix!:      string & strings.MinRunes(1)
-	suffix!:      string & strings.MinRunes(1)
-	safe_regex!:  #RegexMatcher
-	contains!:    string & strings.MinRunes(1)
-	custom?:      v3_1.#TypedExtensionConfig
 	ignore_case?: bool
+
+	// oneof match_pattern: exactly one must be set
+	{exact!: string} |
+	{prefix!: string & strings.MinRunes(1)} |
+	{suffix!: string & strings.MinRunes(1)} |
+	{safe_regex!: #RegexMatcher} |
+	{contains!: string & strings.MinRunes(1)} |
+	{custom!: v3_1.#TypedExtensionConfig}
 }
 
 #ListStringMatcher: {

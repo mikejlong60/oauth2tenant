@@ -4,7 +4,10 @@ package v2
 #FileAccessLog: {
 	"@type": "type.googleapis.com/envoy.config.accesslog.v2.FileAccessLog"
 	path!:   string & !=""
-	format?: string
-	json_format?: {...}
-	typed_json_format?: {...}
+
+	// oneof access_log_format: at most one may be set
+	*{} |
+	{format!: string} |
+	{json_format!: {...}} |
+	{typed_json_format!: {...}}
 }

@@ -9,8 +9,11 @@ import (
 #FileAccessLog: {
 	"@type": "type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog"
 	path!:   string & strings.MinRunes(1)
-	format?: string
-	json_format?: {...}
-	typed_json_format?: {...}
-	log_format!: v3_1.#SubstitutionFormatString
+
+	// oneof access_log_format: at most one may be set
+	*{} |
+	{format!: string} |
+	{json_format!: {...}} |
+	{typed_json_format!: {...}} |
+	{log_format!: v3_1.#SubstitutionFormatString}
 }

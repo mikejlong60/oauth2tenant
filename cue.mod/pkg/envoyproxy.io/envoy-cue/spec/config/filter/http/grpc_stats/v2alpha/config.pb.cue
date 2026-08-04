@@ -6,10 +6,13 @@ import (
 )
 
 #FilterConfig: {
-	"@type":                            "type.googleapis.com/envoy.config.filter.http.grpc_stats.v2alpha.FilterConfig"
-	emit_filter_state?:                 bool
-	individual_method_stats_allowlist?: core_1.#GrpcMethodList
-	stats_for_all_methods?:             bool
+	"@type":            "type.googleapis.com/envoy.config.filter.http.grpc_stats.v2alpha.FilterConfig"
+	emit_filter_state?: bool
+
+	// oneof per_method_stat_specifier: at most one may be set
+	*{} |
+	{individual_method_stats_allowlist!: core_1.#GrpcMethodList} |
+	{stats_for_all_methods!: bool}
 }
 
 #FilterObject: {

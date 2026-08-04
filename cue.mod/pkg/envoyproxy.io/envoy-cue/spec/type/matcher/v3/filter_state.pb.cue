@@ -6,8 +6,10 @@ import (
 )
 
 #FilterStateMatcher: {
-	"@type":        "type.googleapis.com/envoy.type.matcher.v3.FilterStateMatcher"
-	key!:           string & strings.MinRunes(1)
-	string_match?:  #StringMatcher
-	address_match?: #AddressMatcher
+	"@type": "type.googleapis.com/envoy.type.matcher.v3.FilterStateMatcher"
+	key!:    string & strings.MinRunes(1)
+
+	// oneof matcher: exactly one must be set
+	{string_match!: #StringMatcher} |
+	{address_match!: #AddressMatcher}
 }

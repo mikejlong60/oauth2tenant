@@ -32,12 +32,14 @@ package core
 
 #ConfigSource: {
 	"@type":                "type.googleapis.com/envoy.api.v2.core.ConfigSource"
-	path?:                  string
-	api_config_source?:     #ApiConfigSource
-	ads?:                   #AggregatedConfigSource
-	self?:                  #SelfConfigSource
 	initial_fetch_timeout?: string
 	resource_api_version?:  #ApiVersion
+
+	// oneof config_source_specifier: exactly one must be set
+	{path!: string} |
+	{api_config_source!: #ApiConfigSource} |
+	{ads!: #AggregatedConfigSource} |
+	{self!: #SelfConfigSource}
 }
 
 #ApiVersion: "AUTO" | "V2" | "V3"

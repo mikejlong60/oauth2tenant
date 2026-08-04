@@ -14,8 +14,6 @@ import (
 	transport_socket_matches?: [...#Cluster_TransportSocketMatch]
 	name!:                              string & !=""
 	alt_stat_name?:                     string
-	type?:                              #Cluster_DiscoveryType
-	cluster_type?:                      #Cluster_CustomClusterType
 	eds_cluster_config?:                #Cluster_EdsClusterConfig
 	connect_timeout?:                   string // TODO(pgv): duration bounds
 	per_connection_buffer_limit_bytes?: uint32
@@ -42,9 +40,6 @@ import (
 	cleanup_interval?:                         string // TODO(pgv): duration bounds
 	upstream_bind_config?:                     core_1.#BindConfig
 	lb_subset_config?:                         #Cluster_LbSubsetConfig
-	ring_hash_lb_config?:                      #Cluster_RingHashLbConfig
-	original_dst_lb_config?:                   #Cluster_OriginalDstLbConfig
-	least_request_lb_config?:                  #Cluster_LeastRequestLbConfig
 	common_lb_config?:                         #Cluster_CommonLbConfig
 	transport_socket?:                         core_1.#TransportSocket
 	metadata?:                                 core_1.#Metadata
@@ -56,6 +51,17 @@ import (
 	load_balancing_policy?: #LoadBalancingPolicy
 	lrs_server?:            core_1.#ConfigSource
 	track_timeout_budgets?: bool
+
+	// oneof cluster_discovery_type: at most one may be set
+	*{} |
+	{type!: #Cluster_DiscoveryType} |
+	{cluster_type!: #Cluster_CustomClusterType}
+
+	// oneof lb_config: at most one may be set
+	*{} |
+	{ring_hash_lb_config!: #Cluster_RingHashLbConfig} |
+	{original_dst_lb_config!: #Cluster_OriginalDstLbConfig} |
+	{least_request_lb_config!: #Cluster_LeastRequestLbConfig}
 }
 
 #Cluster_TransportSocketMatch: {
@@ -121,12 +127,15 @@ import (
 #Cluster_CommonLbConfig: {
 	"@type":                               "type.googleapis.com/envoy.api.v2.Cluster.CommonLbConfig"
 	healthy_panic_threshold?:              type_4.#Percent
-	zone_aware_lb_config?:                 #Cluster_CommonLbConfig_ZoneAwareLbConfig
-	locality_weighted_lb_config?:          #Cluster_CommonLbConfig_LocalityWeightedLbConfig
 	update_merge_window?:                  string
 	ignore_new_hosts_until_first_hc?:      bool
 	close_connections_on_host_set_change?: bool
 	consistent_hashing_lb_config?:         #Cluster_CommonLbConfig_ConsistentHashingLbConfig
+
+	// oneof locality_config_specifier: at most one may be set
+	*{} |
+	{zone_aware_lb_config!: #Cluster_CommonLbConfig_ZoneAwareLbConfig} |
+	{locality_weighted_lb_config!: #Cluster_CommonLbConfig_LocalityWeightedLbConfig}
 }
 
 #Cluster_CommonLbConfig_ZoneAwareLbConfig: {

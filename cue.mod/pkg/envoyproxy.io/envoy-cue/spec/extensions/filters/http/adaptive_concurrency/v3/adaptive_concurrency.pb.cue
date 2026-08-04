@@ -31,7 +31,9 @@ import (
 
 #AdaptiveConcurrency: {
 	"@type":                            "type.googleapis.com/envoy.extensions.filters.http.adaptive_concurrency.v3.AdaptiveConcurrency"
-	gradient_controller_config!:        #GradientControllerConfig
 	enabled?:                           v3_2.#RuntimeFeatureFlag
 	concurrency_limit_exceeded_status?: v3_1.#HttpStatus
+
+	// oneof concurrency_controller_config: exactly one must be set
+	{gradient_controller_config!: #GradientControllerConfig}
 }

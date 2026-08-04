@@ -52,11 +52,14 @@ import (
 	tcp_backlog_size?:                           uint32
 	max_connections_to_accept_per_socket_event?: uint32 & >0
 	bind_to_port?:                               bool
-	internal_listener?:                          #Listener_InternalListenerConfig
 	enable_mptcp?:                               bool
 	ignore_global_conn_limit?:                   bool
 	bypass_overload_manager?:                    bool
 	tcp_keepalive?:                              v3_1.#TcpKeepalive
+
+	// oneof listener_specifier: at most one may be set
+	*{} |
+	{internal_listener!: #Listener_InternalListenerConfig}
 }
 
 #Listener_DeprecatedV1: {
@@ -65,9 +68,11 @@ import (
 }
 
 #Listener_ConnectionBalanceConfig: {
-	"@type":         "type.googleapis.com/envoy.config.listener.v3.Listener.ConnectionBalanceConfig"
-	exact_balance?:  #Listener_ConnectionBalanceConfig_ExactBalance
-	extend_balance?: v3_1.#TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.config.listener.v3.Listener.ConnectionBalanceConfig"
+
+	// oneof balance_type: exactly one must be set
+	{exact_balance!: #Listener_ConnectionBalanceConfig_ExactBalance} |
+	{extend_balance!: v3_1.#TypedExtensionConfig}
 }
 
 #Listener_ConnectionBalanceConfig_ExactBalance: {

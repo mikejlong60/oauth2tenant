@@ -37,16 +37,19 @@ import (
 }
 
 #PluginConfig: {
-	"@type":    "type.googleapis.com/envoy.extensions.wasm.v3.PluginConfig"
-	name?:      string
-	root_id?:   string
-	vm_config?: #VmConfig
+	"@type":  "type.googleapis.com/envoy.extensions.wasm.v3.PluginConfig"
+	name?:    string
+	root_id?: string
 	configuration?: {...}
 	fail_open?:                       bool
 	failure_policy?:                  #FailurePolicy
 	reload_config?:                   #ReloadConfig
 	capability_restriction_config?:   #CapabilityRestrictionConfig
 	allow_on_headers_stop_iteration?: bool
+
+	// oneof vm: at most one may be set
+	*{} |
+	{vm_config!: #VmConfig}
 }
 
 #WasmService: {

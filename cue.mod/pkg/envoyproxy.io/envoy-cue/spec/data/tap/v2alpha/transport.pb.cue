@@ -14,9 +14,12 @@ import (
 #SocketEvent: {
 	"@type":    "type.googleapis.com/envoy.data.tap.v2alpha.SocketEvent"
 	timestamp?: string
-	read?:      #SocketEvent_Read
-	write?:     #SocketEvent_Write
-	closed?:    #SocketEvent_Closed
+
+	// oneof event_selector: at most one may be set
+	*{} |
+	{read!: #SocketEvent_Read} |
+	{write!: #SocketEvent_Write} |
+	{closed!: #SocketEvent_Closed}
 }
 
 #SocketEvent_Read: {
@@ -44,8 +47,11 @@ import (
 }
 
 #SocketStreamedTraceSegment: {
-	"@type":     "type.googleapis.com/envoy.data.tap.v2alpha.SocketStreamedTraceSegment"
-	trace_id?:   uint64
-	connection?: #Connection
-	event?:      #SocketEvent
+	"@type":   "type.googleapis.com/envoy.data.tap.v2alpha.SocketStreamedTraceSegment"
+	trace_id?: uint64
+
+	// oneof message_piece: at most one may be set
+	*{} |
+	{connection!: #Connection} |
+	{event!: #SocketEvent}
 }

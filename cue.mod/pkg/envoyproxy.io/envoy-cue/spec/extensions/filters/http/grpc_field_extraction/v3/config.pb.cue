@@ -17,6 +17,9 @@ import (
 }
 
 #RequestFieldValueDisposition: {
-	"@type":           "type.googleapis.com/envoy.extensions.filters.http.grpc_field_extraction.v3.RequestFieldValueDisposition"
-	dynamic_metadata?: string
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.grpc_field_extraction.v3.RequestFieldValueDisposition"
+
+	// oneof disposition: at most one may be set
+	*{} |
+	{dynamic_metadata!: string}
 }

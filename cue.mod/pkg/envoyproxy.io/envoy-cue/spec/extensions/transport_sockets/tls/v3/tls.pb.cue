@@ -18,18 +18,21 @@ import (
 }
 
 #DownstreamTlsContext: {
-	"@type":                                "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext"
-	common_tls_context?:                    #CommonTlsContext
-	require_client_certificate?:            bool
-	require_sni?:                           bool
-	session_ticket_keys?:                   #TlsSessionTicketKeys
-	session_ticket_keys_sds_secret_config?: #SdsSecretConfig
-	disable_stateless_session_resumption?:  bool
-	disable_stateful_session_resumption?:   bool
-	session_timeout?:                       string // TODO(pgv): duration bounds
-	ocsp_staple_policy?:                    #DownstreamTlsContext_OcspStaplePolicy
-	full_scan_certs_on_sni_mismatch?:       bool
-	prefer_client_ciphers?:                 bool
+	"@type":                              "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext"
+	common_tls_context?:                  #CommonTlsContext
+	require_client_certificate?:          bool
+	require_sni?:                         bool
+	disable_stateful_session_resumption?: bool
+	session_timeout?:                     string // TODO(pgv): duration bounds
+	ocsp_staple_policy?:                  #DownstreamTlsContext_OcspStaplePolicy
+	full_scan_certs_on_sni_mismatch?:     bool
+	prefer_client_ciphers?:               bool
+
+	// oneof session_ticket_keys_type: at most one may be set
+	*{} |
+	{session_ticket_keys!: #TlsSessionTicketKeys} |
+	{session_ticket_keys_sds_secret_config!: #SdsSecretConfig} |
+	{disable_stateless_session_resumption!: bool}
 }
 
 #DownstreamTlsContext_OcspStaplePolicy: "LENIENT_STAPLING" | "STRICT_STAPLING" | "MUST_STAPLE"
@@ -46,24 +49,29 @@ import (
 	tls_params?: #TlsParameters
 	tls_certificates?: [...#TlsCertificate]
 	tls_certificate_sds_secret_configs?: [...#SdsSecretConfig]
-	tls_certificate_provider_instance?:                #CertificateProviderPluginInstance
-	custom_tls_certificate_selector?:                  v3_1.#TypedExtensionConfig
-	tls_certificate_certificate_provider?:             #CommonTlsContext_CertificateProvider
-	tls_certificate_certificate_provider_instance?:    #CommonTlsContext_CertificateProviderInstance
-	validation_context?:                               #CertificateValidationContext
-	validation_context_sds_secret_config?:             #SdsSecretConfig
-	combined_validation_context?:                      #CommonTlsContext_CombinedCertificateValidationContext
-	validation_context_certificate_provider?:          #CommonTlsContext_CertificateProvider
-	validation_context_certificate_provider_instance?: #CommonTlsContext_CertificateProviderInstance
+	tls_certificate_provider_instance?:             #CertificateProviderPluginInstance
+	custom_tls_certificate_selector?:               v3_1.#TypedExtensionConfig
+	tls_certificate_certificate_provider?:          #CommonTlsContext_CertificateProvider
+	tls_certificate_certificate_provider_instance?: #CommonTlsContext_CertificateProviderInstance
 	alpn_protocols?: [...string]
 	custom_handshaker?: v3_1.#TypedExtensionConfig
 	key_log?:           #TlsKeyLog
+
+	// oneof validation_context_type: at most one may be set
+	*{} |
+	{validation_context!: #CertificateValidationContext} |
+	{validation_context_sds_secret_config!: #SdsSecretConfig} |
+	{combined_validation_context!: #CommonTlsContext_CombinedCertificateValidationContext} |
+	{validation_context_certificate_provider!: #CommonTlsContext_CertificateProvider} |
+	{validation_context_certificate_provider_instance!: #CommonTlsContext_CertificateProviderInstance}
 }
 
 #CommonTlsContext_CertificateProvider: {
-	"@type":       "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.CommonTlsContext.CertificateProvider"
-	name!:         string & strings.MinRunes(1)
-	typed_config?: v3_1.#TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.CommonTlsContext.CertificateProvider"
+	name!:   string & strings.MinRunes(1)
+
+	// oneof config: exactly one must be set
+	{typed_config!: v3_1.#TypedExtensionConfig}
 }
 
 #CommonTlsContext_CertificateProviderInstance: {

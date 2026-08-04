@@ -17,14 +17,20 @@ import (
 	"@type":                           "type.googleapis.com/envoy.extensions.filters.http.json_to_metadata.v3.JsonToMetadata.KeyValuePair"
 	metadata_namespace?:               string
 	key!:                              string & strings.MinRunes(1)
-	value?:                            _
 	type?:                             #JsonToMetadata_ValueType
 	preserve_existing_metadata_value?: bool
+
+	// oneof value_type: at most one may be set
+	*{} |
+	{value!: _}
 }
 
 #JsonToMetadata_Selector: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.json_to_metadata.v3.JsonToMetadata.Selector"
-	key!:    string & strings.MinRunes(1)
+
+	// oneof selector: at most one may be set
+	*{} |
+	{key!: string & strings.MinRunes(1)}
 }
 
 #JsonToMetadata_Rule: {

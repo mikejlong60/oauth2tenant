@@ -9,6 +9,9 @@ package v2
 #Tracing_Http: {
 	"@type": "type.googleapis.com/envoy.config.trace.v2.Tracing.Http"
 	name!:   string & !=""
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }

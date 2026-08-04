@@ -8,8 +8,7 @@ import (
 )
 
 #SinkConfig: {
-	"@type":       "type.googleapis.com/envoy.extensions.stat_sinks.open_telemetry.v3.SinkConfig"
-	grpc_service!: v3_1.#GrpcService
+	"@type": "type.googleapis.com/envoy.extensions.stat_sinks.open_telemetry.v3.SinkConfig"
 	resource_detectors?: [...v3_1.#TypedExtensionConfig]
 	report_counters_as_deltas?:   bool
 	report_histograms_as_deltas?: bool
@@ -17,6 +16,9 @@ import (
 	use_tag_extracted_name?:      bool
 	prefix?:                      string
 	custom_metric_conversions?:   v3_2.#Matcher
+
+	// oneof protocol_specifier: exactly one must be set
+	{grpc_service!: v3_1.#GrpcService}
 }
 
 #SinkConfig_ConversionAction: {

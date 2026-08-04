@@ -8,9 +8,11 @@ import (
 )
 
 #LocalityLbConfig: {
-	"@type":                      "type.googleapis.com/envoy.extensions.load_balancing_policies.common.v3.LocalityLbConfig"
-	zone_aware_lb_config?:        #LocalityLbConfig_ZoneAwareLbConfig
-	locality_weighted_lb_config?: #LocalityLbConfig_LocalityWeightedLbConfig
+	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.common.v3.LocalityLbConfig"
+
+	// oneof locality_config_specifier: exactly one must be set
+	{zone_aware_lb_config!: #LocalityLbConfig_ZoneAwareLbConfig} |
+	{locality_weighted_lb_config!: #LocalityLbConfig_LocalityWeightedLbConfig}
 }
 
 #LocalityLbConfig_ZoneAwareLbConfig: {

@@ -10,17 +10,21 @@ import (
 )
 
 #Matcher: {
-	"@type":       "type.googleapis.com/envoy.config.common.matcher.v3.Matcher"
-	matcher_list?: #Matcher_MatcherList
-	matcher_tree?: #Matcher_MatcherTree
-	on_no_match?:  #Matcher_OnMatch
+	"@type":      "type.googleapis.com/envoy.config.common.matcher.v3.Matcher"
+	on_no_match?: #Matcher_OnMatch
+
+	// oneof matcher_type: exactly one must be set
+	{matcher_list!: #Matcher_MatcherList} |
+	{matcher_tree!: #Matcher_MatcherTree}
 }
 
 #Matcher_OnMatch: {
 	"@type":        "type.googleapis.com/envoy.config.common.matcher.v3.Matcher.OnMatch"
-	matcher?:       #Matcher
-	action?:        v3_1.#TypedExtensionConfig
 	keep_matching?: bool
+
+	// oneof on_match: exactly one must be set
+	{matcher!: #Matcher} |
+	{action!: v3_1.#TypedExtensionConfig}
 }
 
 #Matcher_MatcherList: {
@@ -29,18 +33,22 @@ import (
 }
 
 #Matcher_MatcherList_Predicate: {
-	"@type":           "type.googleapis.com/envoy.config.common.matcher.v3.Matcher.MatcherList.Predicate"
-	single_predicate?: #Matcher_MatcherList_Predicate_SinglePredicate
-	or_matcher?:       #Matcher_MatcherList_Predicate_PredicateList
-	and_matcher?:      #Matcher_MatcherList_Predicate_PredicateList
-	not_matcher?:      #Matcher_MatcherList_Predicate
+	"@type": "type.googleapis.com/envoy.config.common.matcher.v3.Matcher.MatcherList.Predicate"
+
+	// oneof match_type: exactly one must be set
+	{single_predicate!: #Matcher_MatcherList_Predicate_SinglePredicate} |
+	{or_matcher!: #Matcher_MatcherList_Predicate_PredicateList} |
+	{and_matcher!: #Matcher_MatcherList_Predicate_PredicateList} |
+	{not_matcher!: #Matcher_MatcherList_Predicate}
 }
 
 #Matcher_MatcherList_Predicate_SinglePredicate: {
-	"@type":       "type.googleapis.com/envoy.config.common.matcher.v3.Matcher.MatcherList.Predicate.SinglePredicate"
-	input!:        v3_1.#TypedExtensionConfig
-	value_match?:  v3_2.#StringMatcher
-	custom_match?: v3_1.#TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.config.common.matcher.v3.Matcher.MatcherList.Predicate.SinglePredicate"
+	input!:  v3_1.#TypedExtensionConfig
+
+	// oneof matcher: exactly one must be set
+	{value_match!: v3_2.#StringMatcher} |
+	{custom_match!: v3_1.#TypedExtensionConfig}
 }
 
 #Matcher_MatcherList_Predicate_PredicateList: {
@@ -55,11 +63,13 @@ import (
 }
 
 #Matcher_MatcherTree: {
-	"@type":           "type.googleapis.com/envoy.config.common.matcher.v3.Matcher.MatcherTree"
-	input!:            v3_1.#TypedExtensionConfig
-	exact_match_map?:  #Matcher_MatcherTree_MatchMap
-	prefix_match_map?: #Matcher_MatcherTree_MatchMap
-	custom_match?:     v3_1.#TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.config.common.matcher.v3.Matcher.MatcherTree"
+	input!:  v3_1.#TypedExtensionConfig
+
+	// oneof tree_type: exactly one must be set
+	{exact_match_map!: #Matcher_MatcherTree_MatchMap} |
+	{prefix_match_map!: #Matcher_MatcherTree_MatchMap} |
+	{custom_match!: v3_1.#TypedExtensionConfig}
 }
 
 #Matcher_MatcherTree_MatchMap: {
@@ -68,17 +78,19 @@ import (
 }
 
 #MatchPredicate: {
-	"@type":                           "type.googleapis.com/envoy.config.common.matcher.v3.MatchPredicate"
-	or_match?:                         #MatchPredicate_MatchSet
-	and_match?:                        #MatchPredicate_MatchSet
-	not_match?:                        #MatchPredicate
-	any_match!:                        bool & true
-	http_request_headers_match?:       #HttpHeadersMatch
-	http_request_trailers_match?:      #HttpHeadersMatch
-	http_response_headers_match?:      #HttpHeadersMatch
-	http_response_trailers_match?:     #HttpHeadersMatch
-	http_request_generic_body_match?:  #HttpGenericBodyMatch
-	http_response_generic_body_match?: #HttpGenericBodyMatch
+	"@type": "type.googleapis.com/envoy.config.common.matcher.v3.MatchPredicate"
+
+	// oneof rule: exactly one must be set
+	{or_match!: #MatchPredicate_MatchSet} |
+	{and_match!: #MatchPredicate_MatchSet} |
+	{not_match!: #MatchPredicate} |
+	{any_match!: bool & true} |
+	{http_request_headers_match!: #HttpHeadersMatch} |
+	{http_request_trailers_match!: #HttpHeadersMatch} |
+	{http_response_headers_match!: #HttpHeadersMatch} |
+	{http_response_trailers_match!: #HttpHeadersMatch} |
+	{http_request_generic_body_match!: #HttpGenericBodyMatch} |
+	{http_response_generic_body_match!: #HttpGenericBodyMatch}
 }
 
 #MatchPredicate_MatchSet: {
@@ -98,7 +110,9 @@ import (
 }
 
 #HttpGenericBodyMatch_GenericTextMatch: {
-	"@type":       "type.googleapis.com/envoy.config.common.matcher.v3.HttpGenericBodyMatch.GenericTextMatch"
-	string_match!: string & strings.MinRunes(1)
-	binary_match?: bytes
+	"@type": "type.googleapis.com/envoy.config.common.matcher.v3.HttpGenericBodyMatch.GenericTextMatch"
+
+	// oneof rule: exactly one must be set
+	{string_match!: string & strings.MinRunes(1)} |
+	{binary_match!: bytes}
 }

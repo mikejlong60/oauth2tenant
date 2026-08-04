@@ -10,6 +10,9 @@ import (
 	"@type":         "type.googleapis.com/envoy.extensions.rate_limit_descriptors.expr.v3.Descriptor"
 	descriptor_key!: string & strings.MinRunes(1)
 	skip_if_error?:  bool
-	text!:           string & strings.MinRunes(1)
-	parsed?:         v1alpha1_1.#Expr
+
+	// oneof expr_specifier: at most one may be set
+	*{} |
+	{text!: string & strings.MinRunes(1)} |
+	{parsed!: v1alpha1_1.#Expr}
 }

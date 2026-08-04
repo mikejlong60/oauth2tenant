@@ -8,8 +8,11 @@ import (
 #ResourceMonitor: {
 	"@type": "type.googleapis.com/envoy.config.overload.v2alpha.ResourceMonitor"
 	name!:   string & !=""
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }
 
 #ThresholdTrigger: {
@@ -18,9 +21,11 @@ import (
 }
 
 #Trigger: {
-	"@type":    "type.googleapis.com/envoy.config.overload.v2alpha.Trigger"
-	name!:      string & !=""
-	threshold?: #ThresholdTrigger
+	"@type": "type.googleapis.com/envoy.config.overload.v2alpha.Trigger"
+	name!:   string & !=""
+
+	// oneof trigger_oneof: exactly one must be set
+	{threshold!: #ThresholdTrigger}
 }
 
 #OverloadAction: {

@@ -12,22 +12,26 @@ import (
 	"@type":                         "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions"
 	common_http_protocol_options?:   v3_1.#HttpProtocolOptions
 	upstream_http_protocol_options?: v3_1.#UpstreamHttpProtocolOptions
-	explicit_http_config?:           #HttpProtocolOptions_ExplicitHttpConfig
-	use_downstream_protocol_config?: #HttpProtocolOptions_UseDownstreamHttpConfig
-	auto_config?:                    #HttpProtocolOptions_AutoHttpConfig
 	http_filters?: [...v3_2.#HttpFilter]
 	header_validation_config?: v3_1.#TypedExtensionConfig
 	outlier_detection?:        #HttpProtocolOptions_OutlierDetection
 	request_mirror_policies?: [...v3_3.#RouteAction_RequestMirrorPolicy]
 	hash_policy?: [...v3_3.#RouteAction_HashPolicy]
 	retry_policy?: v3_3.#RetryPolicy
+
+	// oneof upstream_protocol_options: exactly one must be set
+	{explicit_http_config!: #HttpProtocolOptions_ExplicitHttpConfig} |
+	{use_downstream_protocol_config!: #HttpProtocolOptions_UseDownstreamHttpConfig} |
+	{auto_config!: #HttpProtocolOptions_AutoHttpConfig}
 }
 
 #HttpProtocolOptions_ExplicitHttpConfig: {
-	"@type":                 "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions.ExplicitHttpConfig"
-	http_protocol_options?:  v3_1.#Http1ProtocolOptions
-	http2_protocol_options?: v3_1.#Http2ProtocolOptions
-	http3_protocol_options?: v3_1.#Http3ProtocolOptions
+	"@type": "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions.ExplicitHttpConfig"
+
+	// oneof protocol_config: exactly one must be set
+	{http_protocol_options!: v3_1.#Http1ProtocolOptions} |
+	{http2_protocol_options!: v3_1.#Http2ProtocolOptions} |
+	{http3_protocol_options!: v3_1.#Http3ProtocolOptions}
 }
 
 #HttpProtocolOptions_UseDownstreamHttpConfig: {

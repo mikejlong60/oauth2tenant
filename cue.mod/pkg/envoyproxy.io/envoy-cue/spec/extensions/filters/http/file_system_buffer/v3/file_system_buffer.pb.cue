@@ -6,12 +6,14 @@ import (
 )
 
 #BufferBehavior: {
-	"@type":                                        "type.googleapis.com/envoy.extensions.filters.http.file_system_buffer.v3.BufferBehavior"
-	stream_when_possible?:                          #BufferBehavior_StreamWhenPossible
-	bypass?:                                        #BufferBehavior_Bypass
-	inject_content_length_if_necessary?:            #BufferBehavior_InjectContentLengthIfNecessary
-	fully_buffer_and_always_inject_content_length?: #BufferBehavior_FullyBufferAndAlwaysInjectContentLength
-	fully_buffer?:                                  #BufferBehavior_FullyBuffer
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.file_system_buffer.v3.BufferBehavior"
+
+	// oneof behavior: exactly one must be set
+	{stream_when_possible!: #BufferBehavior_StreamWhenPossible} |
+	{bypass!: #BufferBehavior_Bypass} |
+	{inject_content_length_if_necessary!: #BufferBehavior_InjectContentLengthIfNecessary} |
+	{fully_buffer_and_always_inject_content_length!: #BufferBehavior_FullyBufferAndAlwaysInjectContentLength} |
+	{fully_buffer!: #BufferBehavior_FullyBuffer}
 }
 
 #BufferBehavior_StreamWhenPossible: {

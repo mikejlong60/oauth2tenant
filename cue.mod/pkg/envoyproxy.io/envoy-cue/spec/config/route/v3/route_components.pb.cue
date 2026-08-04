@@ -53,16 +53,11 @@ import (
 }
 
 #Route: {
-	"@type":                "type.googleapis.com/envoy.config.route.v3.Route"
-	name?:                  string
-	match!:                 #RouteMatch
-	route?:                 #RouteAction
-	redirect?:              #RedirectAction
-	direct_response?:       #DirectResponseAction
-	filter_action?:         #FilterAction
-	non_forwarding_action?: #NonForwardingAction
-	metadata?:              v3_2.#Metadata
-	decorator?:             #Decorator
+	"@type":    "type.googleapis.com/envoy.config.route.v3.Route"
+	name?:      string
+	match!:     #RouteMatch
+	metadata?:  v3_2.#Metadata
+	decorator?: #Decorator
 	typed_per_filter_config?: {[string]: {...}}
 	request_headers_to_add?: [...v3_2.#HeaderValueOption] & list.MaxItems(1000)
 	request_headers_to_remove?: [...string]
@@ -72,6 +67,13 @@ import (
 	per_request_buffer_limit_bytes?: uint32
 	stat_prefix?:                    string
 	request_body_buffer_limit?:      uint64
+
+	// oneof action: exactly one must be set
+	{route!: #RouteAction} |
+	{redirect!: #RedirectAction} |
+	{direct_response!: #DirectResponseAction} |
+	{filter_action!: #FilterAction} |
+	{non_forwarding_action!: #NonForwardingAction}
 }
 
 #WeightedCluster: {
@@ -79,8 +81,12 @@ import (
 	clusters!: [...#WeightedCluster_ClusterWeight] & list.MinItems(1)
 	total_weight?:       uint32
 	runtime_key_prefix?: string
-	header_name?:        string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	use_hash_policy?:    bool
+
+	// oneof random_value_specifier: at most one may be set
+	// TODO(pgv): header_name.string well-known *validate.StringRules_WellKnownRegex
+	*{} |
+	{header_name!: string} |
+	{use_hash_policy!: bool}
 }
 
 #WeightedCluster_ClusterWeight: {
@@ -94,7 +100,11 @@ import (
 	response_headers_to_add?: [...v3_2.#HeaderValueOption] & list.MaxItems(1000)
 	response_headers_to_remove?: [...string]
 	typed_per_filter_config?: {[string]: {...}}
-	host_rewrite_literal?: string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+
+	// oneof host_rewrite_specifier: at most one may be set
+	// TODO(pgv): host_rewrite_literal.string well-known *validate.StringRules_WellKnownRegex
+	*{} |
+	{host_rewrite_literal!: string}
 }
 
 #ClusterSpecifierPlugin: {
@@ -104,15 +114,9 @@ import (
 }
 
 #RouteMatch: {
-	"@type":                "type.googleapis.com/envoy.config.route.v3.RouteMatch"
-	prefix?:                string
-	path?:                  string
-	safe_regex!:            v3_3.#RegexMatcher
-	connect_matcher?:       #RouteMatch_ConnectMatcher
-	path_separated_prefix?: string // TODO(pgv): string.pattern
-	path_match_policy?:     v3_2.#TypedExtensionConfig
-	case_sensitive?:        bool
-	runtime_fraction?:      v3_2.#RuntimeFractionalPercent
+	"@type":           "type.googleapis.com/envoy.config.route.v3.RouteMatch"
+	case_sensitive?:   bool
+	runtime_fraction?: v3_2.#RuntimeFractionalPercent
 	headers?: [...#HeaderMatcher]
 	query_parameters?: [...#QueryParameterMatcher]
 	cookies?: [...#CookieMatcher]
@@ -120,6 +124,15 @@ import (
 	tls_context?: #RouteMatch_TlsContextMatchOptions
 	dynamic_metadata?: [...v3_3.#MetadataMatcher]
 	filter_state?: [...v3_3.#FilterStateMatcher]
+
+	// oneof path_specifier: exactly one must be set
+	// TODO(pgv): path_separated_prefix.string.pattern
+	{prefix!: string} |
+	{path!: string} |
+	{safe_regex!: v3_3.#RegexMatcher} |
+	{connect_matcher!: #RouteMatch_ConnectMatcher} |
+	{path_separated_prefix!: string} |
+	{path_match_policy!: v3_2.#TypedExtensionConfig}
 }
 
 #RouteMatch_GrpcRouteMatchOptions: {
@@ -144,30 +157,23 @@ import (
 	expose_headers?:                  string
 	max_age?:                         string
 	allow_credentials?:               bool
-	filter_enabled?:                  v3_2.#RuntimeFractionalPercent
 	shadow_enabled?:                  v3_2.#RuntimeFractionalPercent
 	allow_private_network_access?:    bool
 	forward_not_matching_preflights?: bool
+
+	// oneof enabled_specifier: at most one may be set
+	*{} |
+	{filter_enabled!: v3_2.#RuntimeFractionalPercent}
 }
 
 #RouteAction: {
 	"@type":                          "type.googleapis.com/envoy.config.route.v3.RouteAction"
-	cluster!:                         string & strings.MinRunes(1)
-	cluster_header!:                  string & strings.MinRunes(1) // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	weighted_clusters?:               #WeightedCluster
-	cluster_specifier_plugin?:        string
-	inline_cluster_specifier_plugin?: #ClusterSpecifierPlugin
 	cluster_not_found_response_code?: #RouteAction_ClusterNotFoundResponseCode
 	metadata_match?:                  v3_2.#Metadata
 	prefix_rewrite?:                  string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
 	regex_rewrite?:                   v3_3.#RegexMatchAndSubstitute
 	path_rewrite_policy?:             v3_2.#TypedExtensionConfig
 	path_rewrite?:                    string
-	host_rewrite_literal?:            string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	auto_host_rewrite?:               bool
-	host_rewrite_header?:             string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	host_rewrite_path_regex?:         v3_3.#RegexMatchAndSubstitute
-	host_rewrite?:                    string
 	append_x_forwarded_host?:         bool
 	timeout?:                         string
 	idle_timeout?:                    string
@@ -189,6 +195,23 @@ import (
 	max_internal_redirects?:   uint32
 	hedge_policy?:             #HedgePolicy
 	max_stream_duration?:      #RouteAction_MaxStreamDuration
+
+	// oneof cluster_specifier: exactly one must be set
+	// TODO(pgv): cluster_header.string well-known *validate.StringRules_WellKnownRegex
+	{cluster!: string & strings.MinRunes(1)} |
+	{cluster_header!: string & strings.MinRunes(1)} |
+	{weighted_clusters!: #WeightedCluster} |
+	{cluster_specifier_plugin!: string} |
+	{inline_cluster_specifier_plugin!: #ClusterSpecifierPlugin}
+
+	// oneof host_rewrite_specifier: at most one may be set
+	// TODO(pgv): host_rewrite_literal.string well-known *validate.StringRules_WellKnownRegex, host_rewrite_header.string well-known *validate.StringRules_WellKnownRegex
+	*{} |
+	{host_rewrite_literal!: string} |
+	{auto_host_rewrite!: bool} |
+	{host_rewrite_header!: string} |
+	{host_rewrite_path_regex!: v3_3.#RegexMatchAndSubstitute} |
+	{host_rewrite!: string}
 }
 
 #RouteAction_RequestMirrorPolicy: {
@@ -203,13 +226,15 @@ import (
 }
 
 #RouteAction_HashPolicy: {
-	"@type":                "type.googleapis.com/envoy.config.route.v3.RouteAction.HashPolicy"
-	header?:                #RouteAction_HashPolicy_Header
-	cookie?:                #RouteAction_HashPolicy_Cookie
-	connection_properties?: #RouteAction_HashPolicy_ConnectionProperties
-	query_parameter?:       #RouteAction_HashPolicy_QueryParameter
-	filter_state?:          #RouteAction_HashPolicy_FilterState
-	terminal?:              bool
+	"@type":   "type.googleapis.com/envoy.config.route.v3.RouteAction.HashPolicy"
+	terminal?: bool
+
+	// oneof policy_specifier: exactly one must be set
+	{header!: #RouteAction_HashPolicy_Header} |
+	{cookie!: #RouteAction_HashPolicy_Cookie} |
+	{connection_properties!: #RouteAction_HashPolicy_ConnectionProperties} |
+	{query_parameter!: #RouteAction_HashPolicy_QueryParameter} |
+	{filter_state!: #RouteAction_HashPolicy_FilterState}
 }
 
 #RouteAction_HashPolicy_Header: {
@@ -291,13 +316,19 @@ import (
 #RetryPolicy_RetryPriority: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RetryPolicy.RetryPriority"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #RetryPolicy_RetryHostPredicate: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RetryPolicy.RetryHostPredicate"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #RetryPolicy_RetryBackOff: {
@@ -328,16 +359,23 @@ import (
 }
 
 #RedirectAction: {
-	"@type":          "type.googleapis.com/envoy.config.route.v3.RedirectAction"
-	https_redirect?:  bool
-	scheme_redirect?: string
-	host_redirect?:   string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	port_redirect?:   uint32
-	path_redirect?:   string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	prefix_rewrite?:  string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	regex_rewrite?:   v3_3.#RegexMatchAndSubstitute
-	response_code?:   #RedirectAction_RedirectResponseCode
-	strip_query?:     bool
+	"@type":        "type.googleapis.com/envoy.config.route.v3.RedirectAction"
+	host_redirect?: string // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+	port_redirect?: uint32
+	response_code?: #RedirectAction_RedirectResponseCode
+	strip_query?:   bool
+
+	// oneof scheme_rewrite_specifier: at most one may be set
+	*{} |
+	{https_redirect!: bool} |
+	{scheme_redirect!: string}
+
+	// oneof path_rewrite_specifier: at most one may be set
+	// TODO(pgv): path_redirect.string well-known *validate.StringRules_WellKnownRegex, prefix_rewrite.string well-known *validate.StringRules_WellKnownRegex
+	*{} |
+	{path_redirect!: string} |
+	{prefix_rewrite!: string} |
+	{regex_rewrite!: v3_3.#RegexMatchAndSubstitute}
 }
 
 #RedirectAction_RedirectResponseCode: "MOVED_PERMANENTLY" | "FOUND" | "SEE_OTHER" | "TEMPORARY_REDIRECT" | "PERMANENT_REDIRECT"
@@ -387,19 +425,21 @@ import (
 }
 
 #RateLimit_Action: {
-	"@type":                      "type.googleapis.com/envoy.config.route.v3.RateLimit.Action"
-	source_cluster?:              #RateLimit_Action_SourceCluster
-	destination_cluster?:         #RateLimit_Action_DestinationCluster
-	request_headers?:             #RateLimit_Action_RequestHeaders
-	query_parameters?:            #RateLimit_Action_QueryParameters
-	remote_address?:              #RateLimit_Action_RemoteAddress
-	generic_key?:                 #RateLimit_Action_GenericKey
-	header_value_match?:          #RateLimit_Action_HeaderValueMatch
-	dynamic_metadata?:            #RateLimit_Action_DynamicMetaData
-	metadata?:                    #RateLimit_Action_MetaData
-	extension?:                   v3_2.#TypedExtensionConfig
-	masked_remote_address?:       #RateLimit_Action_MaskedRemoteAddress
-	query_parameter_value_match?: #RateLimit_Action_QueryParameterValueMatch
+	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit.Action"
+
+	// oneof action_specifier: exactly one must be set
+	{source_cluster!: #RateLimit_Action_SourceCluster} |
+	{destination_cluster!: #RateLimit_Action_DestinationCluster} |
+	{request_headers!: #RateLimit_Action_RequestHeaders} |
+	{query_parameters!: #RateLimit_Action_QueryParameters} |
+	{remote_address!: #RateLimit_Action_RemoteAddress} |
+	{generic_key!: #RateLimit_Action_GenericKey} |
+	{header_value_match!: #RateLimit_Action_HeaderValueMatch} |
+	{dynamic_metadata!: #RateLimit_Action_DynamicMetaData} |
+	{metadata!: #RateLimit_Action_MetaData} |
+	{extension!: v3_2.#TypedExtensionConfig} |
+	{masked_remote_address!: #RateLimit_Action_MaskedRemoteAddress} |
+	{query_parameter_value_match!: #RateLimit_Action_QueryParameterValueMatch}
 }
 
 #RateLimit_Action_SourceCluster: {
@@ -478,8 +518,10 @@ import (
 }
 
 #RateLimit_Override: {
-	"@type":           "type.googleapis.com/envoy.config.route.v3.RateLimit.Override"
-	dynamic_metadata?: #RateLimit_Override_DynamicMetadata
+	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit.Override"
+
+	// oneof override_specifier: exactly one must be set
+	{dynamic_metadata!: #RateLimit_Override_DynamicMetadata}
 }
 
 #RateLimit_Override_DynamicMetadata: {
@@ -498,23 +540,29 @@ import (
 #HeaderMatcher: {
 	"@type":                        "type.googleapis.com/envoy.config.route.v3.HeaderMatcher"
 	name!:                          string & strings.MinRunes(1) // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	exact_match?:                   string
-	safe_regex_match?:              v3_3.#RegexMatcher
-	range_match?:                   v3_5.#Int64Range
-	present_match?:                 bool
-	prefix_match!:                  string & strings.MinRunes(1)
-	suffix_match!:                  string & strings.MinRunes(1)
-	contains_match!:                string & strings.MinRunes(1)
-	string_match?:                  v3_3.#StringMatcher
 	invert_match?:                  bool
 	treat_missing_header_as_empty?: bool
+
+	// oneof header_match_specifier: at most one may be set
+	*{} |
+	{exact_match!: string} |
+	{safe_regex_match!: v3_3.#RegexMatcher} |
+	{range_match!: v3_5.#Int64Range} |
+	{present_match!: bool} |
+	{prefix_match!: string & strings.MinRunes(1)} |
+	{suffix_match!: string & strings.MinRunes(1)} |
+	{contains_match!: string & strings.MinRunes(1)} |
+	{string_match!: v3_3.#StringMatcher}
 }
 
 #QueryParameterMatcher: {
-	"@type":        "type.googleapis.com/envoy.config.route.v3.QueryParameterMatcher"
-	name!:          string & strings.MinRunes(1)
-	string_match!:  v3_3.#StringMatcher
-	present_match?: bool
+	"@type": "type.googleapis.com/envoy.config.route.v3.QueryParameterMatcher"
+	name!:   string & strings.MinRunes(1)
+
+	// oneof query_parameter_match_specifier: at most one may be set
+	*{} |
+	{string_match!: v3_3.#StringMatcher} |
+	{present_match!: bool}
 }
 
 #CookieMatcher: {

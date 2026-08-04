@@ -9,7 +9,10 @@ import (
 #StatsSink: {
 	"@type": "type.googleapis.com/envoy.config.metrics.v3.StatsSink"
 	name?:   string
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #StatsConfig: {
@@ -21,17 +24,22 @@ import (
 }
 
 #StatsMatcher: {
-	"@type":         "type.googleapis.com/envoy.config.metrics.v3.StatsMatcher"
-	reject_all?:     bool
-	exclusion_list?: v3_1.#ListStringMatcher
-	inclusion_list?: v3_1.#ListStringMatcher
+	"@type": "type.googleapis.com/envoy.config.metrics.v3.StatsMatcher"
+
+	// oneof stats_matcher: exactly one must be set
+	{reject_all!: bool} |
+	{exclusion_list!: v3_1.#ListStringMatcher} |
+	{inclusion_list!: v3_1.#ListStringMatcher}
 }
 
 #TagSpecifier: {
-	"@type":      "type.googleapis.com/envoy.config.metrics.v3.TagSpecifier"
-	tag_name?:    string
-	regex?:       string
-	fixed_value?: string
+	"@type":   "type.googleapis.com/envoy.config.metrics.v3.TagSpecifier"
+	tag_name?: string
+
+	// oneof tag_value: at most one may be set
+	*{} |
+	{regex!: string} |
+	{fixed_value!: string}
 }
 
 #HistogramBucketSettings: {
@@ -42,17 +50,21 @@ import (
 }
 
 #StatsdSink: {
-	"@type":           "type.googleapis.com/envoy.config.metrics.v3.StatsdSink"
-	address?:          v3_2.#Address
-	tcp_cluster_name?: string
-	prefix?:           string
+	"@type": "type.googleapis.com/envoy.config.metrics.v3.StatsdSink"
+	prefix?: string
+
+	// oneof statsd_specifier: exactly one must be set
+	{address!: v3_2.#Address} |
+	{tcp_cluster_name!: string}
 }
 
 #DogStatsdSink: {
 	"@type":                 "type.googleapis.com/envoy.config.metrics.v3.DogStatsdSink"
-	address?:                v3_2.#Address
 	prefix?:                 string
 	max_bytes_per_datagram?: uint64 & >0
+
+	// oneof dog_statsd_specifier: exactly one must be set
+	{address!: v3_2.#Address}
 }
 
 #HystrixSink: {

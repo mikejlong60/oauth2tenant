@@ -94,9 +94,11 @@ import (
 }
 
 #Http1ProtocolOptions_HeaderKeyFormat: {
-	"@type":             "type.googleapis.com/envoy.config.core.v3.Http1ProtocolOptions.HeaderKeyFormat"
-	proper_case_words?:  #Http1ProtocolOptions_HeaderKeyFormat_ProperCaseWords
-	stateful_formatter?: #TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.config.core.v3.Http1ProtocolOptions.HeaderKeyFormat"
+
+	// oneof header_format: exactly one must be set
+	{proper_case_words!: #Http1ProtocolOptions_HeaderKeyFormat_ProperCaseWords} |
+	{stateful_formatter!: #TypedExtensionConfig}
 }
 
 #Http1ProtocolOptions_HeaderKeyFormat_ProperCaseWords: {
@@ -155,7 +157,10 @@ import (
 }
 
 #SchemeHeaderTransformation: {
-	"@type":              "type.googleapis.com/envoy.config.core.v3.SchemeHeaderTransformation"
-	scheme_to_overwrite!: string & ("http" | "https")
-	match_upstream?:      bool
+	"@type":         "type.googleapis.com/envoy.config.core.v3.SchemeHeaderTransformation"
+	match_upstream?: bool
+
+	// oneof transformation: at most one may be set
+	*{} |
+	{scheme_to_overwrite!: string & ("http" | "https")}
 }

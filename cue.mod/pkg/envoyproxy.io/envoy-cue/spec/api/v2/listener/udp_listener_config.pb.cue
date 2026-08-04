@@ -4,8 +4,11 @@ package listener
 #UdpListenerConfig: {
 	"@type":            "type.googleapis.com/envoy.api.v2.listener.UdpListenerConfig"
 	udp_listener_name?: string
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }
 
 #ActiveRawUdpListenerConfig: {

@@ -7,7 +7,9 @@ package v2
 }
 
 #BufferPerRoute: {
-	"@type":   "type.googleapis.com/envoy.config.filter.http.buffer.v2.BufferPerRoute"
-	disabled!: bool & true
-	buffer!:   #Buffer
+	"@type": "type.googleapis.com/envoy.config.filter.http.buffer.v2.BufferPerRoute"
+
+	// oneof override: exactly one must be set
+	{disabled!: bool & true} |
+	{buffer!: #Buffer}
 }

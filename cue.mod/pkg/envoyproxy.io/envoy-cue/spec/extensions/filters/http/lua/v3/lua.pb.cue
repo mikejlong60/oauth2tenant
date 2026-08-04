@@ -16,9 +16,12 @@ import (
 }
 
 #LuaPerRoute: {
-	"@type":      "type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute"
-	disabled!:    bool & true
-	name!:        string & strings.MinRunes(1)
-	source_code?: v3_1.#DataSource
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.lua.v3.LuaPerRoute"
 	filter_context?: {...}
+
+	// oneof override: at most one may be set
+	*{} |
+	{disabled!: bool & true} |
+	{name!: string & strings.MinRunes(1)} |
+	{source_code!: v3_1.#DataSource}
 }

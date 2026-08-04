@@ -51,7 +51,9 @@ import (
 }
 
 #CompressorPerRoute: {
-	"@type":    "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.CompressorPerRoute"
-	disabled!:  bool & true
-	overrides?: #CompressorOverrides
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.CompressorPerRoute"
+
+	// oneof override: exactly one must be set
+	{disabled!: bool & true} |
+	{overrides!: #CompressorOverrides}
 }

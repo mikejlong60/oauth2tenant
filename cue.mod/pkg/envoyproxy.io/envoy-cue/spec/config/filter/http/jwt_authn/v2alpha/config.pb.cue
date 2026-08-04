@@ -11,13 +11,15 @@ import (
 	"@type": "type.googleapis.com/envoy.config.filter.http.jwt_authn.v2alpha.JwtProvider"
 	issuer!: string & !=""
 	audiences?: [...string]
-	remote_jwks?: #RemoteJwks
-	local_jwks?:  core_1.#DataSource
-	forward?:     bool
+	forward?: bool
 	from_headers?: [...#JwtHeader]
 	from_params?: [...string]
 	forward_payload_header?: string
 	payload_in_metadata?:    string
+
+	// oneof jwks_source_specifier: exactly one must be set
+	{remote_jwks!: #RemoteJwks} |
+	{local_jwks!: core_1.#DataSource}
 }
 
 #RemoteJwks: {
@@ -39,13 +41,16 @@ import (
 }
 
 #JwtRequirement: {
-	"@type":                 "type.googleapis.com/envoy.config.filter.http.jwt_authn.v2alpha.JwtRequirement"
-	provider_name?:          string
-	provider_and_audiences?: #ProviderWithAudiences
-	requires_any?:           #JwtRequirementOrList
-	requires_all?:           #JwtRequirementAndList
-	allow_missing_or_failed?: {}
-	allow_missing?: {}
+	"@type": "type.googleapis.com/envoy.config.filter.http.jwt_authn.v2alpha.JwtRequirement"
+
+	// oneof requires_type: at most one may be set
+	*{} |
+	{provider_name!: string} |
+	{provider_and_audiences!: #ProviderWithAudiences} |
+	{requires_any!: #JwtRequirementOrList} |
+	{requires_all!: #JwtRequirementAndList} |
+	{allow_missing_or_failed!: {}} |
+	{allow_missing!: {}}
 }
 
 #JwtRequirementOrList: {

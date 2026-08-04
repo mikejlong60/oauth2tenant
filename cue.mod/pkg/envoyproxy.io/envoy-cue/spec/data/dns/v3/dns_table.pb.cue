@@ -21,17 +21,23 @@ import (
 
 #DnsTable_DnsServiceProtocol: {
 	"@type": "type.googleapis.com/envoy.data.dns.v3.DnsTable.DnsServiceProtocol"
-	number?: uint32 & <255
-	name!:   string & strings.MinRunes(1) // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
+
+	// oneof protocol_config: exactly one must be set
+	// TODO(pgv): name.string well-known *validate.StringRules_WellKnownRegex
+	{number!: uint32 & <255} |
+	{name!: string & strings.MinRunes(1)}
 }
 
 #DnsTable_DnsServiceTarget: {
-	"@type":       "type.googleapis.com/envoy.data.dns.v3.DnsTable.DnsServiceTarget"
-	host_name!:    string & strings.MinRunes(1) // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	cluster_name!: string & strings.MinRunes(1) // TODO(pgv): string well-known *validate.StringRules_WellKnownRegex
-	priority?:     uint32 & <65536
-	weight?:       uint32 & <65536
-	port?:         uint32 & <65536
+	"@type":   "type.googleapis.com/envoy.data.dns.v3.DnsTable.DnsServiceTarget"
+	priority?: uint32 & <65536
+	weight?:   uint32 & <65536
+	port?:     uint32 & <65536
+
+	// oneof endpoint_type: exactly one must be set
+	// TODO(pgv): host_name.string well-known *validate.StringRules_WellKnownRegex, cluster_name.string well-known *validate.StringRules_WellKnownRegex
+	{host_name!: string & strings.MinRunes(1)} |
+	{cluster_name!: string & strings.MinRunes(1)}
 }
 
 #DnsTable_DnsService: {
@@ -48,10 +54,12 @@ import (
 }
 
 #DnsTable_DnsEndpoint: {
-	"@type":       "type.googleapis.com/envoy.data.dns.v3.DnsTable.DnsEndpoint"
-	address_list?: #DnsTable_AddressList
-	cluster_name?: string
-	service_list?: #DnsTable_DnsServiceList
+	"@type": "type.googleapis.com/envoy.data.dns.v3.DnsTable.DnsEndpoint"
+
+	// oneof endpoint_config: exactly one must be set
+	{address_list!: #DnsTable_AddressList} |
+	{cluster_name!: string} |
+	{service_list!: #DnsTable_DnsServiceList}
 }
 
 #DnsTable_DnsVirtualDomain: {

@@ -11,8 +11,6 @@ import (
 #TcpProxy: {
 	"@type":                  "type.googleapis.com/envoy.config.filter.network.tcp_proxy.v2.TcpProxy"
 	stat_prefix!:             string & !=""
-	cluster?:                 string
-	weighted_clusters?:       #TcpProxy_WeightedCluster
 	metadata_match?:          core_1.#Metadata
 	idle_timeout?:            string
 	downstream_idle_timeout?: string
@@ -22,6 +20,10 @@ import (
 	max_connect_attempts?: uint32 & >=1
 	hash_policy?: [...type_3.#HashPolicy] & list.MaxItems(1)
 	tunneling_config?: #TcpProxy_TunnelingConfig
+
+	// oneof cluster_specifier: exactly one must be set
+	{cluster!: string} |
+	{weighted_clusters!: #TcpProxy_WeightedCluster}
 }
 
 #TcpProxy_DeprecatedV1: {

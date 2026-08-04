@@ -17,9 +17,11 @@ import (
 }
 
 #DnsFilterConfig_ServerContextConfig: {
-	"@type":             "type.googleapis.com/envoy.extensions.filters.udp.dns_filter.v3.DnsFilterConfig.ServerContextConfig"
-	inline_dns_table?:   v3_2.#DnsTable
-	external_dns_table?: v3_3.#DataSource
+	"@type": "type.googleapis.com/envoy.extensions.filters.udp.dns_filter.v3.DnsFilterConfig.ServerContextConfig"
+
+	// oneof config_source: exactly one must be set
+	{inline_dns_table!: v3_2.#DnsTable} |
+	{external_dns_table!: v3_3.#DataSource}
 }
 
 #DnsFilterConfig_ClientContextConfig: {

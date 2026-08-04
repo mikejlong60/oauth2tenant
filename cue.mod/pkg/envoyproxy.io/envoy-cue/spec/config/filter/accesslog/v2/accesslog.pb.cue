@@ -12,23 +12,28 @@ import (
 	"@type": "type.googleapis.com/envoy.config.filter.accesslog.v2.AccessLog"
 	name?:   string
 	filter?: #AccessLogFilter
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }
 
 #AccessLogFilter: {
-	"@type":                  "type.googleapis.com/envoy.config.filter.accesslog.v2.AccessLogFilter"
-	status_code_filter?:      #StatusCodeFilter
-	duration_filter?:         #DurationFilter
-	not_health_check_filter?: #NotHealthCheckFilter
-	traceable_filter?:        #TraceableFilter
-	runtime_filter?:          #RuntimeFilter
-	and_filter?:              #AndFilter
-	or_filter?:               #OrFilter
-	header_filter?:           #HeaderFilter
-	response_flag_filter?:    #ResponseFlagFilter
-	grpc_status_filter?:      #GrpcStatusFilter
-	extension_filter?:        #ExtensionFilter
+	"@type": "type.googleapis.com/envoy.config.filter.accesslog.v2.AccessLogFilter"
+
+	// oneof filter_specifier: exactly one must be set
+	{status_code_filter!: #StatusCodeFilter} |
+	{duration_filter!: #DurationFilter} |
+	{not_health_check_filter!: #NotHealthCheckFilter} |
+	{traceable_filter!: #TraceableFilter} |
+	{runtime_filter!: #RuntimeFilter} |
+	{and_filter!: #AndFilter} |
+	{or_filter!: #OrFilter} |
+	{header_filter!: #HeaderFilter} |
+	{response_flag_filter!: #ResponseFlagFilter} |
+	{grpc_status_filter!: #GrpcStatusFilter} |
+	{extension_filter!: #ExtensionFilter}
 }
 
 #ComparisonFilter: {
@@ -95,6 +100,9 @@ import (
 #ExtensionFilter: {
 	"@type": "type.googleapis.com/envoy.config.filter.accesslog.v2.ExtensionFilter"
 	name?:   string
-	config?: {...}
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{config!: {...}} |
+	{typed_config!: {...}}
 }

@@ -36,13 +36,16 @@ import (
 	cluster?: string
 	metadata?: {...}
 	dynamic_parameters?: {[string]: v3_2.#ContextParams}
-	locality?:                 #Locality
-	user_agent_name?:          string
-	user_agent_version?:       string
-	user_agent_build_version?: #BuildVersion
+	locality?:        #Locality
+	user_agent_name?: string
 	extensions?: [...#Extension]
 	client_features?: [...string]
 	listening_addresses?: [...#Address]
+
+	// oneof user_agent_version_type: at most one may be set
+	*{} |
+	{user_agent_version!: string} |
+	{user_agent_build_version!: #BuildVersion}
 }
 
 #Metadata: {
@@ -136,12 +139,14 @@ import (
 }
 
 #DataSource: {
-	"@type":               "type.googleapis.com/envoy.config.core.v3.DataSource"
-	filename!:             string & strings.MinRunes(1)
-	inline_bytes?:         bytes
-	inline_string?:        string
-	environment_variable!: string & strings.MinRunes(1)
-	watched_directory?:    #WatchedDirectory
+	"@type":            "type.googleapis.com/envoy.config.core.v3.DataSource"
+	watched_directory?: #WatchedDirectory
+
+	// oneof specifier: exactly one must be set
+	{filename!: string & strings.MinRunes(1)} |
+	{inline_bytes!: bytes} |
+	{inline_string!: string} |
+	{environment_variable!: string & strings.MinRunes(1)}
 }
 
 #RetryPolicy: {
@@ -157,13 +162,19 @@ import (
 #RetryPolicy_RetryPriority: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.RetryPolicy.RetryPriority"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #RetryPolicy_RetryHostPredicate: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.RetryPolicy.RetryHostPredicate"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #RemoteDataSource: {
@@ -175,14 +186,19 @@ import (
 
 #AsyncDataSource: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.AsyncDataSource"
-	local?:  #DataSource
-	remote?: #RemoteDataSource
+
+	// oneof specifier: exactly one must be set
+	{local!: #DataSource} |
+	{remote!: #RemoteDataSource}
 }
 
 #TransportSocket: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.TransportSocket"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #RuntimeFractionalPercent: {

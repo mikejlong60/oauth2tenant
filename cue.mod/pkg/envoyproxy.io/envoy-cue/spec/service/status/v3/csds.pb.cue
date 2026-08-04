@@ -15,14 +15,17 @@ import (
 }
 
 #PerXdsConfig: {
-	"@type":              "type.googleapis.com/envoy.service.status.v3.PerXdsConfig"
-	status?:              #ConfigStatus
-	client_status?:       #ClientConfigStatus
-	listener_config?:     v3_3.#ListenersConfigDump
-	cluster_config?:      v3_3.#ClustersConfigDump
-	route_config?:        v3_3.#RoutesConfigDump
-	scoped_route_config?: v3_3.#ScopedRoutesConfigDump
-	endpoint_config?:     v3_3.#EndpointsConfigDump
+	"@type":        "type.googleapis.com/envoy.service.status.v3.PerXdsConfig"
+	status?:        #ConfigStatus
+	client_status?: #ClientConfigStatus
+
+	// oneof per_xds_config: at most one may be set
+	*{} |
+	{listener_config!: v3_3.#ListenersConfigDump} |
+	{cluster_config!: v3_3.#ClustersConfigDump} |
+	{route_config!: v3_3.#RoutesConfigDump} |
+	{scoped_route_config!: v3_3.#ScopedRoutesConfigDump} |
+	{endpoint_config!: v3_3.#EndpointsConfigDump}
 }
 
 #ClientConfig: {

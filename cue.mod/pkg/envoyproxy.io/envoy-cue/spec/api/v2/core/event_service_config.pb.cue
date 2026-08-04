@@ -2,6 +2,8 @@
 package core
 
 #EventServiceConfig: {
-	"@type":       "type.googleapis.com/envoy.api.v2.core.EventServiceConfig"
-	grpc_service?: #GrpcService
+	"@type": "type.googleapis.com/envoy.api.v2.core.EventServiceConfig"
+
+	// oneof config_source_specifier: exactly one must be set
+	{grpc_service!: #GrpcService}
 }

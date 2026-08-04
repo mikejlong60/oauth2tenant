@@ -72,18 +72,23 @@ import (
 }
 
 #DynamicParameterConstraints: {
-	"@type":          "type.googleapis.com/envoy.service.discovery.v3.DynamicParameterConstraints"
-	constraint?:      #DynamicParameterConstraints_SingleConstraint
-	or_constraints?:  #DynamicParameterConstraints_ConstraintList
-	and_constraints?: #DynamicParameterConstraints_ConstraintList
-	not_constraints?: #DynamicParameterConstraints
+	"@type": "type.googleapis.com/envoy.service.discovery.v3.DynamicParameterConstraints"
+
+	// oneof type: at most one may be set
+	*{} |
+	{constraint!: #DynamicParameterConstraints_SingleConstraint} |
+	{or_constraints!: #DynamicParameterConstraints_ConstraintList} |
+	{and_constraints!: #DynamicParameterConstraints_ConstraintList} |
+	{not_constraints!: #DynamicParameterConstraints}
 }
 
 #DynamicParameterConstraints_SingleConstraint: {
 	"@type": "type.googleapis.com/envoy.service.discovery.v3.DynamicParameterConstraints.SingleConstraint"
 	key?:    string
-	value?:  string
-	exists?: #DynamicParameterConstraints_SingleConstraint_Exists
+
+	// oneof constraint_type: exactly one must be set
+	{value!: string} |
+	{exists!: #DynamicParameterConstraints_SingleConstraint_Exists}
 }
 
 #DynamicParameterConstraints_SingleConstraint_Exists: {

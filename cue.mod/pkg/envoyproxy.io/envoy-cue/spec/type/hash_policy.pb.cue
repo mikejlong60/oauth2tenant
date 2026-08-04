@@ -2,8 +2,10 @@
 package type
 
 #HashPolicy: {
-	"@type":    "type.googleapis.com/envoy.type.HashPolicy"
-	source_ip?: #HashPolicy_SourceIp
+	"@type": "type.googleapis.com/envoy.type.HashPolicy"
+
+	// oneof policy_specifier: exactly one must be set
+	{source_ip!: #HashPolicy_SourceIp}
 }
 
 #HashPolicy_SourceIp: {

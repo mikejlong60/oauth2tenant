@@ -2,9 +2,7 @@
 package v3
 
 #GrpcJsonTranscoder: {
-	"@type":               "type.googleapis.com/envoy.extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder"
-	proto_descriptor?:     string
-	proto_descriptor_bin?: bytes
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder"
 	services?: [...string]
 	print_options?:                #GrpcJsonTranscoder_PrintOptions
 	match_incoming_request_route?: bool
@@ -20,6 +18,10 @@ package v3
 	max_request_body_size?:            uint32 & >0
 	max_response_body_size?:           uint32 & >0
 	capture_unknown_query_parameters?: bool
+
+	// oneof descriptor_set: exactly one must be set
+	{proto_descriptor!: string} |
+	{proto_descriptor_bin!: bytes}
 }
 
 #GrpcJsonTranscoder_PrintOptions: {

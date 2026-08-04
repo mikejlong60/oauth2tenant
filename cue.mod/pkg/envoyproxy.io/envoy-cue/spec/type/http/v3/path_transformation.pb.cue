@@ -7,9 +7,11 @@ package v3
 }
 
 #PathTransformation_Operation: {
-	"@type":                  "type.googleapis.com/envoy.type.http.v3.PathTransformation.Operation"
-	normalize_path_rfc_3986?: #PathTransformation_Operation_NormalizePathRFC3986
-	merge_slashes?:           #PathTransformation_Operation_MergeSlashes
+	"@type": "type.googleapis.com/envoy.type.http.v3.PathTransformation.Operation"
+
+	// oneof operation_specifier: exactly one must be set
+	{normalize_path_rfc_3986!: #PathTransformation_Operation_NormalizePathRFC3986} |
+	{merge_slashes!: #PathTransformation_Operation_MergeSlashes}
 }
 
 #PathTransformation_Operation_NormalizePathRFC3986: {

@@ -23,8 +23,11 @@ package v2alpha
 }
 
 #SubjectAlternateName: {
-	"@type":     "type.googleapis.com/envoy.admin.v2alpha.SubjectAlternateName"
-	dns?:        string
-	uri?:        string
-	ip_address?: string
+	"@type": "type.googleapis.com/envoy.admin.v2alpha.SubjectAlternateName"
+
+	// oneof name: at most one may be set
+	*{} |
+	{dns!: string} |
+	{uri!: string} |
+	{ip_address!: string}
 }

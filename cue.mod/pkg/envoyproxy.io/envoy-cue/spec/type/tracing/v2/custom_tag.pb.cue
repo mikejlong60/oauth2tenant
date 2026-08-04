@@ -6,12 +6,14 @@ import (
 )
 
 #CustomTag: {
-	"@type":         "type.googleapis.com/envoy.type.tracing.v2.CustomTag"
-	tag!:            string & !=""
-	literal?:        #CustomTag_Literal
-	environment?:    #CustomTag_Environment
-	request_header?: #CustomTag_Header
-	metadata?:       #CustomTag_Metadata
+	"@type": "type.googleapis.com/envoy.type.tracing.v2.CustomTag"
+	tag!:    string & !=""
+
+	// oneof type: exactly one must be set
+	{literal!: #CustomTag_Literal} |
+	{environment!: #CustomTag_Environment} |
+	{request_header!: #CustomTag_Header} |
+	{metadata!: #CustomTag_Metadata}
 }
 
 #CustomTag_Literal: {

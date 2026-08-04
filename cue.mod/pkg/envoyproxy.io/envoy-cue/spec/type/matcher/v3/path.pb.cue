@@ -3,5 +3,7 @@ package v3
 
 #PathMatcher: {
 	"@type": "type.googleapis.com/envoy.type.matcher.v3.PathMatcher"
-	path!:   #StringMatcher
+
+	// oneof rule: exactly one must be set
+	{path!: #StringMatcher}
 }

@@ -7,10 +7,13 @@ import (
 )
 
 #FilterConfig: {
-	"@type":           "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.session.dynamic_forward_proxy.v3.FilterConfig"
-	stat_prefix!:      string & strings.MinRunes(1)
-	dns_cache_config!: v3_1.#DnsCacheConfig
-	buffer_options?:   #FilterConfig_BufferOptions
+	"@type":         "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.session.dynamic_forward_proxy.v3.FilterConfig"
+	stat_prefix!:    string & strings.MinRunes(1)
+	buffer_options?: #FilterConfig_BufferOptions
+
+	// oneof implementation_specifier: at most one may be set
+	*{} |
+	{dns_cache_config!: v3_1.#DnsCacheConfig}
 }
 
 #FilterConfig_BufferOptions: {

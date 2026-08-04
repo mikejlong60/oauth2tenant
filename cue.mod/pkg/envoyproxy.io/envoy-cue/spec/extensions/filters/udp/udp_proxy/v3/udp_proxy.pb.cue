@@ -4,39 +4,46 @@ package v3
 import (
 	"list"
 	"strings"
-	v3_1 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/type/matcher/v3"
-	v3_2 "envoyproxy.io/envoy-cue/spec/config/core/v3"
-	v3_3 "envoyproxy.io/envoy-cue/spec/config/accesslog/v3"
+	v3_1 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v3_2 "envoyproxy.io/envoy-cue/spec/config/accesslog/v3"
+	v3_3 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/type/matcher/v3"
 )
 
 #UdpProxyConfig: {
 	"@type":              "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.v3.UdpProxyConfig"
 	stat_prefix!:         string & strings.MinRunes(1)
-	cluster!:             string & strings.MinRunes(1)
-	matcher?:             v3_1.#Matcher
 	idle_timeout?:        string
 	use_original_src_ip?: bool
 	hash_policies?: [...#UdpProxyConfig_HashPolicy] & list.MaxItems(1)
-	upstream_socket_config?:        v3_2.#UdpSocketConfig
+	upstream_socket_config?:        v3_1.#UdpSocketConfig
 	use_per_packet_load_balancing?: bool
-	access_log?: [...v3_3.#AccessLog]
-	proxy_access_log?: [...v3_3.#AccessLog]
+	access_log?: [...v3_2.#AccessLog]
+	proxy_access_log?: [...v3_2.#AccessLog]
 	session_filters?: [...#UdpProxyConfig_SessionFilter]
 	tunneling_config?:   #UdpProxyConfig_UdpTunnelingConfig
 	access_log_options?: #UdpProxyConfig_UdpAccessLogOptions
+
+	// oneof route_specifier: exactly one must be set
+	{cluster!: string & strings.MinRunes(1)} |
+	{matcher!: v3_3.#Matcher}
 }
 
 #UdpProxyConfig_HashPolicy: {
-	"@type":    "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.v3.UdpProxyConfig.HashPolicy"
-	source_ip!: bool & true
-	key!:       string & strings.MinRunes(1)
+	"@type": "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.v3.UdpProxyConfig.HashPolicy"
+
+	// oneof policy_specifier: exactly one must be set
+	{source_ip!: bool & true} |
+	{key!: string & strings.MinRunes(1)}
 }
 
 #UdpProxyConfig_SessionFilter: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.v3.UdpProxyConfig.SessionFilter"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
-	config_discovery?: v3_2.#ExtensionConfigSource
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}} |
+	{config_discovery!: v3_1.#ExtensionConfigSource}
 }
 
 #UdpProxyConfig_UdpTunnelingConfig: {
@@ -48,7 +55,7 @@ import (
 	use_post?:            bool
 	post_path?:           string
 	retry_options?:       #UdpProxyConfig_UdpTunnelingConfig_RetryOptions
-	headers_to_add?: [...v3_2.#HeaderValueOption] & list.MaxItems(1000)
+	headers_to_add?: [...v3_1.#HeaderValueOption] & list.MaxItems(1000)
 	buffer_options?:              #UdpProxyConfig_UdpTunnelingConfig_BufferOptions
 	propagate_response_headers?:  bool
 	propagate_response_trailers?: bool
@@ -63,7 +70,7 @@ import (
 #UdpProxyConfig_UdpTunnelingConfig_RetryOptions: {
 	"@type":               "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.v3.UdpProxyConfig.UdpTunnelingConfig.RetryOptions"
 	max_connect_attempts?: uint32
-	backoff_options?:      v3_2.#BackoffStrategy
+	backoff_options?:      v3_1.#BackoffStrategy
 }
 
 #UdpProxyConfig_UdpAccessLogOptions: {

@@ -6,11 +6,17 @@ import (
 )
 
 #StdoutAccessLog: {
-	"@type":     "type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog"
-	log_format!: v3_1.#SubstitutionFormatString
+	"@type": "type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog"
+
+	// oneof access_log_format: at most one may be set
+	*{} |
+	{log_format!: v3_1.#SubstitutionFormatString}
 }
 
 #StderrAccessLog: {
-	"@type":     "type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StderrAccessLog"
-	log_format!: v3_1.#SubstitutionFormatString
+	"@type": "type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StderrAccessLog"
+
+	// oneof access_log_format: at most one may be set
+	*{} |
+	{log_format!: v3_1.#SubstitutionFormatString}
 }

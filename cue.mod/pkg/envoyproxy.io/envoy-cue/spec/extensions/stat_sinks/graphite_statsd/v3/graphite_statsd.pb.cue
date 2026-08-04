@@ -7,7 +7,9 @@ import (
 
 #GraphiteStatsdSink: {
 	"@type":                 "type.googleapis.com/envoy.extensions.stat_sinks.graphite_statsd.v3.GraphiteStatsdSink"
-	address?:                v3_1.#Address
 	prefix?:                 string
 	max_bytes_per_datagram?: uint64 & >0
+
+	// oneof statsd_specifier: exactly one must be set
+	{address!: v3_1.#Address}
 }

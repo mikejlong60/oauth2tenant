@@ -16,5 +16,7 @@ import (
 
 #MetadataMatcher_PathSegment: {
 	"@type": "type.googleapis.com/envoy.type.matcher.v3.MetadataMatcher.PathSegment"
-	key!:    string & strings.MinRunes(1)
+
+	// oneof segment: exactly one must be set
+	{key!: string & strings.MinRunes(1)}
 }

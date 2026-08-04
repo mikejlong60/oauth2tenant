@@ -25,8 +25,11 @@ import (
 }
 
 #CheckResponse: {
-	"@type":          "type.googleapis.com/envoy.service.auth.v2.CheckResponse"
-	status?:          status_3.#Status
-	denied_response?: #DeniedHttpResponse
-	ok_response?:     #OkHttpResponse
+	"@type": "type.googleapis.com/envoy.service.auth.v2.CheckResponse"
+	status?: status_3.#Status
+
+	// oneof http_response: at most one may be set
+	*{} |
+	{denied_response!: #DeniedHttpResponse} |
+	{ok_response!: #OkHttpResponse}
 }

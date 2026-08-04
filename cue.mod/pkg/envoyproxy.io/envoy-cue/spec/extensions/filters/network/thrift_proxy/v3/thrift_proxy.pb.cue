@@ -30,7 +30,10 @@ import (
 #ThriftFilter: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.v3.ThriftFilter"
 	name!:   string & strings.MinRunes(1)
-	typed_config?: {...}
+
+	// oneof config_type: at most one may be set
+	*{} |
+	{typed_config!: {...}}
 }
 
 #ThriftProtocolOptions: {

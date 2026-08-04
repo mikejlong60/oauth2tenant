@@ -6,18 +6,20 @@ import (
 )
 
 #OutlierDetectionEvent: {
-	"@type":                         "type.googleapis.com/envoy.data.cluster.v3.OutlierDetectionEvent"
-	type?:                           #OutlierEjectionType
-	timestamp?:                      string
-	secs_since_last_action?:         uint64
-	cluster_name!:                   string & strings.MinRunes(1)
-	upstream_url!:                   string & strings.MinRunes(1)
-	action?:                         #Action
-	num_ejections?:                  uint32
-	enforced?:                       bool
-	eject_success_rate_event?:       #OutlierEjectSuccessRate
-	eject_consecutive_event?:        #OutlierEjectConsecutive
-	eject_failure_percentage_event?: #OutlierEjectFailurePercentage
+	"@type":                 "type.googleapis.com/envoy.data.cluster.v3.OutlierDetectionEvent"
+	type?:                   #OutlierEjectionType
+	timestamp?:              string
+	secs_since_last_action?: uint64
+	cluster_name!:           string & strings.MinRunes(1)
+	upstream_url!:           string & strings.MinRunes(1)
+	action?:                 #Action
+	num_ejections?:          uint32
+	enforced?:               bool
+
+	// oneof event: exactly one must be set
+	{eject_success_rate_event!: #OutlierEjectSuccessRate} |
+	{eject_consecutive_event!: #OutlierEjectConsecutive} |
+	{eject_failure_percentage_event!: #OutlierEjectFailurePercentage}
 }
 
 #OutlierEjectSuccessRate: {

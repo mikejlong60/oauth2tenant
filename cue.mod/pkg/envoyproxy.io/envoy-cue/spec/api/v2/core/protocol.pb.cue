@@ -32,8 +32,10 @@ package core
 }
 
 #Http1ProtocolOptions_HeaderKeyFormat: {
-	"@type":            "type.googleapis.com/envoy.api.v2.core.Http1ProtocolOptions.HeaderKeyFormat"
-	proper_case_words?: #Http1ProtocolOptions_HeaderKeyFormat_ProperCaseWords
+	"@type": "type.googleapis.com/envoy.api.v2.core.Http1ProtocolOptions.HeaderKeyFormat"
+
+	// oneof header_format: exactly one must be set
+	{proper_case_words!: #Http1ProtocolOptions_HeaderKeyFormat_ProperCaseWords}
 }
 
 #Http1ProtocolOptions_HeaderKeyFormat_ProperCaseWords: {

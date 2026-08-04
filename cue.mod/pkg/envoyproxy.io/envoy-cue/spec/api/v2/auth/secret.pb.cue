@@ -17,10 +17,13 @@ import (
 }
 
 #Secret: {
-	"@type":              "type.googleapis.com/envoy.api.v2.auth.Secret"
-	name?:                string
-	tls_certificate?:     #TlsCertificate
-	session_ticket_keys?: #TlsSessionTicketKeys
-	validation_context?:  #CertificateValidationContext
-	generic_secret?:      #GenericSecret
+	"@type": "type.googleapis.com/envoy.api.v2.auth.Secret"
+	name?:   string
+
+	// oneof type: at most one may be set
+	*{} |
+	{tls_certificate!: #TlsCertificate} |
+	{session_ticket_keys!: #TlsSessionTicketKeys} |
+	{validation_context!: #CertificateValidationContext} |
+	{generic_secret!: #GenericSecret}
 }

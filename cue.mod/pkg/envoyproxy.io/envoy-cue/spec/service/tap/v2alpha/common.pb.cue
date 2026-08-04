@@ -15,15 +15,17 @@ import (
 }
 
 #MatchPredicate: {
-	"@type":                       "type.googleapis.com/envoy.service.tap.v2alpha.MatchPredicate"
-	or_match?:                     #MatchPredicate_MatchSet
-	and_match?:                    #MatchPredicate_MatchSet
-	not_match?:                    #MatchPredicate
-	any_match!:                    bool & true
-	http_request_headers_match?:   #HttpHeadersMatch
-	http_request_trailers_match?:  #HttpHeadersMatch
-	http_response_headers_match?:  #HttpHeadersMatch
-	http_response_trailers_match?: #HttpHeadersMatch
+	"@type": "type.googleapis.com/envoy.service.tap.v2alpha.MatchPredicate"
+
+	// oneof rule: exactly one must be set
+	{or_match!: #MatchPredicate_MatchSet} |
+	{and_match!: #MatchPredicate_MatchSet} |
+	{not_match!: #MatchPredicate} |
+	{any_match!: bool & true} |
+	{http_request_headers_match!: #HttpHeadersMatch} |
+	{http_request_trailers_match!: #HttpHeadersMatch} |
+	{http_response_headers_match!: #HttpHeadersMatch} |
+	{http_response_trailers_match!: #HttpHeadersMatch}
 }
 
 #MatchPredicate_MatchSet: {
@@ -45,11 +47,13 @@ import (
 }
 
 #OutputSink: {
-	"@type":          "type.googleapis.com/envoy.service.tap.v2alpha.OutputSink"
-	format?:          #OutputSink_Format
-	streaming_admin?: #StreamingAdminSink
-	file_per_tap?:    #FilePerTapSink
-	streaming_grpc?:  #StreamingGrpcSink
+	"@type": "type.googleapis.com/envoy.service.tap.v2alpha.OutputSink"
+	format?: #OutputSink_Format
+
+	// oneof output_sink_type: exactly one must be set
+	{streaming_admin!: #StreamingAdminSink} |
+	{file_per_tap!: #FilePerTapSink} |
+	{streaming_grpc!: #StreamingGrpcSink}
 }
 
 #OutputSink_Format: "JSON_BODY_AS_BYTES" | "JSON_BODY_AS_STRING" | "PROTO_BINARY" | "PROTO_BINARY_LENGTH_DELIMITED" | "PROTO_TEXT"

@@ -6,11 +6,14 @@ import (
 )
 
 #FaultDelay: {
-	"@type":       "type.googleapis.com/envoy.config.filter.fault.v2.FaultDelay"
-	type?:         #FaultDelay_FaultDelayType
-	fixed_delay?:  string // TODO(pgv): duration bounds
-	header_delay?: #FaultDelay_HeaderDelay
-	percentage?:   type_1.#FractionalPercent
+	"@type":     "type.googleapis.com/envoy.config.filter.fault.v2.FaultDelay"
+	type?:       #FaultDelay_FaultDelayType
+	percentage?: type_1.#FractionalPercent
+
+	// oneof fault_delay_secifier: exactly one must be set
+	// TODO(pgv): fixed_delay.duration bounds
+	{fixed_delay!: string} |
+	{header_delay!: #FaultDelay_HeaderDelay}
 }
 
 #FaultDelay_HeaderDelay: {
@@ -20,10 +23,12 @@ import (
 #FaultDelay_FaultDelayType: "FIXED"
 
 #FaultRateLimit: {
-	"@type":       "type.googleapis.com/envoy.config.filter.fault.v2.FaultRateLimit"
-	fixed_limit?:  #FaultRateLimit_FixedLimit
-	header_limit?: #FaultRateLimit_HeaderLimit
-	percentage?:   type_1.#FractionalPercent
+	"@type":     "type.googleapis.com/envoy.config.filter.fault.v2.FaultRateLimit"
+	percentage?: type_1.#FractionalPercent
+
+	// oneof limit_type: exactly one must be set
+	{fixed_limit!: #FaultRateLimit_FixedLimit} |
+	{header_limit!: #FaultRateLimit_HeaderLimit}
 }
 
 #FaultRateLimit_FixedLimit: {

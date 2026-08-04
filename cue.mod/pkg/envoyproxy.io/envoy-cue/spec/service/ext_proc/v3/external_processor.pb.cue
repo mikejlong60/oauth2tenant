@@ -15,33 +15,37 @@ import (
 }
 
 #ProcessingRequest: {
-	"@type":            "type.googleapis.com/envoy.service.ext_proc.v3.ProcessingRequest"
-	request_headers?:   #HttpHeaders
-	response_headers?:  #HttpHeaders
-	request_body?:      #HttpBody
-	response_body?:     #HttpBody
-	request_trailers?:  #HttpTrailers
-	response_trailers?: #HttpTrailers
-	metadata_context?:  v3_2.#Metadata
+	"@type":           "type.googleapis.com/envoy.service.ext_proc.v3.ProcessingRequest"
+	metadata_context?: v3_2.#Metadata
 	attributes?: {[string]: {...}}
 	observability_mode?: bool
 	protocol_config?:    #ProtocolConfiguration
+
+	// oneof request: exactly one must be set
+	{request_headers!: #HttpHeaders} |
+	{response_headers!: #HttpHeaders} |
+	{request_body!: #HttpBody} |
+	{response_body!: #HttpBody} |
+	{request_trailers!: #HttpTrailers} |
+	{response_trailers!: #HttpTrailers}
 }
 
 #ProcessingResponse: {
-	"@type":                      "type.googleapis.com/envoy.service.ext_proc.v3.ProcessingResponse"
-	request_headers?:             #HeadersResponse
-	response_headers?:            #HeadersResponse
-	request_body?:                #BodyResponse
-	response_body?:               #BodyResponse
-	request_trailers?:            #TrailersResponse
-	response_trailers?:           #TrailersResponse
-	immediate_response?:          #ImmediateResponse
-	streamed_immediate_response?: #StreamedImmediateResponse
+	"@type": "type.googleapis.com/envoy.service.ext_proc.v3.ProcessingResponse"
 	dynamic_metadata?: {...}
 	mode_override?:            v3_1.#ProcessingMode
 	request_drain?:            bool
 	override_message_timeout?: string
+
+	// oneof response: exactly one must be set
+	{request_headers!: #HeadersResponse} |
+	{response_headers!: #HeadersResponse} |
+	{request_body!: #BodyResponse} |
+	{response_body!: #BodyResponse} |
+	{request_trailers!: #TrailersResponse} |
+	{response_trailers!: #TrailersResponse} |
+	{immediate_response!: #ImmediateResponse} |
+	{streamed_immediate_response!: #StreamedImmediateResponse}
 }
 
 #HttpHeaders: {
@@ -80,10 +84,13 @@ import (
 }
 
 #StreamedImmediateResponse: {
-	"@type":            "type.googleapis.com/envoy.service.ext_proc.v3.StreamedImmediateResponse"
-	headers_response?:  #HttpHeaders
-	body_response?:     #StreamedBodyResponse
-	trailers_response?: v3_2.#HeaderMap
+	"@type": "type.googleapis.com/envoy.service.ext_proc.v3.StreamedImmediateResponse"
+
+	// oneof response: at most one may be set
+	*{} |
+	{headers_response!: #HttpHeaders} |
+	{body_response!: #StreamedBodyResponse} |
+	{trailers_response!: v3_2.#HeaderMap}
 }
 
 #CommonResponse: {
@@ -126,8 +133,11 @@ import (
 }
 
 #BodyMutation: {
-	"@type":            "type.googleapis.com/envoy.service.ext_proc.v3.BodyMutation"
-	body?:              bytes
-	clear_body?:        bool
-	streamed_response?: #StreamedBodyResponse
+	"@type": "type.googleapis.com/envoy.service.ext_proc.v3.BodyMutation"
+
+	// oneof mutation: at most one may be set
+	*{} |
+	{body!: bytes} |
+	{clear_body!: bool} |
+	{streamed_response!: #StreamedBodyResponse}
 }

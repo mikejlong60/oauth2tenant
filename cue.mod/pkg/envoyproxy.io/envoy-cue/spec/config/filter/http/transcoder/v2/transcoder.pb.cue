@@ -6,9 +6,7 @@ import (
 )
 
 #GrpcJsonTranscoder: {
-	"@type":               "type.googleapis.com/envoy.config.filter.http.transcoder.v2.GrpcJsonTranscoder"
-	proto_descriptor?:     string
-	proto_descriptor_bin?: bytes
+	"@type": "type.googleapis.com/envoy.config.filter.http.transcoder.v2.GrpcJsonTranscoder"
 	services!: [...string] & list.MinItems(1)
 	print_options?:                #GrpcJsonTranscoder_PrintOptions
 	match_incoming_request_route?: bool
@@ -16,6 +14,10 @@ import (
 	auto_mapping?:                    bool
 	ignore_unknown_query_parameters?: bool
 	convert_grpc_status?:             bool
+
+	// oneof descriptor_set: exactly one must be set
+	{proto_descriptor!: string} |
+	{proto_descriptor_bin!: bytes}
 }
 
 #GrpcJsonTranscoder_PrintOptions: {
