@@ -5,63 +5,181 @@ import (
 	v3_1 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
+// Proto representation of the value returned by /server_info, containing
+// server version/server status information.
+// [#next-free-field: 8]
 #ServerInfo: {
-	"@type":               "type.googleapis.com/envoy.admin.v3.ServerInfo"
-	version?:              string
-	state?:                #ServerInfo_State
+	"@type": "type.googleapis.com/envoy.admin.v3.ServerInfo"
+
+	// Server version.
+	version?: string
+
+	// State of the server.
+	state?: #ServerInfo_State
+
+	// Uptime since current epoch was started.
 	uptime_current_epoch?: string
-	uptime_all_epochs?:    string
-	hot_restart_version?:  string
+
+	// Uptime since the start of the first epoch.
+	uptime_all_epochs?: string
+
+	// Hot restart version.
+	hot_restart_version?: string
+
+	// Command line options the server is currently running with.
 	command_line_options?: #CommandLineOptions
-	node?:                 v3_1.#Node
+
+	// Populated node identity of this server.
+	node?: v3_1.#Node
 }
 
-#ServerInfo_State: "LIVE" | "DRAINING" | "PRE_INITIALIZING" | "INITIALIZING"
+#ServerInfo_State:
+	// Server is live and serving traffic.
+	"LIVE" |
 
+	// Server is draining listeners in response to external health checks failing.
+	"DRAINING" |
+
+	// Server has not yet completed cluster manager initialization.
+	"PRE_INITIALIZING" |
+
+	// Server is running the cluster manager initialization callbacks (e.g., RDS).
+	"INITIALIZING"
+
+// [#next-free-field: 43]
 #CommandLineOptions: {
-	"@type":                        "type.googleapis.com/envoy.admin.v3.CommandLineOptions"
-	base_id?:                       uint64
-	use_dynamic_base_id?:           bool
+	"@type": "type.googleapis.com/envoy.admin.v3.CommandLineOptions"
+
+	// See :option:`--base-id` for details.
+	base_id?: uint64
+
+	// See :option:`--use-dynamic-base-id` for details.
+	use_dynamic_base_id?: bool
+
+	// See :option:`--skip-hot-restart-on-no-parent` for details.
 	skip_hot_restart_on_no_parent?: bool
+
+	// See :option:`--skip-hot-restart-parent-stats` for details.
 	skip_hot_restart_parent_stats?: bool
-	base_id_path?:                  string
-	concurrency?:                   uint32
-	config_path?:                   string
-	config_yaml?:                   string
-	allow_unknown_static_fields?:   bool
+
+	// See :option:`--base-id-path` for details.
+	base_id_path?: string
+
+	// See :option:`--concurrency` for details.
+	concurrency?: uint32
+
+	// See :option:`--config-path` for details.
+	config_path?: string
+
+	// See :option:`--config-yaml` for details.
+	config_yaml?: string
+
+	// See :option:`--allow-unknown-static-fields` for details.
+	allow_unknown_static_fields?: bool
+
+	// See :option:`--reject-unknown-dynamic-fields` for details.
 	reject_unknown_dynamic_fields?: bool
+
+	// See :option:`--ignore-unknown-dynamic-fields` for details.
 	ignore_unknown_dynamic_fields?: bool
-	skip_deprecated_logs?:          bool
-	admin_address_path?:            string
-	local_address_ip_version?:      #CommandLineOptions_IpVersion
-	log_level?:                     string
-	component_log_level?:           string
-	log_format?:                    string
-	log_format_escaped?:            bool
-	log_path?:                      string
-	service_cluster?:               string
-	service_node?:                  string
-	service_zone?:                  string
-	file_flush_interval?:           string
-	file_flush_min_size?:           uint32
-	drain_time?:                    string
-	drain_strategy?:                #CommandLineOptions_DrainStrategy
-	parent_shutdown_time?:          string
-	mode?:                          #CommandLineOptions_Mode
-	disable_hot_restart?:           bool
-	enable_mutex_tracing?:          bool
-	restart_epoch?:                 uint32
-	cpuset_threads?:                bool
+
+	// See :option:`--skip-deprecated-logs` for details.
+	skip_deprecated_logs?: bool
+
+	// See :option:`--admin-address-path` for details.
+	admin_address_path?: string
+
+	// See :option:`--local-address-ip-version` for details.
+	local_address_ip_version?: #CommandLineOptions_IpVersion
+
+	// See :option:`--log-level` for details.
+	log_level?: string
+
+	// See :option:`--component-log-level` for details.
+	component_log_level?: string
+
+	// See :option:`--log-format` for details.
+	log_format?: string
+
+	// See :option:`--log-format-escaped` for details.
+	log_format_escaped?: bool
+
+	// See :option:`--log-path` for details.
+	log_path?: string
+
+	// See :option:`--service-cluster` for details.
+	service_cluster?: string
+
+	// See :option:`--service-node` for details.
+	service_node?: string
+
+	// See :option:`--service-zone` for details.
+	service_zone?: string
+
+	// See :option:`--file-flush-interval-msec` for details.
+	file_flush_interval?: string
+
+	// See :option:`--file-flush-min-size-kb` for details.
+	file_flush_min_size?: uint32
+
+	// See :option:`--drain-time-s` for details.
+	drain_time?: string
+
+	// See :option:`--drain-strategy` for details.
+	drain_strategy?: #CommandLineOptions_DrainStrategy
+
+	// See :option:`--parent-shutdown-time-s` for details.
+	parent_shutdown_time?: string
+
+	// See :option:`--mode` for details.
+	mode?: #CommandLineOptions_Mode
+
+	// See :option:`--disable-hot-restart` for details.
+	disable_hot_restart?: bool
+
+	// See :option:`--enable-mutex-tracing` for details.
+	enable_mutex_tracing?: bool
+
+	// See :option:`--restart-epoch` for details.
+	restart_epoch?: uint32
+
+	// See :option:`--cpuset-threads` for details.
+	cpuset_threads?: bool
+
+	// See :option:`--disable-extensions` for details.
 	disabled_extensions?: [...string]
+
+	// See :option:`--enable-fine-grain-logging` for details.
 	enable_fine_grain_logging?: bool
-	socket_path?:               string
-	socket_mode?:               uint32
-	enable_core_dump?:          bool
+
+	// See :option:`--socket-path` for details.
+	socket_path?: string
+
+	// See :option:`--socket-mode` for details.
+	socket_mode?: uint32
+
+	// See :option:`--enable-core-dump` for details.
+	enable_core_dump?: bool
+
+	// See :option:`--stats-tag` for details.
 	stats_tag?: [...string]
 }
 
 #CommandLineOptions_IpVersion: "v4" | "v6"
 
-#CommandLineOptions_Mode: "Serve" | "Validate" | "InitOnly"
+#CommandLineOptions_Mode:
+	// Validate configs and then serve traffic normally.
+	"Serve" |
 
-#CommandLineOptions_DrainStrategy: "Gradual" | "Immediate"
+	// Validate configs and exit.
+	"Validate" |
+
+	// Completely load and initialize the config, and then exit without running the listener loop.
+	"InitOnly"
+
+#CommandLineOptions_DrainStrategy:
+	// Gradually discourage connections over the course of the drain period.
+	"Gradual" |
+
+	// Discourage all connections for the duration of the drain sequence.
+	"Immediate"

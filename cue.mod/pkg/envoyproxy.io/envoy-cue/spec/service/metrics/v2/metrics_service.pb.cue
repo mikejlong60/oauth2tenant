@@ -11,12 +11,19 @@ import (
 }
 
 #StreamMetricsMessage: {
-	"@type":     "type.googleapis.com/envoy.service.metrics.v2.StreamMetricsMessage"
+	"@type": "type.googleapis.com/envoy.service.metrics.v2.StreamMetricsMessage"
+
+	// Identifier data effectively is a structured metadata. As a performance optimization this will
+	// only be sent in the first message on the stream.
 	identifier?: #StreamMetricsMessage_Identifier
+
+	// A list of metric entries
 	envoy_metrics?: [...go_1.#MetricFamily]
 }
 
 #StreamMetricsMessage_Identifier: {
 	"@type": "type.googleapis.com/envoy.service.metrics.v2.StreamMetricsMessage.Identifier"
-	node!:   core_2.#Node
+
+	// The node sending metrics over the stream.
+	node!: core_2.#Node
 }

@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// xDS authority information.
 #Authority: {
 	"@type": "type.googleapis.com/xds.core.v3.Authority"
 	name!:   string & strings.MinRunes(1)

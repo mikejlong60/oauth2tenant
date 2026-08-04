@@ -6,15 +6,29 @@ import (
 	v3_2 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
+// Configuration for tap transport socket. This wraps another transport socket, providing the
+// ability to interpose and record in plain text any traffic that is surfaced to Envoy.
 #Tap: {
-	"@type":            "type.googleapis.com/envoy.extensions.transport_sockets.tap.v3.Tap"
-	common_config!:     v3_1.#CommonExtensionConfig
-	transport_socket!:  v3_2.#TransportSocket
+	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tap.v3.Tap"
+
+	// Common configuration for the tap transport socket.
+	common_config!: v3_1.#CommonExtensionConfig
+
+	// The underlying transport socket being wrapped.
+	transport_socket!: v3_2.#TransportSocket
+
+	// Additional configurations for the transport socket tap
 	socket_tap_config?: #SocketTapConfig
 }
 
+// Additional configurations for the transport socket tap
 #SocketTapConfig: {
-	"@type":                   "type.googleapis.com/envoy.extensions.transport_sockets.tap.v3.SocketTapConfig"
+	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tap.v3.SocketTapConfig"
+
+	// Indicates to whether output the connection information per event
+	// This is only applicable if the streamed trace is enabled
 	set_connection_per_event?: bool
-	stats_prefix?:             string
+
+	// The contents of the transport tap's statistics prefix.
+	stats_prefix?: string
 }

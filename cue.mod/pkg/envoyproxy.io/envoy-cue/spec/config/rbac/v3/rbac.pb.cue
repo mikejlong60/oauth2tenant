@@ -11,103 +11,472 @@ import (
 	v3_5 "envoyproxy.io/envoy-cue/spec/type/v3"
 )
 
+// Role Based Access Control (RBAC) provides service-level and method-level access control for a
+// service. Requests are allowed or denied based on the ``action`` and whether a matching policy is
+// found. For instance, if the action is ALLOW and a matching policy is found the request should be
+// allowed.
+//
+// RBAC can also be used to make access logging decisions by communicating with access loggers
+// through dynamic metadata. When the action is LOG and at least one policy matches, the
+// ``access_log_hint`` value in the shared key namespace 'envoy.common' is set to ``true`` indicating
+// the request should be logged.
+//
+// Here is an example of RBAC configuration. It has two policies:
+//
+// * Service account ``cluster.local/ns/default/sa/admin`` has full access to the service, and so
+//   does "cluster.local/ns/default/sa/superuser".
+//
+// * Any user can read (``GET``) the service at paths with prefix ``/products``, so long as the
+//   destination port is either 80 or 443.
+//
+//  .. code-block:: yaml
+//
+//   action: ALLOW
+//   policies:
+//     "service-admin":
+//       permissions:
+//         - any: true
+//       principals:
+//         - authenticated:
+//             principal_name:
+//               exact: "cluster.local/ns/default/sa/admin"
+//         - authenticated:
+//             principal_name:
+//               exact: "cluster.local/ns/default/sa/superuser"
+//     "product-viewer":
+//       permissions:
+//           - and_rules:
+//               rules:
+//                 - header:
+//                     name: ":method"
+//                     string_match:
+//                       exact: "GET"
+//                 - url_path:
+//                     path: { prefix: "/products" }
+//                 - or_rules:
+//                     rules:
+//                       - destination_port: 80
+//                       - destination_port: 443
+//       principals:
+//         - any: true
 #RBAC: {
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.RBAC"
+
+	// The action to take if a policy matches. Every action either allows or denies a request,
+	// and can also carry out action-specific operations.
+	//
+	// Actions:
+	//
+	//  * ``ALLOW``: Allows the request if and only if there is a policy that matches
+	//    the request.
+	//  * ``DENY``: Allows the request if and only if there are no policies that
+	//    match the request.
+	//  * ``LOG``: Allows all requests. If at least one policy matches, the dynamic
+	//    metadata key ``access_log_hint`` is set to the value ``true`` under the shared
+	//    key namespace ``envoy.common``. If no policies match, it is set to ``false``.
+	//    Other actions do not modify this key.
 	action?: #RBAC_Action
+
+	// Maps from policy name to policy. A match occurs when at least one policy matches the request.
+	// The policies are evaluated in lexicographic order of the policy name.
 	policies?: {[string]: #Policy}
+
+	// Audit logging options that include the condition for audit logging to happen
+	// and audit logger configurations.
+	//
+	// [#not-implemented-hide:]
 	audit_logging_options?: #RBAC_AuditLoggingOptions
 }
 
 #RBAC_AuditLoggingOptions: {
-	"@type":          "type.googleapis.com/envoy.config.rbac.v3.RBAC.AuditLoggingOptions"
+	"@type": "type.googleapis.com/envoy.config.rbac.v3.RBAC.AuditLoggingOptions"
+
+	// Condition for the audit logging to happen.
+	// If this condition is met, all the audit loggers configured here will be invoked.
+	//
+	// [#not-implemented-hide:]
 	audit_condition?: #RBAC_AuditLoggingOptions_AuditCondition
+
+	// Configurations for RBAC-based authorization audit loggers.
+	//
+	// [#not-implemented-hide:]
 	logger_configs?: [...#RBAC_AuditLoggingOptions_AuditLoggerConfig]
 }
 
+// [#not-implemented-hide:]
 #RBAC_AuditLoggingOptions_AuditLoggerConfig: {
-	"@type":       "type.googleapis.com/envoy.config.rbac.v3.RBAC.AuditLoggingOptions.AuditLoggerConfig"
+	"@type": "type.googleapis.com/envoy.config.rbac.v3.RBAC.AuditLoggingOptions.AuditLoggerConfig"
+
+	// Typed logger configuration.
+	//
+	// [#extension-category: envoy.rbac.audit_loggers]
 	audit_logger?: v3_1.#TypedExtensionConfig
-	is_optional?:  bool
+
+	// If true, when the logger is not supported, the data plane will not NACK but simply ignore it.
+	is_optional?: bool
 }
 
-#RBAC_AuditLoggingOptions_AuditCondition: "NONE" | "ON_DENY" | "ON_ALLOW" | "ON_DENY_AND_ALLOW"
+// Deny and allow here refer to RBAC decisions, not actions.
+#RBAC_AuditLoggingOptions_AuditCondition:
+	// Never audit.
+	"NONE" |
 
-#RBAC_Action: "ALLOW" | "DENY" | "LOG"
+	// Audit when RBAC denies the request.
+	"ON_DENY" |
 
+	// Audit when RBAC allows the request.
+	"ON_ALLOW" |
+
+	// Audit whether RBAC allows or denies the request.
+	"ON_DENY_AND_ALLOW"
+
+// Should we do safe-list or block-list style access control?
+#RBAC_Action:
+	// The policies grant access to principals. The rest are denied. This is safe-list style
+	// access control. This is the default type.
+	"ALLOW" |
+
+	// The policies deny access to principals. The rest are allowed. This is block-list style
+	// access control.
+	"DENY" |
+
+	// The policies set the ``access_log_hint`` dynamic metadata key based on if requests match.
+	// All requests are allowed.
+	"LOG"
+
+// Policy specifies a role and the principals that are assigned/denied the role.
+// A policy matches if and only if at least one of its permissions match the
+// action taking place AND at least one of its principals match the downstream
+// AND the condition is true if specified.
+// [#next-free-field: 6]
 #Policy: {
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.Policy"
+
+	// Required. The set of permissions that define a role. Each permission is
+	// matched with OR semantics. To match all actions for this policy, a single
+	// Permission with the ``any`` field set to true should be used.
 	permissions!: [...#Permission] & list.MinItems(1)
+
+	// Required. The set of principals that are assigned/denied the role based on
+	// “action”. Each principal is matched with OR semantics. To match all
+	// downstreams for this policy, a single Principal with the ``any`` field set to
+	// true should be used.
 	principals!: [...#Principal] & list.MinItems(1)
-	condition?:         v1alpha1_2.#Expr
+
+	// An optional symbolic expression specifying an access control
+	// :ref:`condition <arch_overview_condition>`. The condition is combined
+	// with the permissions and the principals as a clause with AND semantics.
+	// Only be used when checked_condition is not used.
+	condition?: v1alpha1_2.#Expr
+
+	// [#not-implemented-hide:]
+	// An optional symbolic expression that has been successfully type checked.
+	// Only be used when condition is not used.
 	checked_condition?: v1alpha1_2.#CheckedExpr
-	cel_config?:        v3_1.#CelExpressionConfig
+
+	// CEL expression configuration that modifies the evaluation behavior of the ``condition`` field.
+	// If specified, string conversion, concatenation, and manipulation functions may be enabled
+	// for the CEL expression. See :ref:`CelExpressionConfig <envoy_v3_api_msg_config.core.v3.CelExpressionConfig>`
+	// for more details.
+	cel_config?: v3_1.#CelExpressionConfig
 }
 
+// SourcedMetadata enables matching against metadata from different sources in the request processing
+// pipeline. It extends the base MetadataMatcher functionality by allowing specification of where the
+// metadata should be sourced from, rather than only matching against dynamic metadata.
+//
+// The matcher can be configured to look up metadata from:
+//
+// * Dynamic metadata: Runtime metadata added by filters during request processing
+// * Route metadata: Static metadata configured on the route entry
 #SourcedMetadata: {
-	"@type":           "type.googleapis.com/envoy.config.rbac.v3.SourcedMetadata"
+	"@type": "type.googleapis.com/envoy.config.rbac.v3.SourcedMetadata"
+
+	// Metadata matcher configuration that defines what metadata to match against. This includes the filter name,
+	// metadata key path, and expected value.
 	metadata_matcher!: v3_3.#MetadataMatcher
-	metadata_source?:  #MetadataSource
+
+	// Specifies which metadata source should be used for matching. If not set,
+	// defaults to DYNAMIC (dynamic metadata). Set to ROUTE to match against
+	// static metadata configured on the route entry.
+	metadata_source?: #MetadataSource
 }
 
+// Permission defines an action (or actions) that a principal can take.
+// [#next-free-field: 15]
 #Permission: {
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.Permission"
 
 	// oneof rule: exactly one must be set
+	// A set of rules that all must match in order to define the action.
 	{and_rules!: #Permission_Set} |
-	{or_rules!: #Permission_Set} |
-	{any!: bool & true} |
-	{header!: v3_4.#HeaderMatcher} |
-	{url_path!: v3_3.#PathMatcher} |
-	{destination_ip!: v3_1.#CidrRange} |
-	{destination_port!: uint32 & <=65535} |
-	{destination_port_range!: v3_5.#Int32Range} |
-	{metadata!: v3_3.#MetadataMatcher} |
-	{not_rule!: #Permission} |
-	{requested_server_name!: v3_3.#StringMatcher} |
-	{matcher!: v3_1.#TypedExtensionConfig} |
-	{uri_template!: v3_1.#TypedExtensionConfig} |
-	{sourced_metadata!: #SourcedMetadata}
+	{
+
+		// A set of rules where at least one must match in order to define the action.
+		or_rules!: #Permission_Set
+	} |
+	{
+
+		// When any is set, it matches any action.
+		any!: bool & true
+	} |
+	{
+
+		// A header (or pseudo-header such as ``:path`` or ``:method``) on the incoming HTTP request. Only available
+		// for HTTP request.
+		//
+		// .. note::
+		//
+		//   The pseudo-header ``:path`` includes the query and fragment string. Use the ``url_path`` field if you
+		//   want to match the URL path without the query and fragment string.
+		header!: v3_4.#HeaderMatcher
+	} |
+	{
+
+		// A URL path on the incoming HTTP request. Only available for HTTP.
+		url_path!: v3_3.#PathMatcher
+	} |
+	{
+
+		// A CIDR block that describes the destination IP.
+		destination_ip!: v3_1.#CidrRange
+	} |
+	{
+
+		// A port number that describes the destination port connecting to.
+		destination_port!: uint32 & <=65535
+	} |
+	{
+
+		// A port number range that describes a range of destination ports connecting to.
+		destination_port_range!: v3_5.#Int32Range
+	} |
+	{
+
+		// Metadata that describes additional information about the action. This field is deprecated; please use
+		// :ref:`sourced_metadata<envoy_v3_api_field_config.rbac.v3.Permission.sourced_metadata>` instead.
+		metadata!: v3_3.#MetadataMatcher
+	} |
+	{
+
+		// Negates matching the provided permission. For instance, if the value of
+		// ``not_rule`` would match, this permission would not match. Conversely, if
+		// the value of ``not_rule`` would not match, this permission would match.
+		not_rule!: #Permission
+	} |
+	{
+
+		// The request server from the client's connection request. This is typically TLS SNI.
+		//
+		// .. attention::
+		//
+		//   The behavior of this field may be affected by how Envoy is configured
+		//   as explained below.
+		//
+		//   * If the :ref:`TLS Inspector <config_listener_filters_tls_inspector>`
+		//     filter is not added, and if a ``FilterChainMatch`` is not defined for
+		//     the :ref:`server name
+		//     <envoy_v3_api_field_config.listener.v3.FilterChainMatch.server_names>`,
+		//     a TLS connection's requested SNI server name will be treated as if it
+		//     wasn't present.
+		//
+		//   * A :ref:`listener filter <arch_overview_listener_filters>` may
+		//     overwrite a connection's requested server name within Envoy.
+		//
+		// Please refer to :ref:`this FAQ entry <faq_how_to_setup_sni>` to learn how to setup SNI.
+		requested_server_name!: v3_3.#StringMatcher
+	} |
+	{
+
+		// Extension for configuring custom matchers for RBAC.
+		// [#extension-category: envoy.rbac.matchers]
+		matcher!: v3_1.#TypedExtensionConfig
+	} |
+	{
+
+		// URI template path matching.
+		// [#extension-category: envoy.path.match]
+		uri_template!: v3_1.#TypedExtensionConfig
+	} |
+	{
+
+		// Matches against metadata from either dynamic state or route configuration. Preferred over the
+		// ``metadata`` field as it provides more flexibility in metadata source selection.
+		sourced_metadata!: #SourcedMetadata
+	}
 }
 
+// Used in the ``and_rules`` and ``or_rules`` fields in the ``rule`` oneof. Depending on the context,
+// each are applied with the associated behavior.
 #Permission_Set: {
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.Permission.Set"
 	rules!: [...#Permission] & list.MinItems(1)
 }
 
+// Principal defines an identity or a group of identities for a downstream
+// subject.
+// [#next-free-field: 15]
 #Principal: {
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.Principal"
 
 	// oneof identifier: exactly one must be set
+	// A set of identifiers that all must match in order to define the downstream.
 	{and_ids!: #Principal_Set} |
-	{or_ids!: #Principal_Set} |
-	{any!: bool & true} |
-	{authenticated!: #Principal_Authenticated} |
-	{source_ip!: v3_1.#CidrRange} |
-	{direct_remote_ip!: v3_1.#CidrRange} |
-	{remote_ip!: v3_1.#CidrRange} |
-	{header!: v3_4.#HeaderMatcher} |
-	{url_path!: v3_3.#PathMatcher} |
-	{metadata!: v3_3.#MetadataMatcher} |
-	{filter_state!: v3_3.#FilterStateMatcher} |
-	{not_id!: #Principal} |
-	{sourced_metadata!: #SourcedMetadata} |
-	{custom!: v3_1.#TypedExtensionConfig}
+	{
+
+		// A set of identifiers at least one must match in order to define the downstream.
+		or_ids!: #Principal_Set
+	} |
+	{
+
+		// When any is set, it matches any downstream.
+		any!: bool & true
+	} |
+	{
+
+		// Authenticated attributes that identify the downstream.
+		// It is recommended to NOT use this field, but instead use
+		// :ref:`MTlsAuthenticated <envoy_v3_api_msg_extensions.rbac.principals.mtls_authenticated.v3.Config>`,
+		// configured via :ref:`custom <envoy_v3_api_field_config.rbac.v3.Principal.custom>`,
+		// which should be used for most use cases due to its improved security.
+		authenticated!: #Principal_Authenticated
+	} |
+	{
+
+		// A CIDR block that describes the downstream IP.
+		// This address will honor proxy protocol, but will not honor XFF.
+		//
+		// This field is deprecated; either use :ref:`remote_ip
+		// <envoy_v3_api_field_config.rbac.v3.Principal.remote_ip>` for the same
+		// behavior, or use
+		// :ref:`direct_remote_ip <envoy_v3_api_field_config.rbac.v3.Principal.direct_remote_ip>`.
+		source_ip!: v3_1.#CidrRange
+	} |
+	{
+
+		// A CIDR block that describes the downstream remote/origin address.
+		//
+		// .. note::
+		//
+		//   This is always the physical peer even if the
+		//   :ref:`remote_ip <envoy_v3_api_field_config.rbac.v3.Principal.remote_ip>` is inferred from the
+		//   x-forwarder-for header, the proxy protocol, etc.
+		direct_remote_ip!: v3_1.#CidrRange
+	} |
+	{
+
+		// A CIDR block that describes the downstream remote/origin address.
+		//
+		// .. note::
+		//
+		//   This may not be the physical peer and could be different from the :ref:`direct_remote_ip
+		//   <envoy_v3_api_field_config.rbac.v3.Principal.direct_remote_ip>`. E.g, if the remote ip is inferred from
+		//   the x-forwarder-for header, the proxy protocol, etc.
+		remote_ip!: v3_1.#CidrRange
+	} |
+	{
+
+		// A header (or pseudo-header such as ``:path`` or ``:method``) on the incoming HTTP request. Only available
+		// for HTTP request.
+		//
+		// .. note::
+		//
+		//   The pseudo-header ``:path`` includes the query and fragment string. Use the ``url_path`` field if you
+		//   want to match the URL path without the query and fragment string.
+		header!: v3_4.#HeaderMatcher
+	} |
+	{
+
+		// A URL path on the incoming HTTP request. Only available for HTTP.
+		url_path!: v3_3.#PathMatcher
+	} |
+	{
+
+		// Metadata that describes additional information about the principal. This field is deprecated; please use
+		// :ref:`sourced_metadata<envoy_v3_api_field_config.rbac.v3.Principal.sourced_metadata>` instead.
+		metadata!: v3_3.#MetadataMatcher
+	} |
+	{
+
+		// Identifies the principal using a filter state object.
+		filter_state!: v3_3.#FilterStateMatcher
+	} |
+	{
+
+		// Negates matching the provided principal. For instance, if the value of
+		// ``not_id`` would match, this principal would not match. Conversely, if the
+		// value of ``not_id`` would not match, this principal would match.
+		not_id!: #Principal
+	} |
+	{
+
+		// Matches against metadata from either dynamic state or route configuration. Preferred over the
+		// ``metadata`` field as it provides more flexibility in metadata source selection.
+		sourced_metadata!: #SourcedMetadata
+	} |
+	{
+
+		// Extension for configuring custom principals for RBAC.
+		// [#extension-category: envoy.rbac.principals]
+		custom!: v3_1.#TypedExtensionConfig
+	}
 }
 
+// Used in the ``and_ids`` and ``or_ids`` fields in the ``identifier`` oneof.
+// Depending on the context, each are applied with the associated behavior.
 #Principal_Set: {
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.Principal.Set"
 	ids!: [...#Principal] & list.MinItems(1)
 }
 
+// Authentication attributes for a downstream.
+// It is recommended to NOT use this type, but instead use
+// :ref:`MTlsAuthenticated <envoy_v3_api_msg_extensions.rbac.principals.mtls_authenticated.v3.Config>`,
+// configured via :ref:`custom <envoy_v3_api_field_config.rbac.v3.Principal.custom>`,
+// which should be used for most use cases due to its improved security.
 #Principal_Authenticated: {
-	"@type":         "type.googleapis.com/envoy.config.rbac.v3.Principal.Authenticated"
+	"@type": "type.googleapis.com/envoy.config.rbac.v3.Principal.Authenticated"
+
+	// The name of the principal. If set, The URI SAN or DNS SAN in that order
+	// is used from the certificate, otherwise the subject field is used. If
+	// unset, it applies to any user that is allowed by the downstream TLS configuration.
+	// If :ref:`require_client_certificate <envoy_v3_api_field_extensions.transport_sockets.tls.v3.DownstreamTlsContext.require_client_certificate>`
+	// is false or :ref:`trust_chain_verification <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.trust_chain_verification>`
+	// is set to :ref:`ACCEPT_UNTRUSTED <envoy_v3_api_enum_value_extensions.transport_sockets.tls.v3.CertificateValidationContext.TrustChainVerification.ACCEPT_UNTRUSTED>`,
+	// then no authentication is required.
 	principal_name?: v3_3.#StringMatcher
 }
 
+// Action defines the result of allowance or denial when a request matches the matcher.
 #Action: {
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.Action"
-	name!:   string & strings.MinRunes(1)
+
+	// The name indicates the policy name.
+	name!: string & strings.MinRunes(1)
+
+	// The action to take if the matcher matches. Every action either allows or denies a request,
+	// and can also carry out action-specific operations.
+	//
+	// **Actions:**
+	//
+	//  * ``ALLOW``: If the request gets matched on ALLOW, it is permitted.
+	//  * ``DENY``: If the request gets matched on DENY, it is not permitted.
+	//  * ``LOG``: If the request gets matched on LOG, it is permitted. Besides, the
+	//    dynamic metadata key ``access_log_hint`` under the shared key namespace
+	//    ``envoy.common`` will be set to the value ``true``.
+	//  * If the request cannot get matched, it will fallback to ``DENY``.
+	//
+	// **Log behavior:**
+	//
+	//  If the RBAC matcher contains at least one LOG action, the dynamic
+	//  metadata key ``access_log_hint`` will be set based on if the request
+	//  get matched on the LOG action.
 	action?: #RBAC_Action
 }
 
-#MetadataSource: "DYNAMIC" | "ROUTE"
+#MetadataSource:
+	// Query :ref:`dynamic metadata <well_known_dynamic_metadata>`
+	"DYNAMIC" |
+
+	// Query :ref:`route metadata <envoy_v3_api_field_config.route.v3.Route.metadata>`
+	"ROUTE"

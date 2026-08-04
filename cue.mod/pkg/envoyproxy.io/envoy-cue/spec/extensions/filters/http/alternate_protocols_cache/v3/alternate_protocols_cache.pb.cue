@@ -5,7 +5,12 @@ import (
 	v3_1 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
+// Configuration for the alternate protocols cache HTTP filter.
+// [#extension: envoy.filters.http.alternate_protocols_cache]
 #FilterConfig: {
-	"@type":                            "type.googleapis.com/envoy.extensions.filters.http.alternate_protocols_cache.v3.FilterConfig"
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.alternate_protocols_cache.v3.FilterConfig"
+
+	// This field is ignored: the alternate protocols cache filter will use the
+	// cache for the cluster the request is routed to.
 	alternate_protocols_cache_options?: v3_1.#AlternateProtocolsCacheOptions
 }

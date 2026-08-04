@@ -6,14 +6,26 @@ import (
 )
 
 #RedisProxyExternalAuthRequest: {
-	"@type":   "type.googleapis.com/envoy.service.redis_auth.v3.RedisProxyExternalAuthRequest"
+	"@type": "type.googleapis.com/envoy.service.redis_auth.v3.RedisProxyExternalAuthRequest"
+
+	// Username, if applicable. Otherwise, empty.
 	username?: string
+
+	// Password sent with the AUTH command.
 	password?: string
 }
 
 #RedisProxyExternalAuthResponse: {
-	"@type":     "type.googleapis.com/envoy.service.redis_auth.v3.RedisProxyExternalAuthResponse"
-	status?:     status_1.#Status
+	"@type": "type.googleapis.com/envoy.service.redis_auth.v3.RedisProxyExternalAuthResponse"
+
+	// Status of the authentication check.
+	status?: status_1.#Status
+
+	// Optional expiration time for the authentication.
+	// If set, the authentication will be valid until this time.
+	// If not set, the authentication will be valid indefinitely.
 	expiration?: string
-	message?:    string
+
+	// Optional message to be sent back to the client.
+	message?: string
 }

@@ -6,94 +6,306 @@ import (
 )
 
 #TCPAccessLogEntry: {
-	"@type":                "type.googleapis.com/envoy.data.accesslog.v3.TCPAccessLogEntry"
-	common_properties?:     #AccessLogCommon
+	"@type": "type.googleapis.com/envoy.data.accesslog.v3.TCPAccessLogEntry"
+
+	// Common properties shared by all Envoy access logs.
+	common_properties?: #AccessLogCommon
+
+	// Properties of the TCP connection.
 	connection_properties?: #ConnectionProperties
 }
 
 #HTTPAccessLogEntry: {
-	"@type":            "type.googleapis.com/envoy.data.accesslog.v3.HTTPAccessLogEntry"
+	"@type": "type.googleapis.com/envoy.data.accesslog.v3.HTTPAccessLogEntry"
+
+	// Common properties shared by all Envoy access logs.
 	common_properties?: #AccessLogCommon
 	protocol_version?:  #HTTPAccessLogEntry_HTTPVersion
-	request?:           #HTTPRequestProperties
-	response?:          #HTTPResponseProperties
+
+	// Description of the incoming HTTP request.
+	request?: #HTTPRequestProperties
+
+	// Description of the outgoing HTTP response.
+	response?: #HTTPResponseProperties
 }
 
+// HTTP version
 #HTTPAccessLogEntry_HTTPVersion: "PROTOCOL_UNSPECIFIED" | "HTTP10" | "HTTP11" | "HTTP2" | "HTTP3"
 
+// Defines fields for a connection
 #ConnectionProperties: {
-	"@type":         "type.googleapis.com/envoy.data.accesslog.v3.ConnectionProperties"
+	"@type": "type.googleapis.com/envoy.data.accesslog.v3.ConnectionProperties"
+
+	// Number of bytes received from downstream.
 	received_bytes?: uint64
-	sent_bytes?:     uint64
+
+	// Number of bytes sent to downstream.
+	sent_bytes?: uint64
 }
 
+// Defines fields that are shared by all Envoy access logs.
+// [#next-free-field: 34]
 #AccessLogCommon: {
-	"@type":                            "type.googleapis.com/envoy.data.accesslog.v3.AccessLogCommon"
-	sample_rate?:                       float64 & >0 & <=1
-	downstream_remote_address?:         v3_1.#Address
-	downstream_local_address?:          v3_1.#Address
-	tls_properties?:                    #TLSProperties
-	start_time?:                        string
-	time_to_last_rx_byte?:              string
-	time_to_first_upstream_tx_byte?:    string
-	time_to_last_upstream_tx_byte?:     string
-	time_to_first_upstream_rx_byte?:    string
-	time_to_last_upstream_rx_byte?:     string
-	time_to_first_downstream_tx_byte?:  string
-	time_to_last_downstream_tx_byte?:   string
-	upstream_remote_address?:           v3_1.#Address
-	upstream_local_address?:            v3_1.#Address
-	upstream_cluster?:                  string
-	response_flags?:                    #ResponseFlags
-	metadata?:                          v3_1.#Metadata
+	"@type": "type.googleapis.com/envoy.data.accesslog.v3.AccessLogCommon"
+
+	// [#not-implemented-hide:]
+	// This field indicates the rate at which this log entry was sampled.
+	// Valid range is (0.0, 1.0].
+	sample_rate?: float64 & >0 & <=1
+
+	// This field is the remote/origin address on which the request from the user was received.
+	//
+	// .. note::
+	//   This may not be the actual peer address. For example, it might be derived from headers like ``x-forwarded-for``,
+	//   the proxy protocol, or similar sources.
+	downstream_remote_address?: v3_1.#Address
+
+	// This field is the local/destination address on which the request from the user was received.
+	downstream_local_address?: v3_1.#Address
+
+	// If the connection is secure, this field will contain TLS properties.
+	tls_properties?: #TLSProperties
+
+	// The time that Envoy started servicing this request. This is effectively the time that the first
+	// downstream byte is received.
+	start_time?: string
+
+	// Interval between the first downstream byte received and the last
+	// downstream byte received (i.e. time it takes to receive a request).
+	time_to_last_rx_byte?: string
+
+	// Interval between the first downstream byte received and the first upstream byte sent. There may
+	// be considerable delta between ``time_to_last_rx_byte`` and this value due to filters.
+	// Additionally, the same caveats apply as documented in ``time_to_last_downstream_tx_byte`` about
+	// not accounting for kernel socket buffer time, etc.
+	time_to_first_upstream_tx_byte?: string
+
+	// Interval between the first downstream byte received and the last upstream byte sent. There may
+	// by considerable delta between ``time_to_last_rx_byte`` and this value due to filters.
+	// Additionally, the same caveats apply as documented in ``time_to_last_downstream_tx_byte`` about
+	// not accounting for kernel socket buffer time, etc.
+	time_to_last_upstream_tx_byte?: string
+
+	// Interval between the first downstream byte received and the first upstream
+	// byte received (i.e. time it takes to start receiving a response).
+	time_to_first_upstream_rx_byte?: string
+
+	// Interval between the first downstream byte received and the last upstream
+	// byte received (i.e. time it takes to receive a complete response).
+	time_to_last_upstream_rx_byte?: string
+
+	// Interval between the first downstream byte received and the first downstream byte sent.
+	// There may be a considerable delta between the ``time_to_first_upstream_rx_byte`` and this field
+	// due to filters. Additionally, the same caveats apply as documented in
+	// ``time_to_last_downstream_tx_byte`` about not accounting for kernel socket buffer time, etc.
+	time_to_first_downstream_tx_byte?: string
+
+	// Interval between the first downstream byte received and the last downstream byte sent.
+	// Depending on protocol, buffering, windowing, filters, etc. there may be a considerable delta
+	// between ``time_to_last_upstream_rx_byte`` and this field. Note also that this is an approximate
+	// time. In the current implementation it does not include kernel socket buffer time. In the
+	// current implementation it also does not include send window buffering inside the HTTP/2 codec.
+	// In the future it is likely that work will be done to make this duration more accurate.
+	time_to_last_downstream_tx_byte?: string
+
+	// The upstream remote/destination address that handles this exchange. This does not include
+	// retries.
+	upstream_remote_address?: v3_1.#Address
+
+	// The upstream local/origin address that handles this exchange. This does not include retries.
+	upstream_local_address?: v3_1.#Address
+
+	// The upstream cluster that ``upstream_remote_address`` belongs to.
+	upstream_cluster?: string
+
+	// Flags indicating occurrences during request/response processing.
+	response_flags?: #ResponseFlags
+
+	// All metadata encountered during request processing, including endpoint
+	// selection.
+	//
+	// This can be used to associate IDs attached to the various configurations
+	// used to process this request with the access log entry. For example, a
+	// route created from a higher level forwarding rule with some ID can place
+	// that ID in this field and cross reference later. It can also be used to
+	// determine if a canary endpoint was used or not.
+	metadata?: v3_1.#Metadata
+
+	// If upstream connection failed due to transport socket (e.g. TLS handshake), provides the
+	// failure reason from the transport socket. The format of this field depends on the configured
+	// upstream transport socket. Common TLS failures are in
+	// :ref:`TLS troubleshooting <arch_overview_ssl_trouble_shooting>`.
 	upstream_transport_failure_reason?: string
-	route_name?:                        string
-	downstream_direct_remote_address?:  v3_1.#Address
+
+	// The name of the route
+	route_name?: string
+
+	// This field is the downstream direct remote address on which the request from the user was
+	// received. Note: This is always the physical peer, even if the remote address is inferred from
+	// for example the x-forwarder-for header, proxy protocol, etc.
+	downstream_direct_remote_address?: v3_1.#Address
+
+	// Map of filter state in stream info that have been configured to be logged. If the filter
+	// state serialized to any message other than ``google.protobuf.Any`` it will be packed into
+	// ``google.protobuf.Any``.
 	filter_state_objects?: {[string]: {...}}
+
+	// A list of custom tags, which annotate logs with additional information.
+	// To configure this value, see the documentation for
+	// :ref:`custom_tags <envoy_v3_api_field_extensions.access_loggers.grpc.v3.CommonGrpcAccessLogConfig.custom_tags>`.
 	custom_tags?: {[string]: string}
-	duration?:                            string
-	upstream_request_attempt_count?:      uint32
-	connection_termination_details?:      string
-	stream_id?:                           string
-	intermediate_log_entry?:              bool
+
+	// For HTTP: Total duration in milliseconds of the request from the start time to the last byte out.
+	// For TCP: Total duration in milliseconds of the downstream connection.
+	// This is the total duration of the request (i.e., when the request's ActiveStream is destroyed)
+	// and may be longer than ``time_to_last_downstream_tx_byte``.
+	duration?: string
+
+	// For HTTP: Number of times the request is attempted upstream. Note that the field is omitted when the request was never attempted upstream.
+	// For TCP: Number of times the connection request is attempted upstream. Note that the field is omitted when the connect request was never attempted upstream.
+	upstream_request_attempt_count?: uint32
+
+	// Connection termination details may provide additional information about why the connection was terminated by Envoy for L4 reasons.
+	connection_termination_details?: string
+
+	// Optional unique id of stream (TCP connection, long-live HTTP2 stream, HTTP request) for logging and tracing.
+	// This could be any format string that could be used to identify one stream.
+	stream_id?: string
+
+	// Indicates whether this log entry is the final entry (flushed after the stream completed) or an intermediate entry
+	// (flushed periodically during the stream).
+	//
+	// For long-lived streams (e.g., TCP connections or long-lived HTTP/2 streams), there may be multiple intermediate
+	// entries and only one final entry.
+	//
+	// If needed, a unique identifier (see :ref:`stream_id <envoy_v3_api_field_data.accesslog.v3.AccessLogCommon.stream_id>`)
+	// can be used to correlate all intermediate and final log entries for the same stream.
+	//
+	// .. attention::
+	//
+	//   This field is deprecated in favor of ``access_log_type``, which provides a clearer indication of the log entry
+	//   type.
+	intermediate_log_entry?: bool
+
+	// If downstream connection in listener failed due to transport socket (e.g. TLS handshake), provides the
+	// failure reason from the transport socket. The format of this field depends on the configured downstream
+	// transport socket. Common TLS failures are in :ref:`TLS troubleshooting <arch_overview_ssl_trouble_shooting>`.
 	downstream_transport_failure_reason?: string
-	downstream_wire_bytes_sent?:          uint64
-	downstream_wire_bytes_received?:      uint64
-	upstream_wire_bytes_sent?:            uint64
-	upstream_wire_bytes_received?:        uint64
-	access_log_type?:                     #AccessLogType
+
+	// For HTTP: Total number of bytes sent to the downstream by the http stream.
+	// For TCP: Total number of bytes sent to the downstream by the :ref:`TCP Proxy <config_network_filters_tcp_proxy>`.
+	downstream_wire_bytes_sent?: uint64
+
+	// For HTTP: Total number of bytes received from the downstream by the http stream. Envoy over counts sizes of received HTTP/1.1 pipelined requests by adding up bytes of requests in the pipeline to the one currently being processed.
+	// For TCP: Total number of bytes received from the downstream by the :ref:`TCP Proxy <config_network_filters_tcp_proxy>`.
+	downstream_wire_bytes_received?: uint64
+
+	// For HTTP: Total number of bytes sent to the upstream by the http stream. This value accumulates during upstream retries.
+	// For TCP: Total number of bytes sent to the upstream by the :ref:`TCP Proxy <config_network_filters_tcp_proxy>`.
+	upstream_wire_bytes_sent?: uint64
+
+	// For HTTP: Total number of bytes received from the upstream by the http stream.
+	// For TCP: Total number of bytes sent to the upstream by the :ref:`TCP Proxy <config_network_filters_tcp_proxy>`.
+	upstream_wire_bytes_received?: uint64
+
+	// The type of the access log, which indicates when the log was recorded.
+	// See :ref:`ACCESS_LOG_TYPE <config_access_log_format_access_log_type>` for the available values.
+	// In case the access log was recorded by a flow which does not correspond to one of the supported
+	// values, then the default value will be ``NotSet``.
+	// For more information about how access log behaves and when it is being recorded,
+	// please refer to :ref:`access logging <arch_overview_access_logs>`.
+	access_log_type?: #AccessLogType
 }
 
+// Flags indicating occurrences during request/response processing.
+// [#next-free-field: 29]
 #ResponseFlags: {
-	"@type":                               "type.googleapis.com/envoy.data.accesslog.v3.ResponseFlags"
-	failed_local_healthcheck?:             bool
-	no_healthy_upstream?:                  bool
-	upstream_request_timeout?:             bool
-	local_reset?:                          bool
-	upstream_remote_reset?:                bool
-	upstream_connection_failure?:          bool
-	upstream_connection_termination?:      bool
-	upstream_overflow?:                    bool
-	no_route_found?:                       bool
-	delay_injected?:                       bool
-	fault_injected?:                       bool
-	rate_limited?:                         bool
-	unauthorized_details?:                 #ResponseFlags_Unauthorized
-	rate_limit_service_error?:             bool
-	downstream_connection_termination?:    bool
-	upstream_retry_limit_exceeded?:        bool
-	stream_idle_timeout?:                  bool
-	invalid_envoy_request_headers?:        bool
-	downstream_protocol_error?:            bool
+	"@type": "type.googleapis.com/envoy.data.accesslog.v3.ResponseFlags"
+
+	// Indicates local server healthcheck failed.
+	failed_local_healthcheck?: bool
+
+	// Indicates there was no healthy upstream.
+	no_healthy_upstream?: bool
+
+	// Indicates there was an upstream request timeout.
+	upstream_request_timeout?: bool
+
+	// Indicates local codec level reset was sent on the stream.
+	local_reset?: bool
+
+	// Indicates remote codec level reset was received on the stream.
+	upstream_remote_reset?: bool
+
+	// Indicates there was a local reset by a connection pool due to an initial connection failure.
+	upstream_connection_failure?: bool
+
+	// Indicates the stream was reset due to an upstream connection termination.
+	upstream_connection_termination?: bool
+
+	// Indicates the stream was reset because of a resource overflow.
+	upstream_overflow?: bool
+
+	// Indicates no route was found for the request.
+	no_route_found?: bool
+
+	// Indicates that the request was delayed before proxying.
+	delay_injected?: bool
+
+	// Indicates that the request was aborted with an injected error code.
+	fault_injected?: bool
+
+	// Indicates that the request was rate-limited locally.
+	rate_limited?: bool
+
+	// Indicates if the request was deemed unauthorized and the reason for it.
+	unauthorized_details?: #ResponseFlags_Unauthorized
+
+	// Indicates that the request was rejected because there was an error in rate limit service.
+	rate_limit_service_error?: bool
+
+	// Indicates the stream was reset due to a downstream connection termination.
+	downstream_connection_termination?: bool
+
+	// Indicates that the upstream retry limit was exceeded, resulting in a downstream error.
+	upstream_retry_limit_exceeded?: bool
+
+	// Indicates that the stream idle timeout was hit, resulting in a downstream 408.
+	stream_idle_timeout?: bool
+
+	// Indicates that the request was rejected because an envoy request header failed strict
+	// validation.
+	invalid_envoy_request_headers?: bool
+
+	// Indicates there was an HTTP protocol error on the downstream request.
+	downstream_protocol_error?: bool
+
+	// Indicates there was a max stream duration reached on the upstream request.
 	upstream_max_stream_duration_reached?: bool
-	response_from_cache_filter?:           bool
-	no_filter_config_found?:               bool
-	duration_timeout?:                     bool
-	upstream_protocol_error?:              bool
-	no_cluster_found?:                     bool
-	overload_manager?:                     bool
-	dns_resolution_failure?:               bool
-	downstream_remote_reset?:              bool
+
+	// Indicates the response was served from a cache filter.
+	response_from_cache_filter?: bool
+
+	// Indicates that a filter configuration is not available.
+	no_filter_config_found?: bool
+
+	// Indicates that the request or connection exceeded the downstream connection duration.
+	duration_timeout?: bool
+
+	// Indicates there was an HTTP protocol error in the upstream response.
+	upstream_protocol_error?: bool
+
+	// Indicates no cluster was found for the request.
+	no_cluster_found?: bool
+
+	// Indicates overload manager terminated the request.
+	overload_manager?: bool
+
+	// Indicates a DNS resolution failed.
+	dns_resolution_failure?: bool
+
+	// Indicates a downstream remote codec level reset was received on the stream
+	downstream_remote_reset?: bool
 }
 
 #ResponseFlags_Unauthorized: {
@@ -101,24 +313,55 @@ import (
 	reason?: #ResponseFlags_Unauthorized_Reason
 }
 
-#ResponseFlags_Unauthorized_Reason: "REASON_UNSPECIFIED" | "EXTERNAL_SERVICE"
+// Reasons why the request was unauthorized
+#ResponseFlags_Unauthorized_Reason:
+	"REASON_UNSPECIFIED" |
 
+	// The request was denied by the external authorization service.
+	"EXTERNAL_SERVICE"
+
+// Properties of a negotiated TLS connection.
+// [#next-free-field: 8]
 #TLSProperties: {
-	"@type":                       "type.googleapis.com/envoy.data.accesslog.v3.TLSProperties"
-	tls_version?:                  #TLSProperties_TLSVersion
-	tls_cipher_suite?:             uint32
-	tls_sni_hostname?:             string
+	"@type": "type.googleapis.com/envoy.data.accesslog.v3.TLSProperties"
+
+	// Version of TLS that was negotiated.
+	tls_version?: #TLSProperties_TLSVersion
+
+	// TLS cipher suite negotiated during handshake. The value is a
+	// four-digit hex code defined by the IANA TLS Cipher Suite Registry
+	// (e.g. ``009C`` for ``TLS_RSA_WITH_AES_128_GCM_SHA256``).
+	//
+	// Here it is expressed as an integer.
+	tls_cipher_suite?: uint32
+
+	// SNI hostname from handshake.
+	tls_sni_hostname?: string
+
+	// Properties of the local certificate used to negotiate TLS.
 	local_certificate_properties?: #TLSProperties_CertificateProperties
-	peer_certificate_properties?:  #TLSProperties_CertificateProperties
-	tls_session_id?:               string
-	ja3_fingerprint?:              string
+
+	// Properties of the peer certificate used to negotiate TLS.
+	peer_certificate_properties?: #TLSProperties_CertificateProperties
+
+	// The TLS session ID.
+	tls_session_id?: string
+
+	// The ``JA3`` fingerprint when ``JA3`` fingerprinting is enabled.
+	ja3_fingerprint?: string
 }
 
 #TLSProperties_CertificateProperties: {
 	"@type": "type.googleapis.com/envoy.data.accesslog.v3.TLSProperties.CertificateProperties"
+
+	// SANs present in the certificate.
 	subject_alt_name?: [...#TLSProperties_CertificateProperties_SubjectAltName]
+
+	// The subject field of the certificate.
 	subject?: string
-	issuer?:  string
+
+	// The issuer field of the certificate.
+	issuer?: string
 }
 
 #TLSProperties_CertificateProperties_SubjectAltName: {
@@ -127,40 +370,111 @@ import (
 	// oneof san: at most one may be set
 	*{} |
 	{uri!: string} |
-	{dns!: string}
+	{
+
+		// [#not-implemented-hide:]
+		dns!: string
+	}
 }
 
 #TLSProperties_TLSVersion: "VERSION_UNSPECIFIED" | "TLSv1" | "TLSv1_1" | "TLSv1_2" | "TLSv1_3"
 
+// [#next-free-field: 16]
 #HTTPRequestProperties: {
-	"@type":                "type.googleapis.com/envoy.data.accesslog.v3.HTTPRequestProperties"
-	request_method?:        v3_1.#RequestMethod
-	scheme?:                string
-	authority?:             string
-	port?:                  uint32
-	path?:                  string
-	user_agent?:            string
-	referer?:               string
-	forwarded_for?:         string
-	request_id?:            string
-	original_path?:         string
+	"@type": "type.googleapis.com/envoy.data.accesslog.v3.HTTPRequestProperties"
+
+	// The request method (RFC 7231/2616).
+	request_method?: v3_1.#RequestMethod
+
+	// The scheme portion of the incoming request URI.
+	scheme?: string
+
+	// HTTP/2 ``:authority`` or HTTP/1.1 ``Host`` header value.
+	authority?: string
+
+	// The port of the incoming request URI
+	// (unused currently, as port is composed onto authority).
+	port?: uint32
+
+	// The path portion from the incoming request URI.
+	path?: string
+
+	// Value of the ``User-Agent`` request header.
+	user_agent?: string
+
+	// Value of the ``Referer`` request header.
+	referer?: string
+
+	// Value of the ``X-Forwarded-For`` request header.
+	forwarded_for?: string
+
+	// Value of the ``X-Request-Id`` request header
+	//
+	// This header is used by Envoy to uniquely identify a request.
+	// It will be generated for all external requests and internal requests that
+	// do not already have a request ID.
+	request_id?: string
+
+	// Value of the ``x-envoy-original-path`` request header.
+	original_path?: string
+
+	// Size of the HTTP request headers in bytes.
+	//
+	// This value is captured from the OSI layer 7 perspective, i.e. it does not
+	// include overhead from framing or encoding at other networking layers.
 	request_headers_bytes?: uint64
-	request_body_bytes?:    uint64
+
+	// Size of the HTTP request body in bytes.
+	//
+	// This value is captured from the OSI layer 7 perspective, i.e. it does not
+	// include overhead from framing or encoding at other networking layers.
+	request_body_bytes?: uint64
+
+	// Map of additional headers that have been configured to be logged.
 	request_headers?: {[string]: string}
-	upstream_header_bytes_sent?:       uint64
+
+	// Number of header bytes sent to the upstream by the http stream, including protocol overhead.
+	//
+	// This value accumulates during upstream retries.
+	upstream_header_bytes_sent?: uint64
+
+	// Number of header bytes received from the downstream by the http stream, including protocol overhead.
 	downstream_header_bytes_received?: uint64
 }
 
+// [#next-free-field: 9]
 #HTTPResponseProperties: {
-	"@type":                 "type.googleapis.com/envoy.data.accesslog.v3.HTTPResponseProperties"
-	response_code?:          uint32
+	"@type": "type.googleapis.com/envoy.data.accesslog.v3.HTTPResponseProperties"
+
+	// The HTTP response code returned by Envoy.
+	response_code?: uint32
+
+	// Size of the HTTP response headers in bytes.
+	//
+	// This value is captured from the OSI layer 7 perspective, i.e. it does not
+	// include protocol overhead or overhead from framing or encoding at other networking layers.
 	response_headers_bytes?: uint64
-	response_body_bytes?:    uint64
+
+	// Size of the HTTP response body in bytes.
+	//
+	// This value is captured from the OSI layer 7 perspective, i.e. it does not
+	// include overhead from framing or encoding at other networking layers.
+	response_body_bytes?: uint64
+
+	// Map of additional headers configured to be logged.
 	response_headers?: {[string]: string}
+
+	// Map of trailers configured to be logged.
 	response_trailers?: {[string]: string}
-	response_code_details?:          string
+
+	// The HTTP response code details.
+	response_code_details?: string
+
+	// Number of header bytes received from the upstream by the http stream, including protocol overhead.
 	upstream_header_bytes_received?: uint64
-	downstream_header_bytes_sent?:   uint64
+
+	// Number of header bytes sent to the downstream by the http stream, including protocol overhead.
+	downstream_header_bytes_sent?: uint64
 }
 
 #AccessLogType: "NotSet" | "TcpUpstreamConnected" | "TcpPeriodic" | "TcpConnectionStart" | "TcpConnectionEnd" | "DownstreamStart" | "DownstreamPeriodic" | "DownstreamEnd" | "UpstreamPoolReady" | "UpstreamPeriodic" | "UpstreamEnd" | "DownstreamTunnelSuccessfullyEstablished" | "UdpTunnelUpstreamConnected" | "UdpPeriodic" | "UdpSessionEnd"

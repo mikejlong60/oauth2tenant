@@ -7,5 +7,8 @@ import (
 
 #Config: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.set_filter_state.v3.Config"
+
+	// A sequence of the filter state values to apply in the specified order
+	// when a new request is received.
 	on_request_headers?: [...v3_1.#FilterStateValue]
 }

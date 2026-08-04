@@ -7,11 +7,15 @@ import (
 	v3_3 "envoyproxy.io/envoy-cue/spec/config/cluster/v3"
 )
 
+// Defines supported protocols etc, so the management server can assign proper
+// endpoints to healthcheck.
 #Capability: {
 	"@type": "type.googleapis.com/envoy.service.health.v3.Capability"
 	health_check_protocols?: [...#Capability_Protocol]
 }
 
+// Different Envoy instances may have different capabilities (e.g. Redis)
+// and/or have ports enabled for different protocols.
 #Capability_Protocol: "HTTP" | "TCP" | "REDIS"
 
 #HealthCheckRequest: {
@@ -26,12 +30,15 @@ import (
 	health_status?: v3_1.#HealthStatus
 }
 
+// Group endpoint health by locality under each cluster.
 #LocalityEndpointsHealth: {
 	"@type":   "type.googleapis.com/envoy.service.health.v3.LocalityEndpointsHealth"
 	locality?: v3_1.#Locality
 	endpoints_health?: [...#EndpointHealth]
 }
 
+// The health status of endpoints in a cluster. The cluster name and locality
+// should match the corresponding fields in ClusterHealthCheck message.
 #ClusterEndpointsHealth: {
 	"@type":       "type.googleapis.com/envoy.service.health.v3.ClusterEndpointsHealth"
 	cluster_name?: string
@@ -40,7 +47,11 @@ import (
 
 #EndpointHealthResponse: {
 	"@type": "type.googleapis.com/envoy.service.health.v3.EndpointHealthResponse"
+
+	// Deprecated - Flat list of endpoint health information.
 	endpoints_health?: [...#EndpointHealth]
+
+	// Organize Endpoint health information by cluster.
 	cluster_endpoints_health?: [...#ClusterEndpointsHealth]
 }
 
@@ -59,21 +70,37 @@ import (
 	endpoints?: [...v3_2.#Endpoint]
 }
 
+// The cluster name and locality is provided to Envoy for the endpoints that it
+// health checks to support statistics reporting, logging and debugging by the
+// Envoy instance (outside of HDS). For maximum usefulness, it should match the
+// same cluster structure as that provided by EDS.
+// [#next-free-field: 6]
 #ClusterHealthCheck: {
 	"@type":       "type.googleapis.com/envoy.service.health.v3.ClusterHealthCheck"
 	cluster_name?: string
 	health_checks?: [...v3_1.#HealthCheck]
 	locality_endpoints?: [...#LocalityEndpoints]
+
+	// Optional map that gets filtered by :ref:`health_checks.transport_socket_match_criteria <envoy_v3_api_field_config.core.v3.HealthCheck.transport_socket_match_criteria>`
+	// on connection when health checking. For more details, see
+	// :ref:`config.cluster.v3.Cluster.transport_socket_matches <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket_matches>`.
 	transport_socket_matches?: [...v3_3.#Cluster_TransportSocketMatch]
+
+	// Optional configuration used to bind newly established upstream connections.
+	// If the address and port are empty, no bind will be performed.
 	upstream_bind_config?: v3_1.#BindConfig
 }
 
 #HealthCheckSpecifier: {
 	"@type": "type.googleapis.com/envoy.service.health.v3.HealthCheckSpecifier"
 	cluster_health_checks?: [...#ClusterHealthCheck]
+
+	// The default is 1 second.
 	interval?: string
 }
 
+// [#not-implemented-hide:] Not configuration. Workaround c++ protobuf issue with importing
+// services: https://github.com/google/protobuf/issues/4221 and protoxform to upgrade the file.
 #HdsDummy: {
 	"@type": "type.googleapis.com/envoy.service.health.v3.HdsDummy"
 }

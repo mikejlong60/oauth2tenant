@@ -6,19 +6,35 @@ import (
 	v2alpha_1 "envoyproxy.io/envoy-cue/spec/data/tap/v2alpha"
 )
 
+// [#not-implemented-hide:] Stream message for the Tap API. Envoy will open a stream to the server
+// and stream taps without ever expecting a response.
 #StreamTapsRequest: {
-	"@type":     "type.googleapis.com/envoy.service.tap.v2alpha.StreamTapsRequest"
+	"@type": "type.googleapis.com/envoy.service.tap.v2alpha.StreamTapsRequest"
+
+	// Identifier data effectively is a structured metadata. As a performance optimization this will
+	// only be sent in the first message on the stream.
 	identifier?: #StreamTapsRequest_Identifier
-	trace_id?:   uint64
-	trace?:      v2alpha_1.#TraceWrapper
+
+	// The trace id. this can be used to merge together a streaming trace. Note that the trace_id
+	// is not guaranteed to be spatially or temporally unique.
+	trace_id?: uint64
+
+	// The trace data.
+	trace?: v2alpha_1.#TraceWrapper
 }
 
 #StreamTapsRequest_Identifier: {
 	"@type": "type.googleapis.com/envoy.service.tap.v2alpha.StreamTapsRequest.Identifier"
-	node!:   core_2.#Node
+
+	// The node sending taps over the stream.
+	node!: core_2.#Node
+
+	// The opaque identifier that was set in the :ref:`output config
+	// <envoy_api_field_service.tap.v2alpha.StreamingGrpcSink.tap_id>`.
 	tap_id?: string
 }
 
+// [#not-implemented-hide:]
 #StreamTapsResponse: {
 	"@type": "type.googleapis.com/envoy.service.tap.v2alpha.StreamTapsResponse"
 }
