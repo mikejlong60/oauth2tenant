@@ -6,7 +6,7 @@ _clientId:         "edge"
 _oauth2_host:      "172.18.0.5"
 _oauth2_host_port: 443
 _realm:            "professional-services"
-_edge_host:        "172.18.0.4:10909"
+_edge_host:        "172.18.0.2:10909"
 
 OAuthProvider: {
     authorization_endpoint: "https://\(_oauth2_host)/realms/professional-services/protocol/openid-connect/auth"

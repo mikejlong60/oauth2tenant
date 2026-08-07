@@ -3,4 +3,4 @@ resources:
     name: oauth-client-secret
     generic_secret:
       secret:
-        inline_string: BYY05iL1jOu7OTURrbtopDWDh1duTbK1
+        inline_string: pmCnxEtVsV0WpjP9K1QL12JojBGKX3RX

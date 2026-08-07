@@ -39,3 +39,6 @@ https://172.18.0.4:10909/services/oauth2tenant/service1/
 
 kubectl create namespace keycloak
 kubectl apply -f keycloak.yaml
+
+
+kubectl create secret generic greymatter-oauth2-secret     --from-file=token.yaml=token.yaml     --from-file=hmac.yaml=hmac.yaml     --namespace oauth2tenant
