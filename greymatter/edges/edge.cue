@@ -12,7 +12,7 @@ edge: gsl.#Edge & {
 	name:            "edge"
 	display_name:    "oauth2tenant edge"
 	version:         "v2.5.0"
-	description:     "No description"
+	description:     "No description fred"
 	business_impact: "high"
 	owner:           "oauth2tenant"
 	capability:      ""

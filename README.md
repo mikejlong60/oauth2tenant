@@ -33,7 +33,7 @@ kubectl apply -f nginx.yaml
 
 
 # replace with edge load balancer domain
-https://172.18.0.4:10909/services/oauth2tenant/service1/
+https://172.18.0.2:10909/services/oauth2tenant/service1/
 
 # Deploying Keycloak
 
